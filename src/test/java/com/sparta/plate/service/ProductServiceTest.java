@@ -9,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
 class ProductServiceTest {
     @Autowired
@@ -34,6 +37,11 @@ class ProductServiceTest {
 
         ProductResponseDto product = productService.createProduct(requestDto, 1L);
 
-        System.out.println("food.getProductName(): " + product.getProductName());
+        assertNotNull(product);
+        assertEquals(name, product.getProductName());
+        assertEquals(description, product.getProductDescription());
+        assertEquals(price, product.getPrice());
+        assertEquals(maxOrderLimit, product.getMaxOrderLimit());
+        assertEquals(stockQuantity, product.getStockQuantity());
     }
 }

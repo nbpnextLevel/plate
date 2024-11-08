@@ -51,9 +51,10 @@ public class Product extends ProductTimestamped {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
+    @Builder.Default
+    @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
     @OrderBy("isPrimary desc")
-    @JsonManagedReference
     private List<ProductImage> productImageList = new ArrayList<>();
 
     @PrePersist
@@ -64,11 +65,13 @@ public class Product extends ProductTimestamped {
     }
 
     public Product toEntity(ProductRequestDto requestDto, Long createdBy) {
+        ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
+
         Product product = Product.builder()
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())
-                .displayStatus(ProductDisplayStatus.valueOf(requestDto.getDisplayStatus()))
+                .displayStatus(displayStatus)
                 .maxOrderLimit(requestDto.getMaxOrderLimit())
                 .stockQuantity(requestDto.getStockQuantity())
                 .isHidden(requestDto.isHidden())
@@ -76,7 +79,7 @@ public class Product extends ProductTimestamped {
                 .build();
 
         product.setCreatedBy(createdBy);
-
+        System.out.println("createdBy: " + createdBy);
         return product;
     }
 

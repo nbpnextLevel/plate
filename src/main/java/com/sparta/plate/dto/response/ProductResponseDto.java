@@ -25,6 +25,7 @@ public class ProductResponseDto {
     private int maxOrderLimit;
     private int stockQuantity;
 
+    @Builder.Default
     private List<ProductImageResponseDto> productImageList = new ArrayList<>();
 
     public static ProductResponseDto toDto(Product product) {
