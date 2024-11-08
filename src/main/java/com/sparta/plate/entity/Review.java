@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,17 +16,17 @@ import java.time.LocalDateTime;
 public class Review extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;  // 리뷰 아이디 (PK)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID reviewId;  // 리뷰 아이디 (PK)
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)  // 주문 아이디 (FK)
     private Order orderId;  // 리뷰가 속한 주문
 
-    @Column(length = 1000)
+    @Column(length = 2000)
     private String reviewDetail;  // 리뷰 내용
 
-    @Column()
+    @Column
     private int reviewScore;  // 별점
 
     @Enumerated(EnumType.STRING)

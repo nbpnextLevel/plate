@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,8 +19,8 @@ import java.time.LocalDateTime;
 public class Payment extends Timestamped{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long payment_id;  // 결제 아이디 (PK)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID payment_id;  // 결제 아이디 (PK)
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
@@ -38,7 +39,5 @@ public class Payment extends Timestamped{
     private LocalDateTime createdAt;  // 생성일
 
     @Column(nullable = false)
-    private String createdBy;  // 생성자 (시스템/사용자)
-
-
+    private String createdBy;  // 생성자
 }
