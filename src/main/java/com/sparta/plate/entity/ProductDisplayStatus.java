@@ -5,5 +5,17 @@ public enum ProductDisplayStatus {
     IN_STOCK,
     SOLD_OUT_TODAY,
     OUT_OF_STOCK,
-    DISCONTINUED
+    DISCONTINUED;
+
+    public static ProductDisplayStatus fromString(String status) {
+        if (status == null) {
+            return PENDING_SALE;
+        }
+
+        try {
+            return ProductDisplayStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            return PENDING_SALE;
+        }
+    }
 }

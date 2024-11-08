@@ -17,6 +17,7 @@ public abstract class ProductTimestamped {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
+    // @CreatedBy : 추후 인증 로직 구현되면 변경예정
     @Column(nullable = false)
     protected Long createdBy;
 
