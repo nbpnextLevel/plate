@@ -19,25 +19,21 @@ public class Review extends Timestamped {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID reviewId;  // 리뷰 아이디 (PK)
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)  // 주문 아이디 (FK)
-    private Order orderId;  // 리뷰가 속한 주문
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order orderId;  // 주문 아이디 (FK)
 
     @Column(length = 2000)
     private String reviewDetail;  // 리뷰 내용
 
-    @Column
-    private int reviewScore;  // 별점
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReviewEnum reviewEnum;  // 리뷰 상태 (ACTIVE, DELETED)
+    private int reviewScore;  // 별점
 
     @Column(nullable = false)
     private LocalDateTime createdAt;  // 생성일
 
     @Column(nullable = false)
-    private String createdBy;  // 생성자
+    private Long createdBy;  // 생성자
 
     private LocalDateTime updatedAt;  // 수정일
 
@@ -47,6 +43,5 @@ public class Review extends Timestamped {
 
     private String deletedBy;  // 삭제자
 
-    @Column(nullable = false)
-    private boolean deleted;  // 삭제 여부
+    private boolean isDeleted;  // 삭제 여부
 }
