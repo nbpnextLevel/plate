@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,4 +21,15 @@ public class ProductRequestDto {
     private int maxOrderLimit;
     private int stockQuantity;
     private boolean isHidden;
+
+    private List<ProductImageRequestDto> images;
+
+    public void validatePrimaryImage() {
+        long primaryCount = images.stream()
+                .filter(ProductImageRequestDto::isPrimary)
+                .count();
+        if (primaryCount != 1) {
+            throw new IllegalArgumentException("대표 이미지는 하나여야 합니다.");
+        }
+    }
 }

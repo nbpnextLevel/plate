@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "p_product")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,9 +21,13 @@ import java.util.UUID;
 public class Product extends ProductTimestamped {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column(unique = true, nullable = false)
     private UUID productId;
 
+    @Column(nullable = false)
     private UUID storeId;
 
     @Column(nullable = false)
@@ -35,9 +39,10 @@ public class Product extends ProductTimestamped {
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProductDisplayStatus displayStatus;
+    private ProductDisplayStatus displayStatus = ProductDisplayStatus.PENDING_SALE;
 
     @Column(nullable = false)
     private int maxOrderLimit;
@@ -51,23 +56,18 @@ public class Product extends ProductTimestamped {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
+    @Setter
     @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
     @OrderBy("isPrimary desc")
     private List<ProductImage> productImageList = new ArrayList<>();
 
-    @PrePersist
-    public void generateId() {
-        if (productId == null) {
-            productId = UUID.randomUUID();
-        }
-    }
-
-    public Product toEntity(ProductRequestDto requestDto, Long createdBy) {
+    public static Product toEntity(ProductRequestDto requestDto, Long createdBy, UUID productId) {
         ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
+                .productId(productId)
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())
@@ -79,7 +79,12 @@ public class Product extends ProductTimestamped {
                 .build();
 
         product.setCreatedBy(createdBy);
-        System.out.println("createdBy: " + createdBy);
+
+        List<ProductImage> productImages = requestDto.getImages().stream()
+                .map(imageDto -> ProductImage.toEntity(imageDto, createdBy))
+                .collect(Collectors.toList());
+        product.setProductImageList(productImages);
+
         return product;
     }
 
