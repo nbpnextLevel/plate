@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "p_product")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +21,13 @@ import java.util.stream.Collectors;
 public class Product extends ProductTimestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)  // UUID 자동 생성
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column(unique = true, nullable = false)
     private UUID productId;
 
+    @Column(nullable = false)
     private UUID storeId;
 
     @Column(nullable = false)
@@ -36,6 +39,7 @@ public class Product extends ProductTimestamped {
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductDisplayStatus displayStatus = ProductDisplayStatus.PENDING_SALE;
@@ -52,16 +56,18 @@ public class Product extends ProductTimestamped {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
+    @Setter
     @Builder.Default
     @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
     @OrderBy("isPrimary desc")
     private List<ProductImage> productImageList = new ArrayList<>();
 
-    public static Product toEntity(ProductRequestDto requestDto, Long createdBy) {
+    public static Product toEntity(ProductRequestDto requestDto, Long createdBy, UUID productId) {
         ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
+                .productId(productId)
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())

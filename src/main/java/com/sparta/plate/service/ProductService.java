@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,19 +26,12 @@ public class ProductService {
             throw new IllegalArgumentException("Product name cannot be null or empty.");
         }
 
-        Product product = Product.toEntity(requestDto, 1L);
+        UUID productId = generateUniqueProductId();
+
+        Product product = Product.toEntity(requestDto, 1L, productId);
 
         for (ProductImage productImage : product.getProductImageList()) {
             productImage.setProduct(product);
-        }
-
-        log.info("product.getName(): " + product.getName());
-        log.info("product.getDescription(): " + product.getDescription());
-        log.info("product.getPrice(): " + product.getPrice());
-        log.info("product.getCreatedAt(): " + product.getCreatedAt());
-        log.info("product.getCreatedBy(): " + product.getCreatedBy());
-        if (!product.getProductImageList().isEmpty()) {
-            log.info("product.getProductImageList().get(0).getFileName(): " + product.getProductImageList().get(0).getFileName());
         }
 
         Product savedProduct = productRepository.save(product);
@@ -44,5 +39,11 @@ public class ProductService {
         return ProductResponseDto.toDto(savedProduct);
     }
 
-
+    private UUID generateUniqueProductId() {
+        UUID productId = UUID.randomUUID();
+        while (productRepository.existsByProductId(productId)) {
+            productId = UUID.randomUUID(); // 중복되면 새 UUID 생성
+        }
+        return productId;
+    }
 }

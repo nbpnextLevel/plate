@@ -47,7 +47,7 @@ class ProductServiceTest {
                 .stockQuantity(stockQuantity)
                 .build();
 
-        ProductResponseDto product = productService.createProduct(requestDto, 1L);
+        ProductResponseDto product = productService.createProduct(requestDto);
 
         assertNotNull(product);
         assertEquals(name, product.getProductName());
@@ -94,7 +94,7 @@ class ProductServiceTest {
                 .images(images)
                 .build();
 
-        ProductResponseDto product = productService.createProduct(requestDto, 1L);
+        ProductResponseDto product = productService.createProduct(requestDto);
 
         assertNotNull(product);
         assertEquals(name, product.getProductName());
