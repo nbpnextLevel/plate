@@ -29,10 +29,7 @@ public class ProductImage extends ProductTimestamped {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isPrimary;
-
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private boolean isHidden;
-
+    
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
