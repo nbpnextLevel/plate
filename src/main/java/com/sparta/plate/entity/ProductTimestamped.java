@@ -1,6 +1,8 @@
 package com.sparta.plate.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +16,6 @@ public abstract class ProductTimestamped {
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     // @CreatedBy : 추후 인증 로직 구현되면 변경예정
@@ -26,5 +27,4 @@ public abstract class ProductTimestamped {
 
     @Column
     protected Long deletedBy;
-
 }

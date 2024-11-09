@@ -1,5 +1,6 @@
 package com.sparta.plate.entity;
 
+import com.sparta.plate.dto.request.ProductImageRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,17 @@ public class ProductImage extends ProductTimestamped {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    public static ProductImage toEntity(ProductImageRequestDto requestDto, Long createdBy) {
+        ProductImage image = ProductImage.builder()
+                .fileName(requestDto.getFileName())
+                .uploadPath(requestDto.getUploadPath())
+                .isPrimary(requestDto.isPrimary())
+                .build();
+
+        image.setCreatedBy(createdBy);
+        return image;
+    }
+
     public void setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
     }
@@ -47,5 +59,12 @@ public class ProductImage extends ProductTimestamped {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
         this.deletedBy = deletedBy;
+    }
+
+    public void setProduct(Product product) {
+        if (this.product != null) {
+            throw new IllegalStateException("이미 Product가 설정되었습니다.");
+        }
+        this.product = product;
     }
 }
