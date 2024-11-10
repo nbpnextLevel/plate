@@ -17,9 +17,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/product")
-    // public ProductResponseDto createProduct(@RequestBody ProductRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
     public ProductResponseDto createProduct(@RequestBody ProductRequestDto requestDto) {
-        // return productService.createProduct(requestDto, userDetails.getUser());
         return productService.createProduct(requestDto);
     }
 }

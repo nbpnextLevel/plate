@@ -20,7 +20,6 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    // public ProductResponseDto createProduct(ProductRequestDto requestDto, Long createdBy) {
     public ProductResponseDto createProduct(ProductRequestDto requestDto) {
         if (requestDto.getProductName() == null || requestDto.getProductName().isEmpty()) {
             throw new IllegalArgumentException("Product name cannot be null or empty.");
@@ -28,7 +27,7 @@ public class ProductService {
 
         UUID productId = generateUniqueProductId();
 
-        Product product = Product.toEntity(requestDto, 1L, productId);
+        Product product = Product.toEntity(requestDto, productId);
 
         for (ProductImage productImage : product.getProductImageList()) {
             productImage.setProduct(product);
@@ -42,7 +41,7 @@ public class ProductService {
     private UUID generateUniqueProductId() {
         UUID productId = UUID.randomUUID();
         while (productRepository.existsByProductId(productId)) {
-            productId = UUID.randomUUID(); // 중복되면 새 UUID 생성
+            productId = UUID.randomUUID();
         }
         return productId;
     }

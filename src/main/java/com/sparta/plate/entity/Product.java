@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -63,7 +62,7 @@ public class Product extends ProductTimestamped {
     @OrderBy("isPrimary desc")
     private List<ProductImage> productImageList = new ArrayList<>();
 
-    public static Product toEntity(ProductRequestDto requestDto, Long createdBy, UUID productId) {
+    public static Product toEntity(ProductRequestDto requestDto, UUID productId) {
         ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
@@ -78,23 +77,23 @@ public class Product extends ProductTimestamped {
                 .storeId(UUID.fromString(requestDto.getStoreId()))
                 .build();
 
-        product.setCreatedBy(createdBy);
+        // product.setCreatedBy(createdBy);
 
         List<ProductImage> productImages = requestDto.getImages().stream()
-                .map(imageDto -> ProductImage.toEntity(imageDto, createdBy))
+                .map(ProductImage::toEntity)
                 .collect(Collectors.toList());
         product.setProductImageList(productImages);
 
         return product;
     }
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
+    // public void setCreatedBy(Long createdBy) {
+    //     this.createdBy = createdBy;
+    // }
 
+    @Override
     public void markAsDeleted(Long deletedBy) {
+        super.markAsDeleted(deletedBy);
         this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now();
-        this.deletedBy = deletedBy;
     }
 }
