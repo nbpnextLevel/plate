@@ -40,16 +40,8 @@ public class Store {
 	private String storeNumber;
 
 	@NotNull
-	@Column(nullable = false, length = 10)
-	private String zipcode;
-
-	@NotNull
 	@Column(nullable = false)
 	private String address;
-
-	@NotNull
-	@Column(nullable = false)
-	private String detailAddress;
 
 	@Column(nullable = false)
 	private Long createdBy;
@@ -59,14 +51,13 @@ public class Store {
 	private Long deletedBy;
 
 	@Builder
-	public Store(StoreCategory categoryId, String storeName, String storeNumber, String zipcode, String address,
-		String detailAddress, Long createdBy) {
+	public Store(UUID id, StoreCategory categoryId, String storeName, String storeNumber, String address,
+		Long createdBy) {
+		this.id = id;
 		this.categoryId = categoryId;
 		this.storeName = storeName;
 		this.storeNumber = storeNumber;
-		this.zipcode = zipcode;
 		this.address = address;
-		this.detailAddress = detailAddress;
 		this.createdBy = createdBy;
 	}
 }
