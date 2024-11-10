@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// TODO 공통 응답 객체 적용 필요 - 재희
 @Slf4j(topic = "User Controller")
 @RestController
 @RequiredArgsConstructor
