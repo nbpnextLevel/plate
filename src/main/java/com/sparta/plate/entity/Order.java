@@ -1,13 +1,13 @@
 package com.sparta.plate.entity;
 
-import com.sparta.plate.entity.OrderStatusEnum;
-import com.sparta.plate.entity.OrderTypeEnum;
+import com.sparta.plate.dto.request.OrderRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,19 +15,19 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Order {
+public class Order extends Timestamped{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", columnDefinition = "UUID")
-    private UUID orderId;  // 주문 ID (UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_id", updatable = false, nullable = false)
+    private UUID orderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)  // 외래 키 설정 (user_id)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (user_id)
     private User user;  // 주문한 사용자 (User 엔티티와 연관)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", nullable = false)  // 외래 키 설정 (store_id)
+    @JoinColumn(name = "store_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (store_id)
     private Store store;  // 주문이 발생한 상점 (Store 엔티티와 연관)
 
     @Enumerated(EnumType.STRING)
@@ -50,41 +50,20 @@ public class Order {
     @Column(name = "order_status", nullable = false)
     private OrderStatusEnum orderStatusEnum;  // 주문 상태 (ENUM)
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;  // 생성 일시 (TIMESTAMP)
+    @OneToMany(mappedBy = "order")  // Order 엔티티에서 'product' 필드를 관리
+    private List<OrderProduct> orderProductList = new ArrayList<>();
 
-    @Column(name = "created_by", nullable = false)
-    private Long createdBy;  // 생성자 (사용자 ID)
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;  // 업데이트 일시 (TIMESTAMP)
-
-    @Column(name = "updated_by")
-    private Long updatedBy;  // 업데이트한 사람 (사용자 ID)
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;  // 삭제 일시 (TIMESTAMP)
-
-    @Column(name = "deleted_by")
-    private Long deletedBy;  // 삭제한 사람 (사용자 ID)
-
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted;  // 삭제 여부 (BOOLEAN)
-
-    // 기본 생성자와 매개변수화된 생성자 (선택사항)
-    public Order(User user, Store store, OrderTypeEnum orderTypeEnum, Long orderPrice, Boolean isCanceled,
-                 String orderAddress, String orderRequest, OrderStatusEnum orderStatusEnum, Long createdBy) {
+    public Order(OrderRequestDto requestDto,User user, Store store, List<OrderProduct> orderProductList) {
         this.user = user;
         this.store = store;
-        this.orderTypeEnum = orderTypeEnum;
-        this.orderPrice = orderPrice;
-        this.isCanceled = isCanceled;
-        this.orderAddress = orderAddress;
-        this.orderRequest = orderRequest;
-        this.orderStatusEnum = orderStatusEnum;
-        this.createdAt = LocalDateTime.now();
-        this.createdBy = createdBy;
-        this.isDeleted = false;
+        this.orderTypeEnum = requestDto.getOrderType();
+        this.orderPrice = requestDto.getOrderPrice();
+        this.isCanceled = requestDto.getIsCanceled();
+        this.orderAddress = requestDto.getOrderAddress();
+        this.orderRequest = requestDto.getOrderRequest();
+        this.orderStatusEnum = requestDto.getOrderStatus();
+        this.orderProductList = orderProductList;
     }
 
 }

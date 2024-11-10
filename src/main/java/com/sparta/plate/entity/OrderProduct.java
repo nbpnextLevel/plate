@@ -12,22 +12,24 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderProduct {
+public class OrderProduct extends Timestamped{
 
     @Id
-    @Column(name = "order_product_id", columnDefinition = "UUID")
-    private UUID orderProductId; // 주문 상품 ID
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_product_id", updatable = false, nullable = false)
+    private UUID orderProductId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false, columnDefinition = "UUID")  // 외래 키 설정 (user_id)
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id", nullable = false)  // 외래 키 설정 (user_id)
     private Order order; // 주문 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false, columnDefinition = "UUID")  // 외래 키 설정 (user_id)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (user_id)
     private Product product; // 상품 ID
 
     @Column(nullable = false)
     private int orderQuantity; // 주문 수량
+
 
     // 기본 생성자와 매개변수화된 생성자 (선택사항)
     public OrderProduct(UUID orderProductId, Order order, Product product, int orderQuantity) {
