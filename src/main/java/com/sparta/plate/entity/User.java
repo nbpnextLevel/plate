@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// TODO bastEntity 상속 필요 - 재희
 @NoArgsConstructor
 @Entity @Getter
 @Table(name = "p_users")

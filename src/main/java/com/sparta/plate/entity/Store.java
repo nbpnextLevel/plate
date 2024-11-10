@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Entity @Table(name = "p_store")
 public class Store {
@@ -28,7 +28,7 @@ public class Store {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_category_id", nullable = false)
-	private StoreCategory categoryId;
+	private StoreCategory storeCategory;
 
 	//private User userId;
 
@@ -43,7 +43,6 @@ public class Store {
 	@Column(nullable = false)
 	private String address;
 
-	@Column(nullable = false)
 	private Long createdBy;
 
 	private Long updatedBy;
@@ -51,13 +50,10 @@ public class Store {
 	private Long deletedBy;
 
 	@Builder
-	public Store(UUID id, StoreCategory categoryId, String storeName, String storeNumber, String address,
-		Long createdBy) {
-		this.id = id;
-		this.categoryId = categoryId;
+	public Store(StoreCategory storeCategory, String storeName, String storeNumber, String address) {
+		this.storeCategory = storeCategory;
 		this.storeName = storeName;
 		this.storeNumber = storeNumber;
 		this.address = address;
-		this.createdBy = createdBy;
 	}
 }

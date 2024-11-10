@@ -32,21 +32,9 @@ public class UserController {
 	private final CheckDuplicatedLoginIdService checkDuplicatedLoginIdService;
 
 	@PostMapping("/signup")
-	public SignupUserResponseDto signup(@Valid @RequestBody SignupRequestDto request, BindingResult bindingResult) {
-
-		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-		if (fieldErrors.size() > 0) {
-			for (FieldError fieldError : bindingResult.getFieldErrors()) {
-				log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
-			}
-			return null;
-		}
-
+	public SignupUserResponseDto signup(@Valid @RequestBody SignupRequestDto request) {
 		User savedUser = userSignupService.signup(request);
-
 		return new SignupUserResponseDto(savedUser.getLoginId());
-
-
 	}
 
 	@GetMapping("/exists/{loginId}")
