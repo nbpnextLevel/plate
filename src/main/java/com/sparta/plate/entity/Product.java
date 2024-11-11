@@ -38,10 +38,11 @@ public class Product extends Timestamped {
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
+    @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProductDisplayStatus displayStatus = ProductDisplayStatus.PENDING_SALE;
+    private ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.PENDING_SALE;
 
     @Setter
     @Column(nullable = false)
@@ -51,6 +52,7 @@ public class Product extends Timestamped {
     @Column(nullable = false)
     private int stockQuantity;
 
+    @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isHidden;
 
@@ -65,7 +67,7 @@ public class Product extends Timestamped {
     private List<ProductImage> productImageList = new ArrayList<>();
 
     public static Product toEntity(ProductRequestDto requestDto, UUID productId) {
-        ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
+        ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
                 .productId(productId)

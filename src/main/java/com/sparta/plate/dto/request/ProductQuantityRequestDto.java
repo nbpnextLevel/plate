@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class ProductQuantityRequestDto {
-    private int maxOrderLimit;
-    private int stockQuantity;
+    private Integer maxOrderLimit;
+    private Integer stockQuantity;
 }

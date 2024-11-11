@@ -2,7 +2,7 @@ package com.sparta.plate.service;
 
 import com.sparta.plate.config.JpaConfig;
 import com.sparta.plate.entity.Product;
-import com.sparta.plate.entity.ProductDisplayStatus;
+import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.repository.ProductRepository;
 import com.sparta.plate.service.product.ProductService;
@@ -42,7 +42,7 @@ class ProductServiceTest {
                 .name("연어 샐러드")
                 .description("설명")
                 .price(new BigDecimal("18000"))
-                .displayStatus(ProductDisplayStatus.PENDING_SALE)
+                .displayStatus(ProductDisplayStatusEnum.PENDING_SALE)
                 .maxOrderLimit(100)
                 .stockQuantity(55)
                 .isHidden(false)

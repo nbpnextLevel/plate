@@ -50,4 +50,26 @@ public class ProductController {
                 .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
                 .build();
     }
+
+    @PatchMapping("/{productId}/visibility")
+    public ApiResponseDto updateProductVisibility(@PathVariable UUID productId) {
+        productService.updateProductVisibility(productId);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
+                .build();
+    }
+
+    @PatchMapping("/{productId}/display-status")
+    public ApiResponseDto updateProductDisplayStatus(@PathVariable UUID productId, @RequestParam String displayStatus) {
+        productService.updateProductDisplayStatus(productId, displayStatus);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
+                .build();
+    }
 }
