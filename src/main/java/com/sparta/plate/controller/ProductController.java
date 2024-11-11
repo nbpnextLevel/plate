@@ -38,4 +38,15 @@ public class ProductController {
                 .message("삭제 완료되었습니다.")
                 .build();
     }
+
+    @PatchMapping("/history/{historyId}/delete")
+    public ApiResponseDto deleteProductHistory(@PathVariable UUID historyId, Long userId) {
+        productService.deleteProductHistory(historyId, 1L);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .message("삭제 완료되었습니다.")
+                .build();
+    }
 }

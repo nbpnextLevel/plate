@@ -2,7 +2,9 @@ package com.sparta.plate.service;
 
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.entity.Product;
+import com.sparta.plate.entity.ProductHistory;
 import com.sparta.plate.entity.ProductImage;
+import com.sparta.plate.repository.ProductHistoryRepository;
 import com.sparta.plate.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,8 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductHistoryRepository historyRepository;
+
 
     @Transactional
     public UUID createProduct(ProductRequestDto requestDto) {
@@ -52,6 +56,16 @@ public class ProductService {
         if (product != null) {
             product.markAsDeleted(userId);
             productRepository.save(product);
+        }
+    }
+
+    @Transactional
+    public void deleteProductHistory(UUID historyId, Long userId) {
+        ProductHistory history = historyRepository.findById(historyId).orElse(null);
+
+        if (history != null) {
+            history.markAsDeleted(userId);
+            historyRepository.save(history);
         }
     }
 }
