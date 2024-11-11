@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/product")
+@RequestMapping("/api/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -30,7 +30,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/delete")
-    public ApiResponseDto deleteProduct(@PathVariable UUID productId, Long userId) {
+    public ApiResponseDto deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId, 1L);
 
         return ApiResponseDto.builder()
@@ -41,8 +41,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/inventory")
-    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto, Long userId) {
-        productService.updateStockAndLimit(productId, requestDto, 1L);
+    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto) {
+        productService.updateStockAndLimit(productId, requestDto);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())

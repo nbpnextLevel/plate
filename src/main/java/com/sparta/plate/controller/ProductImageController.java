@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/product/image")
+@RequestMapping("/api/products/images")
 public class ProductImageController {
 
     private final ProductImageService imageService;
