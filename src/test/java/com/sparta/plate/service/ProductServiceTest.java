@@ -37,7 +37,6 @@ class ProductServiceTest {
     void createProductAndSave() {
         UUID productId = UUID.randomUUID();
         Product product = Product.builder()
-                .productId(productId)
                 .storeId(UUID.randomUUID())
                 .name("연어 샐러드")
                 .description("설명")
