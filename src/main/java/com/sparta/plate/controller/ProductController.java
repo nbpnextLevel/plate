@@ -46,7 +46,7 @@ public class ProductController {
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .data(Map.of("id", savedProductId, "message", "수정 완료되었습니다."))
+                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
                 .build();
     }
 }
