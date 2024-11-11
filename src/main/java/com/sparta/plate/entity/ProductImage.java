@@ -15,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "p_product_image")
-public class ProductImage extends ProductTimestamped {
+public class ProductImage extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

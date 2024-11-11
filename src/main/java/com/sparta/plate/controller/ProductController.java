@@ -1,8 +1,9 @@
 package com.sparta.plate.controller;
 
+import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
-import com.sparta.plate.service.ProductService;
+import com.sparta.plate.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/inventory")
-    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, Long userId) {
-        productService.updateStockAndLimit(productId, 1L);
+    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto, Long userId) {
+        productService.updateStockAndLimit(productId, requestDto, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())

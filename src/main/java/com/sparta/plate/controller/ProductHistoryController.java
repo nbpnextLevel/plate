@@ -1,7 +1,7 @@
 package com.sparta.plate.controller;
 
 import com.sparta.plate.dto.response.ApiResponseDto;
-import com.sparta.plate.service.ProductService;
+import com.sparta.plate.service.product.ProductHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,11 +16,11 @@ import java.util.UUID;
 @RequestMapping("/api/product/history")
 public class ProductHistoryController {
 
-    private final ProductService productService;
+    private final ProductHistoryService historyService;
 
     @PatchMapping("/{historyId}/delete")
     public ApiResponseDto deleteProductHistory(@PathVariable UUID historyId, Long userId) {
-        productService.deleteProductHistory(historyId, 1L);
+        historyService.deleteProductHistory(historyId, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())

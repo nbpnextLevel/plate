@@ -1,7 +1,7 @@
 package com.sparta.plate.controller;
 
 import com.sparta.plate.dto.response.ApiResponseDto;
-import com.sparta.plate.service.ProductService;
+import com.sparta.plate.service.product.ProductImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,11 +16,11 @@ import java.util.UUID;
 @RequestMapping("/api/product/image")
 public class ProductImageController {
 
-    private final ProductService productService;
+    private final ProductImageService imageService;
 
     @PatchMapping("/{imageId}/delete")
     public ApiResponseDto deleteProductImage(@PathVariable UUID imageId, Long userId) {
-        productService.deleteProductImage(imageId, 1L);
+        imageService.deleteProductImage(imageId, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
