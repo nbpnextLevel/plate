@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Table(name = "p_product_image")
-public class ProductImage extends Timestamped {
+public class ProductImage extends TimestampedCreationDeletion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,12 +36,6 @@ public class ProductImage extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    @Transient
-    private LocalDateTime updateAt;
-
-    @Transient
-    private Long updateBy;
 
     public static ProductImage toEntity(ProductImageRequestDto requestDto) {
         return ProductImage.builder()
