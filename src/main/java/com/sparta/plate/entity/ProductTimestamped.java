@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,8 +19,8 @@ public abstract class ProductTimestamped {
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    // @CreatedBy : 추후 인증 로직 구현되면 변경예정
-    @Column(nullable = false)
+    @CreatedBy
+    // @Column(nullable = false)
     protected Long createdBy;
 
     @Column
@@ -27,4 +28,9 @@ public abstract class ProductTimestamped {
 
     @Column
     protected Long deletedBy;
+
+    public void markAsDeleted(Long deletedBy) {
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = deletedBy;
+    }
 }
