@@ -22,7 +22,7 @@ public class ProductHistory extends TimestampedCreationDeletion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private UUID productId;
 
     @Column(nullable = false)

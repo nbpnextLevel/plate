@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class ProductResponseDto {
-    private String productId;
+    private String id;
     private String storeId;
     private String productName;
     private String productDescription;
@@ -24,13 +24,15 @@ public class ProductResponseDto {
     private String displayStatus;
     private int maxOrderLimit;
     private int stockQuantity;
+    private boolean isHidden;
+    private boolean isDeleted;
 
     @Builder.Default
     private List<ProductImageResponseDto> productImageList = new ArrayList<>();
 
     public static ProductResponseDto toDto(Product product) {
         return ProductResponseDto.builder()
-                .productId(String.valueOf(product.getProductId()))
+                .id(String.valueOf(product.getId()))
                 .storeId(String.valueOf(product.getStoreId()))
                 .productName(product.getName())
                 .productDescription(product.getDescription())
@@ -38,6 +40,8 @@ public class ProductResponseDto {
                 .displayStatus(String.valueOf(product.getDisplayStatus()))
                 .maxOrderLimit(product.getMaxOrderLimit())
                 .stockQuantity(product.getStockQuantity())
+                .isHidden(product.isHidden())
+                .isDeleted(product.isDeleted())
                 .productImageList(
                         product.getProductImageList().stream()
                                 .map(ProductImageResponseDto::toDto)

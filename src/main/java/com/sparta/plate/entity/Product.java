@@ -23,18 +23,18 @@ public class Product extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private UUID productId;
-
     @Column(nullable = false)
     private UUID storeId;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Setter
     @Column(nullable = false, length = 500)
     private String description;
 
+    @Setter
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
@@ -66,11 +66,10 @@ public class Product extends Timestamped {
     @OrderBy("isPrimary desc")
     private List<ProductImage> productImageList = new ArrayList<>();
 
-    public static Product toEntity(ProductRequestDto requestDto, UUID productId) {
+    public static Product toEntity(ProductRequestDto requestDto) {
         ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
-                .productId(productId)
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())
@@ -81,8 +80,6 @@ public class Product extends Timestamped {
                 .storeId(UUID.fromString(requestDto.getStoreId()))
                 .build();
 
-        // product.setCreatedBy(createdBy);
-
         List<ProductImage> productImages = requestDto.getImages().stream()
                 .map(ProductImage::toEntity)
                 .collect(Collectors.toList());
@@ -90,10 +87,6 @@ public class Product extends Timestamped {
 
         return product;
     }
-
-    // public void setCreatedBy(Long createdBy) {
-    //     this.createdBy = createdBy;
-    // }
 
     @Override
     public void markAsDeleted(Long deletedBy) {

@@ -1,5 +1,6 @@
 package com.sparta.plate.service.product;
 
+import com.sparta.plate.dto.request.ProductDetailsRequestDto;
 import com.sparta.plate.entity.ProductHistory;
 import com.sparta.plate.exception.ProductHistoryNotFoundException;
 import com.sparta.plate.repository.ProductHistoryRepository;
@@ -26,4 +27,12 @@ public class ProductHistoryService {
         historyRepository.save(history);
     }
 
+    public void createProductHistory(ProductDetailsRequestDto requestDto, UUID productId) {
+        ProductHistory history = ProductHistory.toEntity(requestDto, productId);
+        historyRepository.save(history);
+    }
+
+    public boolean existsProductHistory(UUID productId) {
+        return historyRepository.existsByProductId(productId);
+    }
 }

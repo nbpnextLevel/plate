@@ -1,9 +1,11 @@
 package com.sparta.plate.controller;
 
+import com.sparta.plate.dto.request.ProductDetailsRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.service.product.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,9 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ApiResponseDto createProduct(@RequestBody ProductRequestDto requestDto) {
+    public ApiResponseDto createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
+        System.out.println("Received ProductRequestDto: " + requestDto.getImages().get(0).isPrimary());
+
         UUID savedProductId = productService.createProduct(requestDto);
 
         return ApiResponseDto.builder()
@@ -36,7 +40,18 @@ public class ProductController {
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .message("삭제 완료되었습니다.")
+                .message("상품이 성공적으로 삭제되었습니다.")
+                .build();
+    }
+
+    @PatchMapping("/{productId}")
+    public ApiResponseDto updateProductDetails(@PathVariable UUID productId, @Valid @RequestBody ProductDetailsRequestDto requestDto) {
+        productService.updateProductDetails(productId, requestDto);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .message("상품 정보가 성공적으로 수정되었습니다.")
                 .build();
     }
 
@@ -47,7 +62,7 @@ public class ProductController {
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
+                .data(Map.of("id", productId, "message", "재고와 주문 제한이 성공적으로 수정되었습니다."))
                 .build();
     }
 
@@ -58,7 +73,7 @@ public class ProductController {
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
+                .data(Map.of("id", productId, "message", "상품의 가시성이 성공적으로 수정되었습니다."))
                 .build();
     }
 
@@ -69,7 +84,7 @@ public class ProductController {
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
+                .data(Map.of("id", productId, "message", "상품 표시 상태가 성공적으로 수정되었습니다."))
                 .build();
     }
 }
