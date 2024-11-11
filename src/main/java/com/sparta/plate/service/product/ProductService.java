@@ -54,10 +54,10 @@ public class ProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
 
-        int maxOrderLimit = requestDto.getMaxOrderLimit();
-        int stockQuantity = requestDto.getStockQuantity();
+        product.setMaxOrderLimit(requestDto.getMaxOrderLimit());
+        product.setStockQuantity(requestDto.getStockQuantity());
 
-        productRepository.updateStockAndLimit(productId, maxOrderLimit, stockQuantity);
+        productRepository.save(product);
     }
 
     private UUID generateUniqueProductId() {

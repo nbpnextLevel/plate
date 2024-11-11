@@ -1,6 +1,7 @@
 package com.sparta.plate.service.product;
 
 import com.sparta.plate.entity.ProductImage;
+import com.sparta.plate.exception.ProductImageNotFoundException;
 import com.sparta.plate.repository.ProductHistoryRepository;
 import com.sparta.plate.repository.ProductImageRepository;
 import com.sparta.plate.repository.ProductRepository;
@@ -22,12 +23,10 @@ public class ProductImageService {
 
     @Transactional
     public void deleteProductImage(UUID imageId, Long userId) {
-        ProductImage image = imageRepository.findById(imageId).orElse(null);
+        ProductImage image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ProductImageNotFoundException("Product image not found with ID: " + imageId)); // 예외 처리 추가
 
-        if (image != null) {
-            image.markAsDeleted(userId);
-            imageRepository.save(image);
-        }
+        image.markAsDeleted(userId);
+        imageRepository.save(image);
     }
-
 }

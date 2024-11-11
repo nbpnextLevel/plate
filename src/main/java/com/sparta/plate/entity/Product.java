@@ -43,9 +43,11 @@ public class Product extends Timestamped {
     @Column(nullable = false)
     private ProductDisplayStatus displayStatus = ProductDisplayStatus.PENDING_SALE;
 
+    @Setter
     @Column(nullable = false)
     private int maxOrderLimit;
 
+    @Setter
     @Column(nullable = false)
     private int stockQuantity;
 
