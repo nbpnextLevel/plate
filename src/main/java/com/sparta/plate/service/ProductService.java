@@ -80,4 +80,13 @@ public class ProductService {
             imageRepository.save(image);
         }
     }
+
+    @Transactional
+    public void updateStockAndLimit(UUID productId, Long userId) {
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (product != null) {
+            
+        }
+    }
 }

@@ -39,25 +39,14 @@ public class ProductController {
                 .build();
     }
 
-    @PatchMapping("/history/{historyId}/delete")
-    public ApiResponseDto deleteProductHistory(@PathVariable UUID historyId, Long userId) {
-        productService.deleteProductHistory(historyId, 1L);
+    @PatchMapping("/{productId}/inventory")
+    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, Long userId) {
+        productService.updateStockAndLimit(productId, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
                 .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .message("삭제 완료되었습니다.")
-                .build();
-    }
-
-    @PatchMapping("/image/{imageId}/delete")
-    public ApiResponseDto deleteProductImage(@PathVariable UUID imageId, Long userId) {
-        productService.deleteProductImage(imageId, 1L);
-
-        return ApiResponseDto.builder()
-                .statusCode(HttpStatus.OK.value())
-                .statusMessage(HttpStatus.OK.getReasonPhrase())
-                .message("삭제 완료되었습니다.")
+                .data(Map.of("id", productId, "message", "수정 완료되었습니다."))
                 .build();
     }
 }
