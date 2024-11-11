@@ -43,3 +43,4 @@ public abstract class Timestamped {
     @Column
     private UUID deletedBy;
 }
+
