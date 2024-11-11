@@ -44,4 +44,14 @@ public class ProductService {
         }
         return productId;
     }
+
+    @Transactional
+    public void deleteProduct(UUID productId, Long userId) {
+        Product product = productRepository.findById(productId).orElse(null);
+
+        if (product != null) {
+            product.markAsDeleted(userId);
+            productRepository.save(product);
+        }
+    }
 }
