@@ -1,7 +1,6 @@
 package com.sparta.plate.service;
 
 import com.sparta.plate.dto.request.ProductRequestDto;
-import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.repository.ProductRepository;
@@ -20,7 +19,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public ProductResponseDto createProduct(ProductRequestDto requestDto) {
+    public UUID createProduct(ProductRequestDto requestDto) {
         if (requestDto.getProductName() == null || requestDto.getProductName().isEmpty()) {
             throw new IllegalArgumentException("Product name cannot be null or empty.");
         }
@@ -35,7 +34,7 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        return ProductResponseDto.toDto(savedProduct);
+        return savedProduct.getId();
     }
 
     private UUID generateUniqueProductId() {
