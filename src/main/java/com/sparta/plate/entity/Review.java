@@ -16,8 +16,8 @@ import java.util.UUID;
 public class Review extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID reviewId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewId;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)

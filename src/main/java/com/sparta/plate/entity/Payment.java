@@ -18,8 +18,8 @@ import java.util.UUID;
 public class Payment extends Timestamped{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID paymentId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long paymentId;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
