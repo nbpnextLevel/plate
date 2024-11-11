@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,10 +16,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Order {
+public class Order extends Timestamped{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id", columnDefinition = "UUID")
     private UUID orderId;  // 주문 ID (UUID)
 
@@ -32,9 +33,9 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type", nullable = false)
-    private OrderTypeEnum orderTypeEnum;  // 주문 유형 (ENUM)
+    private OrderTypeEnum orderType;  // 주문 유형 (ENUM)
 
-    @Column(name = "order_price", nullable = false, precision = 10, scale = 0)
+    @Column(name = "order_price", nullable = false)
     private Long orderPrice;  // 주문 금액 (NUMERIC(10,0))
 
     @Column(name = "is_canceled", nullable = false)
@@ -48,22 +49,65 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
-    private OrderStatusEnum orderStatusEnum;  // 주문 상태 (ENUM)
+    private OrderStatusEnum orderStatus;  // 주문 상태 (ENUM)
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;  // 삭제 여부 (BOOLEAN)
 
     @OneToMany(mappedBy = "order")  // Order 엔티티에서 'product' 필드를 관리
     private List<OrderProduct> orderProductList = new ArrayList<>();
+
 
     // 기본 생성자와 매개변수화된 생성자 (선택사항)
     public Order(OrderRequestDto requestDto, User user, Store store, List<OrderProduct> orderProductList) {
         this.user = user;
         this.store = store;
-        this.orderTypeEnum = requestDto.getOrderType();
+        this.orderType = requestDto.getOrderType();
         this.orderPrice = requestDto.getOrderPrice();
         this.isCanceled = requestDto.getIsCanceled();
         this.orderAddress = requestDto.getOrderAddress();
         this.orderRequest = requestDto.getOrderRequest();
-        this.orderStatusEnum = requestDto.getOrderStatus();
+        this.orderStatus= requestDto.getOrderStatus();
         this.orderProductList = orderProductList;
+    }
+
+    public void addOrderProduct(OrderProduct orderProduct) {
+        orderProductList.add(orderProduct);
+        orderProduct.changeOrder(this);
+    }
+
+    public void changeStatus(OrderStatusEnum orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    /**
+     * Order 생성
+     */
+    private Order(User user) {
+        this.user = user;
+    }
+
+    public static Order createOrder(User user, OrderProduct... orderProducts) {
+        Order order = new Order(user);
+        Arrays.stream(orderProducts).forEach(order::addOrderProduct);
+        order.changeStatus(OrderStatusEnum.PENDING_PAYMENT);
+        return order;
+    }
+
+    /**
+     * 주문 취소
+     */
+    public void cancelOrder() {
+        // 배달 중일땐 취소 안되야 할것 같음..(배달관련 추후 추가 고민)
+        this.changeStatus(OrderStatusEnum.ORDER_CANCELLED);
+        //orderProductList.forEach(OrderProduct::cancel);
+    }
+
+    /**
+     * 전체 주문 가격
+     */
+    public int getTotalPrice() {
+        return orderProductList.stream().mapToInt(OrderProduct::getTotalPrice).sum();
     }
 
 }
