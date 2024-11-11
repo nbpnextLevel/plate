@@ -3,6 +3,7 @@ package com.sparta.plate.config;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,8 +11,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.sparta.plate.jwt.JwtUtil;
+import com.sparta.plate.jwt.JwtFilter;
+import com.sparta.plate.jwt.LoginFilter;
+import com.sparta.plate.jwt.JwtTokenProvider;
 import com.sparta.plate.security.UserDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	private final JwtUtil jwtUtil;
+	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsServiceImpl userDetailsService;
 	private final AuthenticationConfiguration authenticationConfiguration;
 
@@ -31,8 +35,34 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		return configuration.getAuthenticationManager();
+	}
+
+	@Bean
+	public LoginFilter loginFilter() throws Exception {
+		LoginFilter filter = new LoginFilter(jwtTokenProvider);
+		filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+		return filter;
+	}
+
+	@Bean
+	public JwtFilter jwtFilter() throws Exception {
+		return new JwtFilter(jwtTokenProvider, userDetailsService);
+	}
+
+	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		//csrf disable
 		http.csrf((csrf) -> csrf.disable());
+
+		//From 로그인 방식 disable
+		http
+			.formLogin((auth) -> auth.disable());
+
+		//http basic 인증 방식 disable
+		http
+			.httpBasic((auth) -> auth.disable());
 
 		// 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
 		http.sessionManagement((sessionManagement) ->
@@ -42,11 +72,15 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests((authorizeHttpRequests) ->
 			authorizeHttpRequests
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-				.requestMatchers("/").permitAll() // 메인 페이지 요청 허가
+				.requestMatchers("/", "/api/users/signup", "/api/users/exists/", "/api/users/login").permitAll() // 메인 페이지 요청 허가
 			//	.requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
+				.requestMatchers("/reissue").permitAll()
 				.requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가 TODO 시큐리티 완성 후 수정할 예정 - 재희
 				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
+
+		http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtFilter(), LoginFilter.class);
 
 		return http.build();
 	}
