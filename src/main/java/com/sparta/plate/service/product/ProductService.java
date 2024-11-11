@@ -1,10 +1,10 @@
 package com.sparta.plate.service.product;
 
+import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductImage;
-import com.sparta.plate.repository.ProductHistoryRepository;
-import com.sparta.plate.repository.ProductImageRepository;
+import com.sparta.plate.exception.ProductNotFoundException;
 import com.sparta.plate.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,6 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductHistoryRepository historyRepository;
-    private final ProductImageRepository imageRepository;
 
 
     @Transactional
@@ -44,21 +42,22 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UUID productId, Long userId) {
-        Product product = productRepository.findById(productId).orElse(null);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
 
-        if (product != null) {
-            product.markAsDeleted(userId);
-            productRepository.save(product);
-        }
+        product.markAsDeleted(userId);
+        productRepository.save(product);
     }
 
     @Transactional
-    public void updateStockAndLimit(UUID productId, Long userId) {
-        Product product = productRepository.findById(productId).orElse(null);
+    public void updateStockAndLimit(UUID productId, ProductQuantityRequestDto requestDto, Long userId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
 
-        if (product != null) {
-            
-        }
+        int maxOrderLimit = requestDto.getMaxOrderLimit();
+        int stockQuantity = requestDto.getStockQuantity();
+
+        productRepository.updateStockAndLimit(productId, maxOrderLimit, stockQuantity);
     }
 
     private UUID generateUniqueProductId() {
