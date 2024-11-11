@@ -49,4 +49,15 @@ public class ProductController {
                 .message("삭제 완료되었습니다.")
                 .build();
     }
+
+    @PatchMapping("/image/{imageId}/delete")
+    public ApiResponseDto deleteProductImage(@PathVariable UUID imageId, Long userId) {
+        productService.deleteProductImage(imageId, 1L);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .message("삭제 완료되었습니다.")
+                .build();
+    }
 }
