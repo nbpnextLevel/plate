@@ -15,19 +15,19 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Order extends Timestamped{
+public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id", updatable = false, nullable = false)
-    private UUID orderId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_id", columnDefinition = "UUID")
+    private UUID orderId;  // 주문 ID (UUID)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (user_id)
+    @JoinColumn(name = "user_id", nullable = false)  // 외래 키 설정 (user_id)
     private User user;  // 주문한 사용자 (User 엔티티와 연관)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (store_id)
+    @JoinColumn(name = "store_id", nullable = false)  // 외래 키 설정 (store_id)
     private Store store;  // 주문이 발생한 상점 (Store 엔티티와 연관)
 
     @Enumerated(EnumType.STRING)
@@ -53,8 +53,8 @@ public class Order extends Timestamped{
     @OneToMany(mappedBy = "order")  // Order 엔티티에서 'product' 필드를 관리
     private List<OrderProduct> orderProductList = new ArrayList<>();
 
-
-    public Order(OrderRequestDto requestDto,User user, Store store, List<OrderProduct> orderProductList) {
+    // 기본 생성자와 매개변수화된 생성자 (선택사항)
+    public Order(OrderRequestDto requestDto, User user, Store store, List<OrderProduct> orderProductList) {
         this.user = user;
         this.store = store;
         this.orderTypeEnum = requestDto.getOrderType();

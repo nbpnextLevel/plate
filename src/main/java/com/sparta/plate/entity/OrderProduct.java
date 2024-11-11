@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderProduct extends Timestamped{
+public class OrderProduct {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
