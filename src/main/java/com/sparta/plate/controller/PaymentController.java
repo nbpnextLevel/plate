@@ -1,11 +1,11 @@
-package com.sparta.plate.controller;
+package com.sparta.plate.controller.payment;
 
 import com.sparta.plate.dto.request.PaymentRequestDto;
 import com.sparta.plate.dto.response.PaymentResponseDto;
+import com.sparta.plate.entity.Payment;
 import com.sparta.plate.repository.PaymentRepository;
 import com.sparta.plate.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/payments")
+@RequestMapping("/api/payment")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -26,7 +26,6 @@ public class PaymentController {
     @PostMapping("/{orderId}")
     public PaymentResponseDto createPayment(@PathVariable("orderId") UUID orderId,
                                             @RequestBody PaymentRequestDto paymentRequestDto) {
-
         return paymentService.createPayment(paymentRequestDto);
     }
 
@@ -36,22 +35,18 @@ public class PaymentController {
         return paymentService.getPaymentBypaymentId(paymentId);
     }
 
-//    @GetMapping("/loginId")
-//    public Page<PaymentResponseDto> getPaymentsByLoginId(@RequestParam("loginId") String loginId, Pageable pageable) {
-//        return paymentService.getPaymentsByLoginId(loginId,pageable);
-//    }
+    // userId 사용자별 조회
+    @GetMapping("/user/{userId}")
+    public Page<PaymentResponseDto> findPaymentByUserId(@PathVariable("userId") Long userId, Pageable pageable) {
 
-    // loginId 조회
-    @GetMapping("/user/{loginId}")
-    public Page<PaymentResponseDto> findByOrderUserLoginId(@PathVariable("loginId") String loginId, Pageable pageable) {
-
-        return paymentService.getPaymentsByLoginId(loginId, pageable);
+        return paymentService.findPaymentByUserId(userId, pageable);
     }
 
-    // ERROR loginId조회 + search(storeName)
-    @GetMapping("/search/{loginId}")
-    public Page<PaymentResponseDto> getPaymentsByLoginIdAndSearch(
-            @PathVariable("loginId") String loginId,
+    // userId 조회 + search(storeName)
+    // search : 스토어 이름을 검색해서, 해당되는 스토어만 조회
+    @GetMapping("/search/{userId}")
+    public Page<PaymentResponseDto> searchPaymentsByUserIdAndStoreName(
+            @PathVariable("userId") Long userId,
             @RequestParam(value = "search", required = false) String storeName,
             @RequestParam("page") int page, // 페이지 번호
             @RequestParam("size") int size, // 페이지 사이즈
@@ -60,10 +55,16 @@ public class PaymentController {
 
         Pageable pageable = createPageable(page, size, sortBy, isAcs);
 
-        return paymentService.getPaymentsByLoginIdAndSearch(loginId,storeName,pageable);
+        // paymentService에서 데이터를 조회
+        Page<Payment> paymentPage = paymentService.searchPaymentsByUserIdAndStoreName(userId, storeName, pageable);
+
+        Page<PaymentResponseDto> responseDtoPage = paymentPage.map(PaymentResponseDto::new);
+
+        return responseDtoPage;
     }
 
-    // ERROR storeId 조회, 1개밖에 안 나옴ㅠㅠ
+    // storeID 조회
+    // 가게 사장님이, 결제된 내역들을 조회하기 위해!
     @GetMapping("/store/{storeId}")
     public Page<PaymentResponseDto> getPaymentsByStoreId(@PathVariable("storeId") UUID storeId, Pageable pageable) {
         return paymentService.getPaymentsByStoreId(storeId, pageable);

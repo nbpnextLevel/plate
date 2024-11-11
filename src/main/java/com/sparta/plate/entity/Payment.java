@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.mapping.ToOne;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -13,16 +16,15 @@ import java.util.UUID;
 @Setter
 @Table(name = "p_payment")
 @NoArgsConstructor
-public class Payment extends Timestamped{
+public class Payment extends TimestampedCreationDeletion{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID paymentId;
+    private UUID paymentId = UUID.randomUUID();
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-
 
     @Column(nullable = false)
     private String paymentNumber;
@@ -33,11 +35,11 @@ public class Payment extends Timestamped{
     @Column(nullable = false)
     private Long amount;    // 결제 금액 (주문 금액과 다를 수 있음)
 
-
     public Payment(Order order) {
         this.amount = order.getOrderPrice();
         this.paymentNumber = "PAY_" + this.paymentId.toString();
         this.isPaid = true;
+//        this.user = order.getUser();
         this.order = order;
     }
 
@@ -52,4 +54,3 @@ public class Payment extends Timestamped{
         }
     }
 }
-

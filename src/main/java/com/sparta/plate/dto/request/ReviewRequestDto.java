@@ -1,5 +1,7 @@
 package com.sparta.plate.dto.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,8 @@ public class ReviewRequestDto {
     private String reviewDetail;
 
     @NotNull
+    @Max(5)
+    @Min(1)
     private int reviewScore;
 
     private boolean reviewStatus;

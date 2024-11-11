@@ -4,6 +4,7 @@ import com.sparta.plate.entity.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +15,10 @@ public class PaymentResponseDto {
 
     private UUID paymentId;
     private UUID orderId;
+    private UUID storeId;
+    private String loginId;
+    private Long userId;
+
     private String paymentNumber;
     private Boolean isPaid;
     private Long amount;
@@ -25,15 +30,18 @@ public class PaymentResponseDto {
     private String address;
     private Long orderPrice;
 
-    private UUID storeId;
-
-    private Timestamped timestamped;
+    private Long createBy;
+    private LocalDateTime createAt;
+    private Long deletedBy;
+    private LocalDateTime deletedAt;
 
 
     public PaymentResponseDto(Order order, Payment payment) {
         this.paymentId = payment.getPaymentId();
         this.orderId = payment.getOrder().getOrderId();
         this.storeId = payment.getOrder().getStore().getId();
+        this.loginId = payment.getOrder().getUser().getLoginId();
+        this.userId = payment.getOrder().getUser().getId();
 
         this.paymentNumber = payment.getPaymentNumber();
         this.isPaid = payment.isPaid();
@@ -45,15 +53,18 @@ public class PaymentResponseDto {
         this.address = payment.getOrder().getOrderAddress();
         this.orderPrice = payment.getOrder().getOrderPrice();
 
-
-        this.timestamped = getTimestamped();
+        this.createBy = payment.getOrder().getCreateBy();
+        this.createAt = payment.getOrder().getCreatedAt();
+        this.deletedBy = payment.getOrder().getCreateBy();
+        this.deletedAt = payment.getOrder().getDeletedAt();
     }
-
 
     public PaymentResponseDto(Payment payment) {
         this.paymentId = payment.getPaymentId();
         this.orderId = payment.getOrder().getOrderId();
         this.storeId = payment.getOrder().getStore().getId();
+        this.loginId = payment.getOrder().getUser().getLoginId();
+        this.userId = payment.getOrder().getUser().getId();
 
         this.paymentNumber = payment.getPaymentNumber();
         this.isPaid = payment.isPaid();
@@ -65,6 +76,9 @@ public class PaymentResponseDto {
         this.address = payment.getOrder().getOrderAddress();
         this.orderPrice = payment.getOrder().getOrderPrice();
 
-        this.timestamped = getTimestamped();
+        this.createBy = payment.getOrder().getCreateBy();
+        this.createAt = payment.getOrder().getCreatedAt();
+        this.deletedBy = payment.getOrder().getCreateBy();
+        this.deletedAt = payment.getOrder().getDeletedAt();
     }
 }

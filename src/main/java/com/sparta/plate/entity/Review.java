@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -33,8 +34,9 @@ public class Review extends Timestamped {
     @Max(5)
     private int reviewScore;
 
+
     @Column
-    private boolean reviewStatus = false;
+    private boolean reviewStatus = true;
 
     public Review(ReviewRequestDto reviewRequestDto, Payment payment) {
         this.reviewDetail = reviewRequestDto.getReviewDetail();
@@ -48,5 +50,10 @@ public class Review extends Timestamped {
         if (reviewId == null) {
             reviewId = UUID.randomUUID();
         }
+    }
+
+    @Override
+    public void markAsDeleted(Long deletedBy){
+        super.markAsDeleted(deletedBy);
     }
 }

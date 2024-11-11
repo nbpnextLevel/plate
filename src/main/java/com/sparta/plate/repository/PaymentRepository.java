@@ -20,7 +20,8 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 
     Optional<Payment> findByPaymentId(UUID paymentId);
 
-    Page<Payment> findByOrderUserLoginId(String loginId, Pageable pageable);
+    @Query("SELECT p FROM Payment p JOIN p.order o JOIN o.user u WHERE u.id = :id")
+    Page<Payment> findPaymentByUserId(@Param("id") Long id, Pageable pageable);
 
 
     // ERROR : loginId & search:storeName
@@ -32,12 +33,12 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
             "JOIN p.order o " +            // Payment -> Order
             "JOIN o.store s " +            // Order -> Store
             "JOIN o.user u " +             // Order -> User (연관관계 추가)
-            "WHERE u.loginId = :loginId " +// User의 loginId로 필터링
+            "WHERE u.id = :userId " +// User의 loginId로 필터링
             "AND s.storeName LIKE %:storeName% " +  // Store의 storeName을 LIKE로 필터링
             "ORDER BY s.storeName ASC")    // storeName 기준으로 정렬
-    Page<Payment> searchPaymentsByLoginIdAndStoreName(@Param("loginId") String loginId,
-                                                      @Param("storeName") String storeName,
-                                                      Pageable pageable);
+    Page<Payment> searchPaymentsByUserIdAndStoreName(@Param("userId") Long userId,
+                                                     @Param("storeName") String storeName,
+                                                     Pageable pageable);
 
 
 //    Page<Payment> findByOrderStoreId(UUID storeId, Pageable pageable);
@@ -49,6 +50,19 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 //            "WHERE s.id = :storeId " +        // Store의 id를 기준으로 결제 조회
 //            "ORDER BY p.paymentId ASC")              // 결제 내역을 주문 순으로 정렬
     Page<Payment> findALLByOrderStoreId(@Param("storeId") UUID storeId, Pageable pageable);
+
+
+    @Query("SELECT p FROM Payment p " +
+            "JOIN p.order o " +
+            "JOIN o.user u " +
+            "JOIN o.store s " +
+            "WHERE u.id = :userId " +
+            "AND s.storeName LIKE %:storeName%")
+    Page<Payment> findByOrderUserIdAndStoreName(@Param("userId") Long userId,
+                                                @Param("storeName") String storeName,
+                                                Pageable pageable);
+
+
     // 로그인 ID로 결제 조회 (storeName 조건 없이)
 //    Page<Payment> findByUserLoginId(String loginId, Pageable pageable);
 }
