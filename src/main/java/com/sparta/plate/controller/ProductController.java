@@ -38,4 +38,15 @@ public class ProductController {
                 .message("삭제 완료되었습니다.")
                 .build();
     }
+
+    @PatchMapping("/{productId}/inventory")
+    public ApiResponseDto updateStockAndLimit(@PathVariable UUID productId, Long userId) {
+        productService.updateStockAndLimit(productId, 1L);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .data(Map.of("id", savedProductId, "message", "수정 완료되었습니다."))
+                .build();
+    }
 }
