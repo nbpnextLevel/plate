@@ -5,9 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Entity
 @Getter
 @Setter
@@ -16,8 +13,8 @@ import java.util.UUID;
 public class Review extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID reviewId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long reviewId;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
