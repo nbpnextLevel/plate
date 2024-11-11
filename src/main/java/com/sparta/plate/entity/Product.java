@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product extends ProductTimestamped {
+public class Product extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

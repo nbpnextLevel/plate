@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductHistory extends ProductTimestamped {
+public class ProductHistory extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,6 +34,12 @@ public class ProductHistory extends ProductTimestamped {
 
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
+
+    @Transient
+    private LocalDateTime updateAt;
+
+    @Transient
+    private Long updateBy;
 
     public static ProductHistory toEntity(ProductRequestDto requestDto, Long createdBy, UUID productId) {
         ProductHistory product = ProductHistory.builder()
