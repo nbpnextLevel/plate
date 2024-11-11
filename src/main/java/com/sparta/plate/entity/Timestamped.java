@@ -8,7 +8,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @MappedSuperclass
@@ -23,7 +22,7 @@ public abstract class Timestamped {
     // 생성자
     @CreatedBy
     @Column(updatable = false)
-    private UUID createBy;
+    private Long createBy;
 
     // 수정일
     @LastModifiedDate
@@ -33,7 +32,7 @@ public abstract class Timestamped {
     // 수정자
     @LastModifiedBy
     @Column
-    private UUID updateBy;
+    private Long updateBy;
 
     // 삭제일
     @Column
@@ -41,5 +40,5 @@ public abstract class Timestamped {
 
     // 삭제자
     @Column
-    private UUID deletedBy;
+    private Long deletedBy;
 }
