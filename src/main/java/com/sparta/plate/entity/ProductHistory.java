@@ -49,12 +49,7 @@ public class ProductHistory extends Timestamped {
                 .price(requestDto.getPrice())
                 .build();
 
-        // product.setCreatedBy(createdBy);
-
         return product;
     }
-
-    // public void setCreatedBy(Long createdBy) {
-    //     this.createdBy = createdBy;
-    // }
+    
 }

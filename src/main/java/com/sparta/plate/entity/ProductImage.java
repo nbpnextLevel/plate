@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -37,18 +38,19 @@ public class ProductImage extends Timestamped {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Transient
+    private LocalDateTime updateAt;
+
+    @Transient
+    private Long updateBy;
+
     public static ProductImage toEntity(ProductImageRequestDto requestDto) {
-        // image.setCreatedBy(createdBy);
         return ProductImage.builder()
                 .fileName(requestDto.getFileName())
                 .uploadPath(requestDto.getUploadPath())
                 .isPrimary(requestDto.isPrimary())
                 .build();
     }
-
-    // public void setCreatedBy(Long createdBy) {
-    //     this.createdBy = createdBy;
-    // }
 
     @Override
     public void markAsDeleted(Long deletedBy) {
