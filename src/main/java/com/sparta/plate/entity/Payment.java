@@ -19,24 +19,18 @@ public class Payment extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID payment_id;  // 결제 아이디 (PK)
+    private UUID paymentId;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order_id;  // 주문 아이디 (FK)
+    private Order orderId;
 
     @Column(nullable = false)
-    private String paymentNumber;  // 결제 승인 번호
+    private String paymentNumber;
 
     @Column(nullable = false)
-    private boolean isPaid;  // 결제 여부
+    private boolean isPaid;
 
     @Column(nullable = false)
-    private Long amount;  // 결제 금액
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;  // 생성일
-
-    @Column(nullable = false)
-    private String createdBy;  // 생성자
+    private Long amount;
 }

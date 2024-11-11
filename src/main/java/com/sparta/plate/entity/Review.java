@@ -17,31 +17,17 @@ public class Review extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID reviewId;  // 리뷰 아이디 (PK)
+    private UUID reviewId;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order orderId;  // 주문 아이디 (FK)
+    private Order orderId;
 
     @Column(length = 2000)
-    private String reviewDetail;  // 리뷰 내용
+    private String reviewDetail;
 
     @Column(nullable = false)
-    private int reviewScore;  // 별점
+    private int reviewScore;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;  // 생성일
-
-    @Column(nullable = false)
-    private Long createdBy;  // 생성자
-
-    private LocalDateTime updatedAt;  // 수정일
-
-    private String updatedBy;  // 수정자
-
-    private LocalDateTime deletedAt;  // 삭제일
-
-    private String deletedBy;  // 삭제자
-
-    private boolean isDeleted;  // 삭제 여부
+    private boolean isDeleted;
 }
