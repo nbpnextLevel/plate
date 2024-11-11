@@ -22,8 +22,6 @@ public class ProductController {
 
     @PostMapping
     public ApiResponseDto createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
-        System.out.println("Received ProductRequestDto: " + requestDto.getImages().get(0).isPrimary());
-
         UUID savedProductId = productService.createProduct(requestDto);
 
         return ApiResponseDto.builder()

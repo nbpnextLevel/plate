@@ -34,7 +34,7 @@ public class ProductRequestDto {
     @NotNull(message = "Stock quantity cannot be null")
     @Positive(message = "Stock quantity must be positive")
     private Integer stockQuantity;
-    
+
     @JsonProperty("isHidden")
     private boolean isHidden;
 
@@ -44,13 +44,6 @@ public class ProductRequestDto {
         long primaryCount = images.stream()
                 .filter(ProductImageRequestDto::isPrimary)
                 .count();
-
-        // 로그 추가
-        System.out.println("Primary Image Count: " + primaryCount);
-        for (ProductImageRequestDto image : images) {
-            System.out.println("Image fileName: " + image.getFileName() + ", isPrimary: " + image.isPrimary());
-        }
-
         if (primaryCount != 1) {
             throw new IllegalArgumentException("대표 이미지는 하나여야 합니다.");
         }

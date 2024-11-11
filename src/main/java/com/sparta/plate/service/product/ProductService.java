@@ -51,14 +51,10 @@ public class ProductService {
         Product product = findProductById(productId);
 
         if (!historyService.existsProductHistory(productId)) {
-            System.out.println(product.getName() + ", " + product.getDescription() + ", " + product.getPrice());
             ProductDetailsRequestDto currentDto = new ProductDetailsRequestDto(product.getName(), product.getDescription(), product.getPrice());
 
             historyService.createProductHistory(currentDto, productId);
         }
-        System.out.println("requestDto.getProductName: " + requestDto.getProductName());
-        System.out.println("requestDto.getProductDescription: " + requestDto.getProductDescription());
-        System.out.println("requestDto.getPrice: " + requestDto.getPrice());
 
         requestDto.setProductName(requestDto.getProductName() == null ? product.getName() : requestDto.getProductName());
         product.setName(requestDto.getProductName() != null ? requestDto.getProductName() : product.getName());
