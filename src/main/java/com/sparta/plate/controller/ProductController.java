@@ -2,7 +2,7 @@ package com.sparta.plate.controller;
 
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
-import com.sparta.plate.service.ProductService;
+import com.sparta.plate.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

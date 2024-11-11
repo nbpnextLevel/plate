@@ -5,6 +5,7 @@ import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatus;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.repository.ProductRepository;
+import com.sparta.plate.service.product.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
