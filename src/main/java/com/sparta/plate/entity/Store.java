@@ -49,11 +49,20 @@ public class Store {
 
 	private Long deletedBy;
 
+	private boolean isDeleted;
+
 	@Builder
-	public Store(StoreCategory storeCategory, String storeName, String storeNumber, String address) {
+	public Store(StoreCategory storeCategory, String storeName, String storeNumber, String address, boolean isDeleted) {
 		this.storeCategory = storeCategory;
 		this.storeName = storeName;
 		this.storeNumber = storeNumber;
 		this.address = address;
+		this.isDeleted = false;
+	}
+
+	// TODO deletedAt 확인
+	public void deleteStore(Long userId) {
+		this.isDeleted = true;
+		this.deletedBy = userId;
 	}
 }
