@@ -1,12 +1,15 @@
 package com.sparta.plate.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentRequestDto {
     private Long orderId;
+    private boolean isCanceled;
     private Long amount;
 }
 
