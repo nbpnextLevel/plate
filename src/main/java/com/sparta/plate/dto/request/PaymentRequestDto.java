@@ -3,13 +3,20 @@ package com.sparta.plate.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentRequestDto {
-    private Long orderId;
-    private boolean isCanceled;
-    private Long amount;
-}
 
+    private UUID orderId;
+    private Long amount;
+
+    private boolean isCanceled;
+
+
+}
