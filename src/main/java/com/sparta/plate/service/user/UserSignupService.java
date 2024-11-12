@@ -1,7 +1,5 @@
 package com.sparta.plate.service.user;
 
-import java.util.Optional;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +38,9 @@ public class UserSignupService {
 			.address(request.getAddress())
 			.build();
 
-		User savedUser = userRepository.saveAndFlush(user); // 영속성 컨텍스트 설정
-		user.setCreatedBy(savedUser.getId()); // 변경감지
+		User savedUser = userRepository.save(user);
 
-		return user; // 트랜잭션 끝나고 변경감지 내용 DB에 반영
+		return savedUser;
 	}
 
 	private void validateRequest(SignupRequestDto request) {

@@ -7,17 +7,17 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// TODO bastEntity 상속 필요 - 재희
 @NoArgsConstructor
 @Entity @Getter
 @Table(name = "p_users")
-public class User {
+public class User extends Timestamped {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -35,6 +35,9 @@ public class User {
 	@NotNull @Column(nullable = false, length = 100)
 	private UserRoleEnum role;
 
+	@OneToOne(mappedBy = "user")
+	private Store store;
+
 	@NotNull @Column(nullable = false)
 	private String email;
 
@@ -47,15 +50,9 @@ public class User {
 	@NotNull @Column(nullable = false)
 	private String address;
 
-	private Long createdBy;
-
-	private Long updatedBy;
-
-	private Long deletedBy;
-
 	@Builder
 	public User(String loginId, String password, String nickname, UserRoleEnum role, String email, String phone,
-		boolean isDeleted, String address, Long createdBy, Long updatedBy, Long deletedBy) {
+		boolean isDeleted, String address) {
 		this.loginId = loginId;
 		this.password = password;
 		this.nickname = nickname;
@@ -64,12 +61,11 @@ public class User {
 		this.phone = phone;
 		this.isDeleted = isDeleted;
 		this.address = address;
-		this.createdBy = createdBy;
-		this.updatedBy = updatedBy;
-		this.deletedBy = deletedBy;
 	}
 
-	public void setCreatedBy(Long id) {
-		this.createdBy = id;
+	@Override
+	public void markAsDeleted(Long deletedBy) {
+		super.markAsDeleted(deletedBy);
+		this.isDeleted = true;
 	}
 }
