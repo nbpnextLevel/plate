@@ -87,7 +87,7 @@ public class JwtTokenProvider {
 
 	// 토큰에서 로그인 아이디 가져오기
 	public String getLoginIdFromToken(String token) {
-		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("loginId", String.class);
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("sub", String.class);
 	}
 
 	// 토큰에서 유저권한 가져오기
@@ -140,4 +140,6 @@ public class JwtTokenProvider {
 		}
 		return false;
 	}
+
+
 }
