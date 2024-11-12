@@ -10,9 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-
-    boolean existsByProductId(UUID productId);
-
     @Modifying
     @Query("UPDATE Product p SET p.maxOrderLimit = :maxOrderLimit, p.stockQuantity = :stockQuantity WHERE p.id = :productId")
     void updateStockAndLimit(UUID productId, int maxOrderLimit, int stockQuantity);

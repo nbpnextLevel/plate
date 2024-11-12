@@ -23,32 +23,36 @@ public class Product extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private UUID productId;
-
     @Column(nullable = false)
     private UUID storeId;
 
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Setter
     @Column(nullable = false, length = 500)
     private String description;
 
+    @Setter
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
+    @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProductDisplayStatus displayStatus = ProductDisplayStatus.PENDING_SALE;
+    private ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.PENDING_SALE;
 
+    @Setter
     @Column(nullable = false)
     private int maxOrderLimit;
 
+    @Setter
     @Column(nullable = false)
     private int stockQuantity;
 
+    @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isHidden;
 
@@ -58,15 +62,14 @@ public class Product extends Timestamped {
     @Setter
     @Builder.Default
     @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("isPrimary desc")
-    private List<ProductImage> productImageList = new ArrayList<>();
+    private List<ProductImage> productImages = new ArrayList<>();
 
-    public static Product toEntity(ProductRequestDto requestDto, UUID productId) {
-        ProductDisplayStatus displayStatus = ProductDisplayStatus.fromString(requestDto.getDisplayStatus());
+    public static Product toEntity(ProductRequestDto requestDto) {
+        ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
 
         Product product = Product.builder()
-                .productId(productId)
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())
@@ -77,19 +80,13 @@ public class Product extends Timestamped {
                 .storeId(UUID.fromString(requestDto.getStoreId()))
                 .build();
 
-        // product.setCreatedBy(createdBy);
-
-        List<ProductImage> productImages = requestDto.getImages().stream()
-                .map(ProductImage::toEntity)
+        List<ProductImage> images = requestDto.getImages().stream()
+                .map(dto -> ProductImage.toEntity(dto, product))
                 .collect(Collectors.toList());
-        product.setProductImageList(productImages);
+        product.setProductImages(images);
 
         return product;
     }
-
-    // public void setCreatedBy(Long createdBy) {
-    //     this.createdBy = createdBy;
-    // }
 
     @Override
     public void markAsDeleted(Long deletedBy) {

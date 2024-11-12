@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/product/history")
+@RequestMapping("/api/products/histories")
 public class ProductHistoryController {
 
     private final ProductHistoryService historyService;
