@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -69,7 +68,7 @@ public class Product extends Timestamped {
     public static Product toEntity(ProductRequestDto requestDto) {
         ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
 
-        Product product = Product.builder()
+        return Product.builder()
                 .name(requestDto.getProductName())
                 .description(requestDto.getProductDescription())
                 .price(requestDto.getPrice())
@@ -79,13 +78,6 @@ public class Product extends Timestamped {
                 .isHidden(requestDto.isHidden())
                 .storeId(UUID.fromString(requestDto.getStoreId()))
                 .build();
-
-        List<ProductImage> images = requestDto.getImages().stream()
-                .map(dto -> ProductImage.toEntity(dto, product))
-                .collect(Collectors.toList());
-        product.setProductImages(images);
-
-        return product;
     }
 
     @Override

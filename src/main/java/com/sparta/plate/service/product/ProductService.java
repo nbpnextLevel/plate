@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,7 +32,14 @@ public class ProductService {
         validateProductImages(requestDto.getImages());
 
         Product product = Product.toEntity(requestDto);
-        Product savedProduct = productRepository.save(product);
+
+        List<ProductImage> newImages = requestDto.getImages().stream()
+                .map(dto -> ProductImage.toEntity(dto, product))
+                .collect(Collectors.toList());
+
+        product.setProductImages(newImages);
+
+        Product savedProduct = productRepository.saveAndFlush(product);
         return savedProduct.getId();
     }
 
@@ -155,4 +163,6 @@ public class ProductService {
             }
         }
     }
+
+    // 상품 수정 시 해당 상품을 등록한 Owner인지 확인하는 메소드 추후 구현
 }
