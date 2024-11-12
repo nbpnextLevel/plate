@@ -23,7 +23,7 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     Page<Payment> findByOrderUserLoginId(String loginId, Pageable pageable);
 
 
-// ERROR : loginId & search:storeName
+    // ERROR : loginId & search:storeName
 //    {
 //        "errorMessage": "org.hibernate.query.sqm.UnknownPathException: Could not resolve attribute 'storeName' of 'com.sparta.plate.entity.Payment' [SELECT p FROM Payment p JOIN p.order o JOIN o.store s JOIN o.user u WHERE u.id = :loginId AND s.storeName LIKE :storeName ORDER BY s.storeName ASC, p.storeName asc]",
 //            "statusCode": 400
@@ -43,7 +43,7 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 //    Page<Payment> findByOrderStoreId(UUID storeId, Pageable pageable);
 
 
-//    @Query("SELECT p FROM Payment p " +
+    //    @Query("SELECT p FROM Payment p " +
 //            "JOIN p.order o " +               // Payment -> Order
 //            "JOIN o.store s " +               // Order -> Store
 //            "WHERE s.id = :storeId " +        // Store의 id를 기준으로 결제 조회
