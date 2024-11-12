@@ -155,5 +155,4 @@ public class ProductService {
             }
         }
     }
-    // 상품 수정 시 해당 상품을 등록한 Owner인지 확인하는 메소드 추후 구현
 }
