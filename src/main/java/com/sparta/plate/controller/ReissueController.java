@@ -1,5 +1,6 @@
 package com.sparta.plate.controller;
 
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,21 +29,25 @@ public class ReissueController {
 
 	@PostMapping("/reissue")
 	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+
 		String refreshToken = getRefreshToken(request);
 
 		if (refreshToken == null) {
-			log.error("Refresh token is null");
 			return new ResponseEntity<>("Refresh Token is null", HttpStatus.BAD_REQUEST);
 		}
 
 		String newAccessToken = reissueService.reissueAccessToken(refreshToken);
+		String newRefreshToken = reissueService.reissueRefreshToken(refreshToken);
+
 		response.setHeader("access", newAccessToken);
+		response.addCookie(createCookie("refresh", newRefreshToken));
 
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	private String getRefreshToken(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
+
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals("refresh")) {
@@ -52,5 +57,14 @@ public class ReissueController {
 		}
 
 		return null;
+	}
+
+	private Cookie createCookie(String key, String value) {
+
+		Cookie cookie = new Cookie(key, value);
+		cookie.setMaxAge(24*60*60);
+		cookie.setHttpOnly(true);
+
+		return cookie;
 	}
 }

@@ -3,10 +3,8 @@ package com.sparta.plate.jwt;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +32,7 @@ public class JwtTokenProvider {
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String AUTHORIZATION_KEY = "auth";
 	private static final String BEARER_PREFIX = "Bearer ";
+
 	private static final String TOKEN_TYPE = "type";
 	private static final String ACCESS_TOKEN = "access";
 	private static final String REFRESH_TOKEN = "refresh";
@@ -124,7 +123,7 @@ public class JwtTokenProvider {
 		return null;
 	}
 
-	// AccessToken 검증
+	// Token 검증
 	public boolean validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

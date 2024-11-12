@@ -7,10 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sparta.plate.security.UserDetailsServiceImpl;
-import io.jsonwebtoken.ExpiredJwtException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,37 +40,27 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		String token = jwtTokenProvider.getJwtFromHeader(request);
 
-		// 토큰이 없다면 다음 필터로 넘김
-		if(token == null) {
-			filterChain.doFilter(request, response);
-			return;
-		};
+		if (StringUtils.hasText(token)) {
 
-		// 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-		try {
-			jwtTokenProvider.isExpired(token);
-		} catch (ExpiredJwtException e) {
-			response.getWriter().print("Access token expired");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
-		}
+			if (!jwtTokenProvider.validateToken(token)) {
+				log.error("Token Error");
+				return;
+			}
 
-		// accessToken인지 확인
-		if(!jwtTokenProvider.isAccessToken(token)) {
-			response.getWriter().print("Invalid access token");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
-		}
+			if(!jwtTokenProvider.isAccessToken(token)) {
+				response.getWriter().print("Invalid access token");
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			}
 
-		// 토큰 검증 완료
-		String loginId = jwtTokenProvider.getLoginIdFromToken(token);
-		String role = jwtTokenProvider.getRoleFromToken(token);
+			String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
-		try {
-			setAuthentication(loginId);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			return;
+			try {
+				setAuthentication(loginId);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				return;
+			}
 		}
 
 		filterChain.doFilter(request, response);
