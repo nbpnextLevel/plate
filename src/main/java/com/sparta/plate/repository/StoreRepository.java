@@ -1,5 +1,6 @@
 package com.sparta.plate.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ import com.sparta.plate.entity.Store;
 public interface StoreRepository extends JpaRepository<Store, UUID> {
 
 	Store saveAndFlush(Store store);
+
+	Optional<Store> findByIdAndIsDeletedFalse(UUID storeId);
 }
