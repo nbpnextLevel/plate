@@ -2,10 +2,7 @@ package com.sparta.plate.entity;
 
 import com.sparta.plate.dto.request.ProductImageRequestDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -21,12 +18,15 @@ public class ProductImage extends TimestampedCreationDeletion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @Setter
     @Column(nullable = false)
     private String fileName;
 
+    @Setter
     @Column(nullable = false)
     private String uploadPath;
 
+    @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isPrimary;
 
@@ -37,8 +37,13 @@ public class ProductImage extends TimestampedCreationDeletion {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public static ProductImage toEntity(ProductImageRequestDto requestDto) {
+    public static ProductImage toEntity(ProductImageRequestDto requestDto, Product product) {
+        if (product == null) {
+            throw new IllegalArgumentException("Product cannot be null when creating ProductImage.");
+        }
+
         return ProductImage.builder()
+                .product(product)
                 .fileName(requestDto.getFileName())
                 .uploadPath(requestDto.getUploadPath())
                 .isPrimary(requestDto.isPrimary())
@@ -48,6 +53,7 @@ public class ProductImage extends TimestampedCreationDeletion {
     @Override
     public void markAsDeleted(Long deletedBy) {
         super.markAsDeleted(deletedBy);
+        this.isPrimary = false;
         this.isDeleted = true;
     }
 

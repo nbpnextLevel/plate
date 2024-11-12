@@ -1,6 +1,7 @@
 package com.sparta.plate.controller;
 
 import com.sparta.plate.dto.request.ProductDetailsRequestDto;
+import com.sparta.plate.dto.request.ProductImageRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -78,6 +80,17 @@ public class ProductController {
     @PatchMapping("/{productId}/display-status")
     public ApiResponseDto updateProductDisplayStatus(@PathVariable UUID productId, @RequestParam String displayStatus) {
         productService.updateProductDisplayStatus(productId, displayStatus);
+
+        return ApiResponseDto.builder()
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .data(Map.of("id", productId, "message", "상품 표시 상태가 성공적으로 수정되었습니다."))
+                .build();
+    }
+
+    @PatchMapping("/{productId}/images")
+    public ApiResponseDto manageProductImage(@PathVariable UUID productId, @RequestBody List<ProductImageRequestDto> images) {
+        productService.manageProductImage(productId, images, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())

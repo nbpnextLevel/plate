@@ -62,9 +62,9 @@ public class Product extends Timestamped {
     @Setter
     @Builder.Default
     @JsonManagedReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @OrderBy("isPrimary desc")
-    private List<ProductImage> productImageList = new ArrayList<>();
+    private List<ProductImage> productImages = new ArrayList<>();
 
     public static Product toEntity(ProductRequestDto requestDto) {
         ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
@@ -80,10 +80,10 @@ public class Product extends Timestamped {
                 .storeId(UUID.fromString(requestDto.getStoreId()))
                 .build();
 
-        List<ProductImage> productImages = requestDto.getImages().stream()
-                .map(ProductImage::toEntity)
+        List<ProductImage> images = requestDto.getImages().stream()
+                .map(dto -> ProductImage.toEntity(dto, product))
                 .collect(Collectors.toList());
-        product.setProductImageList(productImages);
+        product.setProductImages(images);
 
         return product;
     }

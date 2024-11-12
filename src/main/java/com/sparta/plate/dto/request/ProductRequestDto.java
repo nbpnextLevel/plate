@@ -39,13 +39,4 @@ public class ProductRequestDto {
     private boolean isHidden;
 
     private List<ProductImageRequestDto> images;
-
-    public void validatePrimaryImage() {
-        long primaryCount = images.stream()
-                .filter(ProductImageRequestDto::isPrimary)
-                .count();
-        if (primaryCount != 1) {
-            throw new IllegalArgumentException("대표 이미지는 하나여야 합니다.");
-        }
-    }
 }

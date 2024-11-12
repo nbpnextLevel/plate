@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -21,8 +22,13 @@ public class ProductImageService {
     public void deleteProductImage(UUID imageId, Long userId) {
         ProductImage image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ProductImageNotFoundException("Product image not found with ID: " + imageId));
-
+        
         image.markAsDeleted(userId);
         imageRepository.save(image);
     }
+
+    public List<ProductImage> getActiveImages(UUID productId) {
+        return imageRepository.findActiveImagesByProductId(productId);
+    }
+
 }

@@ -65,7 +65,7 @@ class ProductServiceTest {
         productImages.add(image1);
         productImages.add(image2);
 
-        product.setProductImageList(productImages);
+        product.setProductImages(productImages);
 
         productRepository.save(product);
 

@@ -1,6 +1,7 @@
 package com.sparta.plate.service.product;
 
 import com.sparta.plate.dto.request.ProductDetailsRequestDto;
+import com.sparta.plate.dto.request.ProductImageRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.entity.Product;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -26,16 +28,12 @@ public class ProductService {
 
     @Transactional
     public UUID createProduct(ProductRequestDto requestDto) {
-        requestDto.validatePrimaryImage();
+        validateProductImages(requestDto.getImages());
 
         Product product = Product.toEntity(requestDto);
-
-        validateProductImages(product);
-
         Product savedProduct = productRepository.save(product);
         return savedProduct.getId();
     }
-
 
     @Transactional
     public void deleteProduct(UUID productId, Long userId) {
@@ -100,17 +98,61 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @Transactional
+    public void manageProductImage(UUID productId, List<ProductImageRequestDto> imageRequestDtos, Long userId) {
+        validateProductImages(imageRequestDtos);
+
+        Product product = findProductById(productId);
+
+        List<ProductImage> currentImages = product.getProductImages();
+
+        List<ProductImage> newImages = imageRequestDtos.stream()
+                .filter(dto -> dto.getId() == null)
+                .map(dto -> ProductImage.toEntity(dto, product))
+                .toList();
+
+        currentImages.forEach(currentImage -> {
+            boolean isFound = imageRequestDtos.stream()
+                    .anyMatch(dto -> dto.getId() != null && currentImage.getId().equals(dto.getId()));
+
+            if (!isFound) {
+                currentImage.markAsDeleted(userId);
+            } else {
+                imageRequestDtos.stream()
+                        .filter(dto -> dto.getId() != null && currentImage.getId().equals(dto.getId()))
+                        .findFirst()
+                        .ifPresent(dto -> {
+                            if (currentImage.isPrimary() != dto.isPrimary()) {
+                                currentImage.setPrimary(dto.isPrimary());
+                            }
+                        });
+            }
+        });
+
+        newImages.forEach(newImage -> {
+            product.getProductImages().add(newImage);
+        });
+
+        productRepository.save(product);
+    }
+
     private Product findProductById(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
 
-    private void validateProductImages(Product product) {
-        for (ProductImage productImage : product.getProductImageList()) {
-            if (productImage.getUploadPath() == null || productImage.getUploadPath().isEmpty()) {
+    private void validateProductImages(List<ProductImageRequestDto> imageRequestDtos) {
+        long primaryCount = imageRequestDtos.stream()
+                .filter(ProductImageRequestDto::isPrimary)
+                .count();
+        if (primaryCount != 1) {
+            throw new IllegalArgumentException("대표 이미지는 하나로 지정 되어야 합니다.");
+        }
+
+        for (ProductImageRequestDto image : imageRequestDtos) {
+            if (image.getUploadPath() == null || image.getUploadPath().isEmpty()) {
                 throw new ProductValidationException("Product image URL cannot be null or empty.");
             }
-            productImage.setProduct(product);
         }
     }
     // 상품 수정 시 해당 상품을 등록한 Owner인지 확인하는 메소드 추후 구현
