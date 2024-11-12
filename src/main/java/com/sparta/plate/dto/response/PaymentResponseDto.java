@@ -30,9 +30,7 @@ public class PaymentResponseDto {
     private Timestamped timestamped;
 
 
-
-
-    public PaymentResponseDto(Payment payment) {
+    public PaymentResponseDto(Order order, Payment payment) {
         this.paymentId = payment.getPaymentId();
         this.orderId = payment.getOrder().getOrderId();
         this.paymentNumber = payment.getPaymentNumber();
@@ -41,7 +39,7 @@ public class PaymentResponseDto {
 
         this.storeName = payment.getOrder().getStore().getStoreName();
         this.orderProductList = payment.getOrder().getOrderProductList();
-        this.orderTypeEum = payment.getOrder().getOrderTypeEnum();
+        this.orderTypeEum = payment.getOrder().getOrderType();
         this.address = payment.getOrder().getOrderAddress();
         this.orderPrice = payment.getOrder().getOrderPrice();
 

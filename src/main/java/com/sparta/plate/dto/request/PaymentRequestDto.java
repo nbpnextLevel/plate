@@ -11,18 +11,16 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PaymentRequestDto {
 
     private UUID orderId;
     private Long orderPrice;
-
     private boolean isCanceled;
 
-    public PaymentRequestDto(Order order) {
-        this.orderId = order.getOrderId();
-        this.orderPrice = order.getOrderPrice();
-        this.isCanceled = order.getIsCanceled();
+    public PaymentRequestDto(UUID orderId, Long orderPrice, boolean isCanceled) {
+        this.orderId = orderId;
+        this.orderPrice = orderPrice;
+        this.isCanceled = isCanceled;
     }
 
 
