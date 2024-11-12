@@ -8,16 +8,16 @@ import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.exception.ProductNotFoundException;
-import com.sparta.plate.exception.ProductValidationException;
 import com.sparta.plate.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,17 +25,14 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductImageService imageService;
     private final ProductHistoryService historyService;
 
     @Transactional
-    public UUID createProduct(ProductRequestDto requestDto) {
-        validateProductImages(requestDto.getImages());
-
+    public UUID createProduct(ProductRequestDto requestDto) throws IOException {
         Product product = Product.toEntity(requestDto);
 
-        List<ProductImage> newImages = requestDto.getImages().stream()
-                .map(dto -> ProductImage.toEntity(dto, product))
-                .collect(Collectors.toList());
+        List<ProductImage> newImages = imageService.processProductImages(product, requestDto.getImages());
 
         product.setProductImages(newImages);
 
@@ -105,39 +102,26 @@ public class ProductService {
     }
 
     @Transactional
-    public void manageProductImage(UUID productId, List<ProductImageRequestDto> imageRequestDtos, Long userId) {
-        validateProductImages(imageRequestDtos);
-
+    public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, Long userId) throws IOException {
         Product product = findProductById(productId);
 
         List<ProductImage> currentImages = product.getProductImages();
+        List<ProductImage> newImages = imageService.processProductImages(product, requestDto);
 
-        List<ProductImage> newImages = imageRequestDtos.stream()
-                .filter(dto -> dto.getId() == null)
-                .map(dto -> ProductImage.toEntity(dto, product))
-                .toList();
+        List<ProductImage> allImages = new ArrayList<>(currentImages);
+        allImages.addAll(newImages);
 
-        currentImages.forEach(currentImage -> {
-            boolean isFound = imageRequestDtos.stream()
-                    .anyMatch(dto -> dto.getId() != null && currentImage.getId().equals(dto.getId()));
+        allImages = imageService.updatePrimaryImage(allImages, requestDto);
 
-            if (!isFound) {
-                currentImage.markAsDeleted(userId);
-            } else {
-                imageRequestDtos.stream()
-                        .filter(dto -> dto.getId() != null && currentImage.getId().equals(dto.getId()))
-                        .findFirst()
-                        .ifPresent(dto -> {
-                            if (currentImage.isPrimary() != dto.isPrimary()) {
-                                currentImage.setPrimary(dto.isPrimary());
-                            }
-                        });
+        if (requestDto.getDeletedImageIds() != null) {
+            for (ProductImage currentImage : currentImages) {
+                if (requestDto.getDeletedImageIds().contains(currentImage.getId())) {
+                    currentImage.markAsDeleted(userId);
+                }
             }
-        });
+        }
 
-        newImages.forEach(newImage -> {
-            product.getProductImages().add(newImage);
-        });
+        product.setProductImages(allImages);
 
         productRepository.save(product);
     }
@@ -146,21 +130,5 @@ public class ProductService {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
-
-    private void validateProductImages(List<ProductImageRequestDto> imageRequestDtos) {
-        long primaryCount = imageRequestDtos.stream()
-                .filter(ProductImageRequestDto::isPrimary)
-                .count();
-        if (primaryCount != 1) {
-            throw new IllegalArgumentException("대표 이미지는 하나로 지정 되어야 합니다.");
-        }
-
-        for (ProductImageRequestDto image : imageRequestDtos) {
-            if (image.getUploadPath() == null || image.getUploadPath().isEmpty()) {
-                throw new ProductValidationException("Product image URL cannot be null or empty.");
-            }
-        }
-    }
-
     // 상품 수정 시 해당 상품을 등록한 Owner인지 확인하는 메소드 추후 구현
 }

@@ -1,0 +1,50 @@
+### POST PRODUCT - 상품 등록
+POST http://localhost:8080/api/products
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="storeId"
+
+37e8c0e2-234d-4304-9cc8-408125993b90
+--boundary
+Content-Disposition: form-data; name="productName"
+
+연어 샐러드
+--boundary
+Content-Disposition: form-data; name="productDescription"
+
+북유럽 전통 방식으로 숙성시켜 풍미와 쫄깃함이 가득한 연어와 계란, 양파 등 토핑이 어우러진 메뉴
+--boundary
+Content-Disposition: form-data; name="price"
+
+17500
+--boundary
+Content-Disposition: form-data; name="stockQuantity"
+
+50
+--boundary
+Content-Disposition: form-data; name="maxOrderLimit"
+
+100
+--boundary
+Content-Disposition: form-data; name="displayStatus"
+
+PENDING_SALE
+--boundary
+Content-Disposition: form-data; name="isHidden"
+
+false
+--boundary
+Content-Disposition: form-data; name="primaryImageIndex"
+
+1
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="profile.png"
+Content-Type: image/png
+
+< C:\Users\misu\Downloads\profile.png
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="icon-todo.png"
+Content-Type: image/png
+
+< C:\Users\misu\Downloads\icon-todo.png

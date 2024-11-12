@@ -1,6 +1,5 @@
 package com.sparta.plate.entity;
 
-import com.sparta.plate.dto.request.ProductImageRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,16 +36,16 @@ public class ProductImage extends TimestampedCreationDeletion {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public static ProductImage toEntity(ProductImageRequestDto requestDto, Product product) {
+    public static ProductImage toEntity(Product product, String fileName, String uploadPath, boolean isPrimary) {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null when creating ProductImage.");
         }
 
         return ProductImage.builder()
                 .product(product)
-                .fileName(requestDto.getFileName())
-                .uploadPath(requestDto.getUploadPath())
-                .isPrimary(requestDto.isPrimary())
+                .fileName(fileName)
+                .uploadPath(uploadPath)
+                .isPrimary(isPrimary)
                 .build();
     }
 
