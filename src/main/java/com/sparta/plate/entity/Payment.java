@@ -16,12 +16,13 @@ import java.util.UUID;
 public class Payment extends Timestamped{
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID paymentId = UUID.randomUUID();
 
-    @OneToOne(cascade = CascadeType.PERSIST)  // TEST용
+    @OneToOne//(cascade = CascadeType.PERSIST)  // TEST용
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
+
 
     @Column(nullable = false)
     private String paymentNumber;
@@ -44,4 +45,11 @@ public class Payment extends Timestamped{
         super();
     }
 
+    @PrePersist  // 엔티티가 저장되기 전에 UUID 자동 생성
+    public void prePersist() {
+        if (paymentId == null) {
+            paymentId = UUID.randomUUID();
+        }
+    }
 }
+
