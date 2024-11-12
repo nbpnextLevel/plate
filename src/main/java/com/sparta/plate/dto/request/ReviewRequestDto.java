@@ -5,18 +5,24 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDto {
     private String loginId;
 
-    private Long paymentId;
+    private UUID paymentId;
 
     @Size(max = 2000)
     private String reviewDetail;
 
     @NotNull
     private int reviewScore;
+
+    private boolean reviewStatus;
 }
