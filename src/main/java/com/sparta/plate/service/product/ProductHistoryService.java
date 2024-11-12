@@ -31,8 +31,4 @@ public class ProductHistoryService {
         ProductHistory history = ProductHistory.toEntity(requestDto, productId);
         historyRepository.save(history);
     }
-
-    public boolean existsProductHistory(UUID productId) {
-        return historyRepository.existsByProductId(productId);
-    }
 }

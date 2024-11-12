@@ -40,6 +40,10 @@ public class ProductService {
         product.setProductImages(newImages);
 
         Product savedProduct = productRepository.saveAndFlush(product);
+
+        ProductDetailsRequestDto currentDto = new ProductDetailsRequestDto(product.getName(), product.getDescription(), product.getPrice());
+        historyService.createProductHistory(currentDto, savedProduct.getId());
+
         return savedProduct.getId();
     }
 
@@ -56,12 +60,6 @@ public class ProductService {
     public void updateProductDetails(UUID productId, ProductDetailsRequestDto requestDto) {
         Product product = findProductById(productId);
 
-        if (!historyService.existsProductHistory(productId)) {
-            ProductDetailsRequestDto currentDto = new ProductDetailsRequestDto(product.getName(), product.getDescription(), product.getPrice());
-
-            historyService.createProductHistory(currentDto, productId);
-        }
-
         requestDto.setProductName(requestDto.getProductName() == null ? product.getName() : requestDto.getProductName());
         product.setName(requestDto.getProductName() != null ? requestDto.getProductName() : product.getName());
 
@@ -71,7 +69,7 @@ public class ProductService {
         requestDto.setPrice(requestDto.getPrice() == null ? product.getPrice() : requestDto.getPrice());
         product.setPrice(requestDto.getPrice() != null ? requestDto.getPrice() : product.getPrice());
 
-
+        System.out.println("productId: " + product.getId());
         productRepository.saveAndFlush(product);
 
         historyService.createProductHistory(requestDto, productId);
