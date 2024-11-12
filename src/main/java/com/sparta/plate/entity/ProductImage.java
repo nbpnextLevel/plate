@@ -59,7 +59,7 @@ public class ProductImage extends TimestampedCreationDeletion {
 
     public void setProduct(Product product) {
         if (this.product != null) {
-            throw new IllegalStateException("이미 Product가 설정되었습니다.");
+            return;
         }
         this.product = product;
     }

@@ -22,7 +22,7 @@ public class ProductImageService {
     public void deleteProductImage(UUID imageId, Long userId) {
         ProductImage image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ProductImageNotFoundException("Product image not found with ID: " + imageId));
-        
+
         image.markAsDeleted(userId);
         imageRepository.save(image);
     }
