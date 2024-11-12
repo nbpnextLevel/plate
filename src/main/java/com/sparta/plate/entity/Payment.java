@@ -17,9 +17,9 @@ public class Payment extends Timestamped{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID paymentId = UUID.randomUUID();
+    private UUID paymentId;
 
-    @OneToOne//(cascade = CascadeType.PERSIST)  // TEST용
+    @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
