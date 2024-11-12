@@ -3,6 +3,7 @@ package com.sparta.plate.config;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -69,13 +70,15 @@ public class WebSecurityConfig {
 			sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		);
 
+		// TODO 각자 권한에 따른 설정 필요
 		http.authorizeHttpRequests((authorizeHttpRequests) ->
 			authorizeHttpRequests
 				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-				.requestMatchers("/", "/api/users/signup", "/api/users/exists/", "/api/users/login",
-					"/api/users/reissue").permitAll()
-			//	.requestMatchers("/api/users/**").permitAll() // '/api/user/'로 시작하는 요청 모두 접근 허가
-				.requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가 TODO 시큐리티 완성 후 수정할 예정 - 재희
+				.requestMatchers("/", "/api/users/signup", "/api/users/exists/", "/api/users/login", "/api/users/reissue").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/stores/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+				.requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+				.requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
 				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
 
