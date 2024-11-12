@@ -1,4 +1,4 @@
-package com.sparta.plate.controller;
+package com.sparta.plate.controller.store;
 
 import java.util.List;
 
