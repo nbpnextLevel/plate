@@ -6,16 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "p_order")  // 테이블 이름 설정
 @Getter
 @Setter
 @NoArgsConstructor
-public class Order {
+@Table(name = "p_order")  // 테이블 이름 설정
+public class Order extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,6 +64,23 @@ public class Order {
         this.orderAddress = requestDto.getOrderAddress();
         this.orderRequest = requestDto.getOrderRequest();
         this.orderStatusEnum = requestDto.getOrderStatus();
+        this.orderProductList = orderProductList;
+    }
+
+
+    // 테스트 생성자
+    public Order(UUID orderId, User user, Store store, OrderTypeEnum orderTypeEnum,
+                 Long orderPrice, Boolean isCanceled, String orderAddress,
+                 String orderRequest, OrderStatusEnum orderStatusEnum, List<OrderProduct> orderProductList) {
+        this.orderId = orderId;
+        this.user = user;
+        this.store = store;
+        this.orderTypeEnum = orderTypeEnum;
+        this.orderPrice = orderPrice;
+        this.isCanceled = isCanceled;
+        this.orderAddress = orderAddress;
+        this.orderRequest = orderRequest;
+        this.orderStatusEnum = orderStatusEnum;
         this.orderProductList = orderProductList;
     }
 
