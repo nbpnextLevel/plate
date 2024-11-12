@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Table(name = "p_product_image")
-public class ProductImage extends ProductTimestamped {
+public class ProductImage extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(nullable = false)
     private String fileName;
@@ -29,7 +29,7 @@ public class ProductImage extends ProductTimestamped {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isPrimary;
-    
+
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDeleted;
 
@@ -37,25 +37,23 @@ public class ProductImage extends ProductTimestamped {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public static ProductImage toEntity(ProductImageRequestDto requestDto, Long createdBy) {
-        ProductImage image = ProductImage.builder()
+    public static ProductImage toEntity(ProductImageRequestDto requestDto) {
+        // image.setCreatedBy(createdBy);
+        return ProductImage.builder()
                 .fileName(requestDto.getFileName())
                 .uploadPath(requestDto.getUploadPath())
                 .isPrimary(requestDto.isPrimary())
                 .build();
-
-        image.setCreatedBy(createdBy);
-        return image;
     }
 
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
+    // public void setCreatedBy(Long createdBy) {
+    //     this.createdBy = createdBy;
+    // }
 
+    @Override
     public void markAsDeleted(Long deletedBy) {
+        super.markAsDeleted(deletedBy);
         this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now();
-        this.deletedBy = deletedBy;
     }
 
     public void setProduct(Product product) {

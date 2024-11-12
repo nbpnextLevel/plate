@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Entity @Table(name = "p_store")
 public class Store {
@@ -28,7 +28,7 @@ public class Store {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "store_category_id", nullable = false)
-	private StoreCategory categoryId;
+	private StoreCategory storeCategory;
 
 	//private User userId;
 
@@ -40,33 +40,29 @@ public class Store {
 	private String storeNumber;
 
 	@NotNull
-	@Column(nullable = false, length = 10)
-	private String zipcode;
-
-	@NotNull
 	@Column(nullable = false)
 	private String address;
 
-	@NotNull
-	@Column(nullable = false)
-	private String detailAddress;
-
-	@Column(nullable = false)
 	private Long createdBy;
 
 	private Long updatedBy;
 
 	private Long deletedBy;
 
+	private boolean isDeleted;
+
 	@Builder
-	public Store(StoreCategory categoryId, String storeName, String storeNumber, String zipcode, String address,
-		String detailAddress, Long createdBy) {
-		this.categoryId = categoryId;
+	public Store(StoreCategory storeCategory, String storeName, String storeNumber, String address, boolean isDeleted) {
+		this.storeCategory = storeCategory;
 		this.storeName = storeName;
 		this.storeNumber = storeNumber;
-		this.zipcode = zipcode;
 		this.address = address;
-		this.detailAddress = detailAddress;
-		this.createdBy = createdBy;
+		this.isDeleted = false;
+	}
+
+	// TODO deletedAt 확인
+	public void deleteStore(Long userId) {
+		this.isDeleted = true;
+		this.deletedBy = userId;
 	}
 }

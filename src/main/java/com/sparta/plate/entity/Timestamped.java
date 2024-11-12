@@ -1,12 +1,15 @@
 package com.sparta.plate.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,31 +17,30 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Timestamped {
 
-    // 생성일
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    // 생성자
     @CreatedBy
     @Column(updatable = false)
     private Long createBy;
 
-    // 수정일
     @LastModifiedDate
     @Column
     private LocalDateTime updateAt;
 
-    // 수정자
     @LastModifiedBy
     @Column
     private Long updateBy;
 
-    // 삭제일
     @Column
     private LocalDateTime deletedAt;
 
-    // 삭제자
     @Column
     private Long deletedBy;
+
+    public void markAsDeleted(Long deletedBy) {
+        this.deletedAt = LocalDateTime.now();
+        this.deletedBy = deletedBy;
+    }
 }
