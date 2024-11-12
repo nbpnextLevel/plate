@@ -1,7 +1,5 @@
 package com.sparta.plate.dto.request;
 
-import com.sparta.plate.entity.Order;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
