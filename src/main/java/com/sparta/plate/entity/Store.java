@@ -2,6 +2,8 @@ package com.sparta.plate.entity;
 
 import java.util.UUID;
 
+import com.sparta.plate.dto.request.StoreRequestDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -62,5 +64,13 @@ public class Store extends Timestamped {
 	public void markAsDeleted(Long deletedBy) {
 		super.markAsDeleted(deletedBy);
 		this.isDeleted = true;
+	}
+
+	public void update(StoreRequestDto request, User user, StoreCategory storeCategory) {
+		this.user = user;
+		this.storeCategory = storeCategory;
+		this.storeName = request.getName();
+		this.storeNumber = request.getStoreNumber();
+		this.address =  request.getAddress();
 	}
 }

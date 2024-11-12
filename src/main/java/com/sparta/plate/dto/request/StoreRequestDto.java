@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class CreateStoreRequestDto {
+public class StoreRequestDto {
 
 	@NotNull
 	private UUID categoryId;
