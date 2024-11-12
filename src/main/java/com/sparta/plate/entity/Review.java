@@ -17,8 +17,8 @@ public class Review extends Timestamped {
     private Long reviewId;
 
     @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order orderId;
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
 
     @Column(length = 2000)
     private String reviewDetail;
