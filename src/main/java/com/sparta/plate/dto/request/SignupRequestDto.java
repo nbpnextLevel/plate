@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+//@AllArgsConstructor
 public class SignupRequestDto {
 
 	@Pattern(regexp = "^[a-z0-9]{4,10}$",
