@@ -26,12 +26,12 @@ public class ProductController {
 
     @PostMapping
     public ApiResponseDto createProduct(
-            @RequestParam(value = "storeId", required = false) String storeId,
-            @RequestParam(value = "productName", required = false) String productName,
-            @RequestParam(value = "productDescription", required = false) String productDescription,
-            @RequestParam(value = "price", required = false) BigDecimal price,
-            @RequestParam(value = "stockQuantity", required = false) Integer stockQuantity,
-            @RequestParam(value = "maxOrderLimit", required = false) Integer maxOrderLimit,
+            @RequestParam(value = "storeId") String storeId,
+            @RequestParam(value = "productName") String productName,
+            @RequestParam(value = "productDescription") String productDescription,
+            @RequestParam(value = "price") BigDecimal price,
+            @RequestParam(value = "stockQuantity") Integer stockQuantity,
+            @RequestParam(value = "maxOrderLimit") Integer maxOrderLimit,
             @RequestParam(value = "displayStatus", required = false) String displayStatus,
             @RequestParam(value = "isHidden", required = false) Boolean isHidden,
             @RequestParam(value = "files[]", required = false) MultipartFile[] files,
