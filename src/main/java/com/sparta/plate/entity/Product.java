@@ -76,7 +76,7 @@ public class Product extends Timestamped {
                 .maxOrderLimit(requestDto.getMaxOrderLimit())
                 .stockQuantity(requestDto.getStockQuantity())
                 .isHidden(requestDto.isHidden())
-                .storeId(UUID.fromString(requestDto.getStoreId()))
+                .storeId(requestDto.getStoreId())
                 .build();
     }
 

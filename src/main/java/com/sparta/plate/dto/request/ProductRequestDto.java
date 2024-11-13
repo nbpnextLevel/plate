@@ -4,16 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.UUID;
 
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductRequestDto {
 
     @NotNull(message = "Store ID cannot be null")
-    private String storeId;
+    private UUID storeId;
 
     @NotBlank(message = "Product name cannot be blank")
     private String productName;
@@ -38,5 +44,5 @@ public class ProductRequestDto {
     @JsonProperty("isHidden")
     private boolean isHidden;
 
-    private List<ProductImageRequestDto> images;
+    private ProductImageRequestDto images;
 }

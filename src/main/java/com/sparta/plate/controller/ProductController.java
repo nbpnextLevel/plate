@@ -10,10 +10,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,35 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ApiResponseDto createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
+    public ApiResponseDto createProduct(
+            @RequestParam(value = "storeId") String storeId,
+            @RequestParam(value = "productName") String productName,
+            @RequestParam(value = "productDescription") String productDescription,
+            @RequestParam(value = "price") BigDecimal price,
+            @RequestParam(value = "stockQuantity") Integer stockQuantity,
+            @RequestParam(value = "maxOrderLimit") Integer maxOrderLimit,
+            @RequestParam(value = "displayStatus", required = false) String displayStatus,
+            @RequestParam(value = "isHidden", required = false) Boolean isHidden,
+            @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+            @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
+    ) throws IOException {
+        ProductImageRequestDto imageRequestDto = ProductImageRequestDto.builder()
+                .files(files)
+                .primaryImageIndex(primaryImageIndex)
+                .build();
+
+        ProductRequestDto requestDto = ProductRequestDto.builder()
+                .storeId(UUID.fromString(storeId))
+                .productName(productName)
+                .productDescription(productDescription)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .maxOrderLimit(maxOrderLimit)
+                .displayStatus(displayStatus)
+                .isHidden(isHidden)
+                .images(imageRequestDto)
+                .build();
+
         UUID savedProductId = productService.createProduct(requestDto);
 
         return ApiResponseDto.builder()
@@ -89,8 +118,23 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/images")
-    public ApiResponseDto manageProductImage(@PathVariable UUID productId, @RequestBody List<ProductImageRequestDto> images) {
-        productService.manageProductImage(productId, images, 1L);
+    public ApiResponseDto manageProductImage(
+            @PathVariable UUID productId,
+            @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+            @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex,
+            @RequestParam(value = "deletedImageIds", required = false) List<String> deletedImageIds
+    ) throws IOException {
+        List<UUID> convertedDeletedImageIds = Optional.ofNullable(deletedImageIds)
+                .map(ids -> ids.stream().map(UUID::fromString).toList())
+                .orElseGet(Collections::emptyList);
+
+        ProductImageRequestDto requestDto = ProductImageRequestDto.builder()
+                .files(files)
+                .primaryImageIndex(primaryImageIndex)
+                .deletedImageIds(convertedDeletedImageIds)
+                .build();
+
+        productService.manageProductImage(productId, requestDto, 1L);
 
         return ApiResponseDto.builder()
                 .statusCode(HttpStatus.OK.value())
