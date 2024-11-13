@@ -2,17 +2,15 @@ package com.sparta.plate.dto.request;
 
 import com.sparta.plate.entity.UserRoleEnum;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Value;
 
 @Getter
+@AllArgsConstructor
 public class SignupRequestDto {
 
 	@Pattern(regexp = "^[a-z0-9]{4,10}$",
