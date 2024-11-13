@@ -1,6 +1,5 @@
 package com.sparta.plate.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -11,10 +10,8 @@ public class ProductQueryDto {
     private UUID storeId;
     private UUID productId;
     private String productName;
-    @JsonProperty("isHidden")
-    private boolean isHidden;
-    @JsonProperty("isDeleted")
-    private boolean isDeleted;
+    private String isHidden;
+    private String isDeleted;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String sort;
