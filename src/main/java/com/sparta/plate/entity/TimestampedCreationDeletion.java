@@ -21,7 +21,7 @@ public abstract class TimestampedCreationDeletion {
 
     @CreatedBy
     @Column(updatable = false)
-    private Long createBy;
+    private Long createdBy;
 
     @Column
     private LocalDateTime deletedAt;

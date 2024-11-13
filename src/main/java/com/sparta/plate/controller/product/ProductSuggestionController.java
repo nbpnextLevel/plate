@@ -1,11 +1,14 @@
 package com.sparta.plate.controller.product;
 
+import com.sparta.plate.dto.request.ProductSuggestionQueryDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
+import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
 import com.sparta.plate.service.product.ProductSuggestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,6 +24,13 @@ public class ProductSuggestionController {
         String responseText = suggestionService.getProductSuggestion(text, LocalDateTime.now());
 
         return ApiResponseDto.success(Map.of("responseText", responseText));
+    }
+
+    @GetMapping
+    public ApiResponseDto<Map<String, Object>> getSuggestionsHistories(@RequestBody ProductSuggestionQueryDto requestDto) {
+        List<ProductSuggestionResponseDto> responseDto = suggestionService.getSuggestionsHistories(requestDto);
+
+        return ApiResponseDto.success(Map.of("suggestionsHistories", responseDto));
     }
 
     @PatchMapping("/{suggestionId}/delete")

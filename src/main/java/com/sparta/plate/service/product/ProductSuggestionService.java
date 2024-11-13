@@ -1,5 +1,7 @@
 package com.sparta.plate.service.product;
 
+import com.sparta.plate.dto.request.ProductSuggestionQueryDto;
+import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
 import com.sparta.plate.entity.ProductSuggestionRequest;
 import com.sparta.plate.exception.ProductHistoryNotFoundException;
 import com.sparta.plate.google.service.GoogleApiService;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,6 +45,10 @@ public class ProductSuggestionService {
         suggestionRepository.save(suggestionRequest);
 
         return responseText;
+    }
+
+    public List<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
+        return new ArrayList<>();
     }
 
     @Transactional
