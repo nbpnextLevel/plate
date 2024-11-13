@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import com.sparta.plate.repository.StoreCategoryRepository;
 
 import lombok.RequiredArgsConstructor;
 
+@Order(2)
 @Component
 @RequiredArgsConstructor
 public class StoreCategoryDataRunner implements ApplicationRunner {

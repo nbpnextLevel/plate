@@ -1,7 +1,9 @@
 package com.sparta.plate.controller.store;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,7 @@ import com.sparta.plate.entity.Store;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.CreateStoreService;
 import com.sparta.plate.service.store.DeleteStoreService;
+import com.sparta.plate.service.store.GetStoreListService;
 import com.sparta.plate.service.store.GetStoreService;
 import com.sparta.plate.service.store.UpdateStoreService;
 
@@ -35,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StoreController {
 
 	private final CreateStoreService createStoreService;
+	private final GetStoreListService getStoreListService;
 	private final GetStoreService getStoreService;
 	private final UpdateStoreService updateStoreService;
 	private final DeleteStoreService deleteStoreService;
@@ -51,6 +55,19 @@ public class StoreController {
 	// 	Store store = createStoreService.createStore(request, userDetails.getUser());
 	// 	return new CreteStoreResponseDto(store.getId());
 	// }
+
+	@GetMapping
+	public ApiResponseDto<List<StoreResponseDto>> getAllStores(
+		@RequestParam("page") int page,
+		@RequestParam(value = "size", defaultValue = "10") int size,
+		@RequestParam("sortBy") String sortBy,
+		@RequestParam("isAsc") boolean isAsc,
+		@RequestParam(value = "search", required = false) String search
+	) {
+		Page<StoreResponseDto> storeList = getStoreListService.getStoreList(page - 1, size, sortBy, isAsc, search);
+
+		return ApiResponseDto.successPage(storeList);
+	}
 
 	@GetMapping("/{storeId}")
 	public ApiResponseDto<StoreResponseDto> getStore(@PathVariable("storeId") UUID storeId){
