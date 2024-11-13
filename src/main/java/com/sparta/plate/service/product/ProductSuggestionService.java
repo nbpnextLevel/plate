@@ -6,7 +6,6 @@ import com.sparta.plate.entity.ProductSuggestionRequest;
 import com.sparta.plate.exception.ProductHistoryNotFoundException;
 import com.sparta.plate.google.service.GoogleApiService;
 import com.sparta.plate.repository.ProductSuggestionRepository;
-import com.sparta.plate.repository.impl.ProductSuggestionRepositoryImpl;
 import com.sparta.plate.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ public class ProductSuggestionService {
 
     private final GoogleApiService googleApiService;
     private final ProductSuggestionRepository suggestionRepository;
-    private final ProductSuggestionRepositoryImpl suggestionRepositoryImpl;
 
     @Transactional
     public String getProductSuggestion(String requestText, LocalDateTime requestAt) {
@@ -52,7 +50,7 @@ public class ProductSuggestionService {
 
     public Page<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
         Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
-        return suggestionRepositoryImpl.searchAll(pageable, requestDto);
+        return suggestionRepository.searchAll(pageable, requestDto);
     }
 
     @Transactional
