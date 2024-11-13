@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
-
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder
@@ -26,19 +25,19 @@ public class ApiResponseDto<T> {
     // 메시지 없는 성공 응답
     public static <T> ApiResponseDto<T> success(T data) {
         return ApiResponseDto.<T>builder()
-            .statusCode(HttpStatus.OK.value())
-            .statusMessage(HttpStatus.OK.getReasonPhrase())
-            .data(data)
-            .build();
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .data(data)
+                .build();
     }
 
     // 메시지를 포함한 성공 응답
     public static <T> ApiResponseDto<T> success(String message, T data) {
         return ApiResponseDto.<T>builder()
-            .statusCode(HttpStatus.OK.value())
-            .statusMessage(HttpStatus.OK.getReasonPhrase())
-            .message(message)
-            .data(data)
-            .build();
+                .statusCode(HttpStatus.OK.value())
+                .statusMessage(HttpStatus.OK.getReasonPhrase())
+                .message(message)
+                .data(data)
+                .build();
     }
 }

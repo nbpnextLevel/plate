@@ -9,11 +9,11 @@ Content-Disposition: form-data; name="storeId"
 --boundary
 Content-Disposition: form-data; name="productName"
 
-연어 샐러드
+비빔메밀면 샐러드
 --boundary
 Content-Disposition: form-data; name="productDescription"
 
-북유럽 전통 방식으로 숙성시켜 풍미와 쫄깃함이 가득한 연어와 계란, 양파 등 토핑이 어우러진 메뉴
+매콤새콤달콤한 고추장비빔 드레싱과 닭가슴살, 메밀면 등 토핑들이 조화롭게 어우러진 비빔면 스타일의 K-BIBIM 샐러드
 --boundary
 Content-Disposition: form-data; name="price"
 
@@ -25,7 +25,7 @@ Content-Disposition: form-data; name="stockQuantity"
 --boundary
 Content-Disposition: form-data; name="maxOrderLimit"
 
-100
+4
 --boundary
 Content-Disposition: form-data; name="displayStatus"
 
