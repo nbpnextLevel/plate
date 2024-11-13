@@ -24,72 +24,72 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	private final JwtTokenProvider jwtTokenProvider;
-	private final UserDetailsServiceImpl userDetailsService;
-	private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		return configuration.getAuthenticationManager();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
-	@Bean
-	public LoginFilter loginFilter() throws Exception {
-		LoginFilter filter = new LoginFilter(jwtTokenProvider);
-		filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-		return filter;
-	}
+    @Bean
+    public LoginFilter loginFilter() throws Exception {
+        LoginFilter filter = new LoginFilter(jwtTokenProvider);
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return filter;
+    }
 
-	@Bean
-	public JwtFilter jwtFilter() throws Exception {
-		return new JwtFilter(jwtTokenProvider, userDetailsService);
-	}
+    @Bean
+    public JwtFilter jwtFilter() throws Exception {
+        return new JwtFilter(jwtTokenProvider, userDetailsService);
+    }
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		//csrf disable
-		http.csrf((csrf) -> csrf.disable());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // csrf disable
+        http.csrf((csrf) -> csrf.disable());
 
-		//From 로그인 방식 disable
-		http
-			.formLogin((auth) -> auth.disable());
+        // From 로그인 방식 disable
+        http
+                .formLogin((auth) -> auth.disable());
 
-		//http basic 인증 방식 disable
-		http
-			.httpBasic((auth) -> auth.disable());
+        // http basic 인증 방식 disable
+        http
+                .httpBasic((auth) -> auth.disable());
 
-		// 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
-		http.sessionManagement((sessionManagement) ->
-			sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		);
+        // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
+        http.sessionManagement((sessionManagement) ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
 
-		// TODO 각자 권한에 따른 설정 필요
-		http.authorizeHttpRequests((authorizeHttpRequests) ->
-			authorizeHttpRequests
-				.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-				.requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
-				.requestMatchers(HttpMethod.GET,"/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
-				.requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
-				.requestMatchers("/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-                               
-        .requestMatchers("/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-        .requestMatchers("/api/products/images/{imageId}/delete", "/api/products/{productId}/images").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-        .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
-        .requestMatchers(HttpMethod.GET, "/api/products/histories", "/api/products/images").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
-        .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
-                               
-				.requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
-				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
-		);
+        // TODO 각자 권한에 따른 설정 필요
+        http.authorizeHttpRequests((authorizeHttpRequests) ->
+                authorizeHttpRequests
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+                        .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
+                        .requestMatchers("/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
 
-		http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(jwtFilter(), LoginFilter.class);
+                        .requestMatchers("/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers("/api/products/images/{imageId}/delete", "/api/products/{productId}/images").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/products/histories", "/api/products/images").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
 
-		return http.build();
-	}
+                        .requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
+                        .anyRequest().authenticated() // 그 외 모든 요청 인증처리
+        );
+
+        http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter(), LoginFilter.class);
+
+        return http.build();
+    }
 }
