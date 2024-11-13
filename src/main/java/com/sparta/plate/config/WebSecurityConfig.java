@@ -76,6 +76,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
                         .requestMatchers("/api/stores/**", "/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers("/api/products/suggestion/{suggestionId}/delete").hasAnyAuthority("ROLE_MASTER")
                         .requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
