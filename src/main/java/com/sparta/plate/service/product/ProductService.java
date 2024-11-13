@@ -7,8 +7,10 @@ import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
+import com.sparta.plate.entity.Store;
 import com.sparta.plate.exception.ProductNotFoundException;
 import com.sparta.plate.repository.ProductRepository;
+import com.sparta.plate.service.store.GetStoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,10 +29,12 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductImageService imageService;
     private final ProductHistoryService historyService;
+    private final GetStoreService storeService;
 
     @Transactional
     public UUID createProduct(ProductRequestDto requestDto) throws IOException {
-        Product product = Product.toEntity(requestDto);
+        Store store = storeService.getStore(requestDto.getStoreId());
+        Product product = Product.toEntity(requestDto, store);
 
         List<ProductImage> newImages = imageService.processProductImages(product, requestDto.getImages());
 

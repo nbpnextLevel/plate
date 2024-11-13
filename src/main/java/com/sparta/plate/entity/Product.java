@@ -22,8 +22,9 @@ public class Product extends Timestamped {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)
-    private UUID storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @Setter
     @Column(nullable = false)
@@ -65,7 +66,7 @@ public class Product extends Timestamped {
     @OrderBy("isPrimary desc")
     private List<ProductImage> productImages = new ArrayList<>();
 
-    public static Product toEntity(ProductRequestDto requestDto) {
+    public static Product toEntity(ProductRequestDto requestDto, Store store) {
         ProductDisplayStatusEnum displayStatus = ProductDisplayStatusEnum.fromString(requestDto.getDisplayStatus());
 
         return Product.builder()
@@ -76,7 +77,7 @@ public class Product extends Timestamped {
                 .maxOrderLimit(requestDto.getMaxOrderLimit())
                 .stockQuantity(requestDto.getStockQuantity())
                 .isHidden(requestDto.isHidden())
-                .storeId(requestDto.getStoreId())
+                .store(store)
                 .build();
     }
 
