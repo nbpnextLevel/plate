@@ -47,9 +47,9 @@ public class ProductSuggestionService {
         return responseText;
     }
 
-    public List<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
-        return new ArrayList<>();
-    }
+    // public List<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
+    //     return new ArrayList<>();
+    // }
 
     @Transactional
     public void deleteProductSuggestion(UUID suggestionId, Long userId) {

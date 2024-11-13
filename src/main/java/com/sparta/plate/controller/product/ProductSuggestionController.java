@@ -26,12 +26,12 @@ public class ProductSuggestionController {
         return ApiResponseDto.success(Map.of("responseText", responseText));
     }
 
-    @GetMapping
-    public ApiResponseDto<Map<String, Object>> getSuggestionsHistories(@RequestBody ProductSuggestionQueryDto requestDto) {
-        List<ProductSuggestionResponseDto> responseDto = suggestionService.getSuggestionsHistories(requestDto);
-
-        return ApiResponseDto.success(Map.of("suggestionsHistories", responseDto));
-    }
+    // @GetMapping
+    // public ApiResponseDto<Map<String, Object>> getSuggestionsHistories(@RequestBody ProductSuggestionQueryDto requestDto) {
+    //     List<ProductSuggestionResponseDto> responseDto = suggestionService.getSuggestionsHistories(requestDto);
+    //
+    //     return ApiResponseDto.success(Map.of("suggestionsHistories", responseDto));
+    // }
 
     @PatchMapping("/{suggestionId}/delete")
     public ApiResponseDto<Map<String, Object>> deleteProductSuggestion(@PathVariable UUID suggestionId, Long userId) {

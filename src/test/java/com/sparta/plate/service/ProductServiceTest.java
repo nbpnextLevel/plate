@@ -1,16 +1,13 @@
 package com.sparta.plate.service;
 
-import com.sparta.plate.config.JpaConfig;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.repository.ProductRepository;
-import com.sparta.plate.service.product.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -22,11 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@Import(JpaConfig.class)
+// @Import(JpaConfig.class)
 class ProductServiceTest {
-
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -35,7 +29,6 @@ class ProductServiceTest {
     @Transactional
     @DisplayName("Product 생성 및 저장 테스트")
     void createProductAndSave() {
-        UUID productId = UUID.randomUUID();
         Product product = Product.builder()
                 .storeId(UUID.randomUUID())
                 .name("연어 샐러드")
@@ -53,15 +46,15 @@ class ProductServiceTest {
                 .fileName("salad1")
                 .uploadPath("/download/salad1")
                 .isPrimary(true)
+                .product(product)
                 .build();
         ProductImage image2 = ProductImage.builder()
                 .fileName("salad2")
                 .uploadPath("/download/salad2")
                 .isPrimary(false)
+                .product(product)
                 .build();
-
-        image1.setProduct(product);
-        image2.setProduct(product);
+        
         productImages.add(image1);
         productImages.add(image2);
 
