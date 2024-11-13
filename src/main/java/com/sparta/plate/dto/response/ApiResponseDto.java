@@ -69,6 +69,15 @@ public class ApiResponseDto<T> {
             .build();
     }
 
+    // 삭제 성공시 응답
+    public static <T> ApiResponseDto<T> successDelete() {
+        return ApiResponseDto.<T>builder()
+            .statusCode(HttpStatus.NO_CONTENT.value())
+            .statusMessage(HttpStatus.NO_CONTENT.getReasonPhrase())
+            .build();
+    }
+
+    // 페이징처리가 필요한 조회 성공 응답
     public static <T> ApiResponseDto<List<T>> successPage(Page<T> page) {
         return ApiResponseDto.<List<T>>builder()
             .statusCode(HttpStatus.OK.value())
