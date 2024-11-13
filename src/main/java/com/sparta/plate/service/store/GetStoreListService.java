@@ -23,6 +23,7 @@ public class GetStoreListService {
 	public Page<StoreResponseDto> getStoreList(int page, int size, String sortBy, boolean isAsc, String search) {
 
 		// TODO 페이징 유틸로 만들기
+		// sortBy : createdAt, updatedAt만 가능
 		// 페이지사이즈 10, 30, 50 이외는 제한
 		Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
 		Sort sort = Sort.by(direction, sortBy);

@@ -1,6 +1,7 @@
 package com.sparta.plate.controller.store;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.plate.dto.request.StoreRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
-import com.sparta.plate.dto.response.CreteStoreResponseDto;
 import com.sparta.plate.dto.response.StoreResponseDto;
 import com.sparta.plate.entity.Store;
 import com.sparta.plate.security.UserDetailsImpl;
@@ -44,9 +44,9 @@ public class StoreController {
 	private final DeleteStoreService deleteStoreService;
 
 	@PostMapping
-	public CreteStoreResponseDto createStore(@Valid @RequestBody StoreRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	public ApiResponseDto<Map<String, Object>> createStore(@Valid @RequestBody StoreRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		Store store = createStoreService.createStore(request, userDetails.getUser());
-		return new CreteStoreResponseDto(store.getId());
+		return ApiResponseDto.success(Map.of("uuid", store.getId()));
 	}
 
 	// TODO  관리자 권한의 유저는 특정 유저에 대해 가게를 생성해줄 수 있고, 권한 변경도 가능하도록 기능 개발 필요
@@ -86,9 +86,10 @@ public class StoreController {
 		return ApiResponseDto.success(store.getId());
 	}
 
-	@DeleteMapping
-	public void deleteStore(@RequestParam(name = "id") UUID storeId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+	@DeleteMapping("/{storeId}")
+	public ApiResponseDto<?> deleteStore(@PathVariable(name = "storeId") UUID storeId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 		deleteStoreService.deleteStore(storeId, userDetails.getUser());
+		return ApiResponseDto.successDelete();
 	}
 
 }
