@@ -3,9 +3,11 @@ package com.sparta.plate.controller.product;
 import com.sparta.plate.dto.request.ProductImageQueryDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductImageResponseDto;
+import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,8 +23,8 @@ public class ProductImageController {
     private final ProductImageService imageService;
 
     @PatchMapping("/{imageId}/delete")
-    public ApiResponseDto<Map<String, Object>> deleteProductImage(@PathVariable UUID imageId, Long userId) {
-        imageService.deleteProductImage(imageId, 1L);
+    public ApiResponseDto<Map<String, Object>> deleteProductImage(@PathVariable UUID imageId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        imageService.deleteProductImage(imageId, userDetails);
 
         return ApiResponseDto.success(Map.of("message", "상품 이미지가 성공적으로 삭제되었습니다."));
     }

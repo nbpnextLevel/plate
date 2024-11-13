@@ -75,9 +75,10 @@ public class WebSecurityConfig {
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/", "/api/users/login", "/api/users/reissue").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
                         .requestMatchers("/api/stores/**", "/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers("/api/products/images/{imageId}/delete", "/api/products/{productId}/images").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "/api/products/histories", "/api/products/images").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
-                        .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete", "/api/products/images/{imageId}/delete").hasAnyAuthority("ROLE_MASTER")
+                        .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
                         .requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );

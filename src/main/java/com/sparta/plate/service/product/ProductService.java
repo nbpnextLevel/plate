@@ -10,6 +10,7 @@ import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.entity.Store;
 import com.sparta.plate.exception.ProductNotFoundException;
 import com.sparta.plate.repository.ProductRepository;
+import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.GetStoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductImageService imageService;
+    private final ProductOwnershipService productOwnershipService;
     private final ProductHistoryService historyService;
     private final GetStoreService storeService;
 
@@ -106,8 +108,17 @@ public class ProductService {
     }
 
     @Transactional
-    public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, Long userId) throws IOException {
+    public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         Product product = findProductById(productId);
+
+        Long userId = userDetails.getUser().getId();
+
+        boolean isOwner = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
+
+        if (isOwner) {
+            productOwnershipService.checkProductOwnership(product.getId(), userId);
+        }
 
         List<ProductImage> currentImages = product.getProductImages();
         List<ProductImage> newImages = imageService.processProductImages(product, requestDto);

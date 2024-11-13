@@ -5,9 +5,11 @@ import com.sparta.plate.dto.request.ProductImageRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
+import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -97,7 +99,8 @@ public class ProductController {
             @PathVariable UUID productId,
             @RequestParam(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex,
-            @RequestParam(value = "deletedImageIds", required = false) List<String> deletedImageIds
+            @RequestParam(value = "deletedImageIds", required = false) List<String> deletedImageIds,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         List<UUID> convertedDeletedImageIds = Optional.ofNullable(deletedImageIds)
                 .map(ids -> ids.stream().map(UUID::fromString).toList())
@@ -109,7 +112,7 @@ public class ProductController {
                 .deletedImageIds(convertedDeletedImageIds)
                 .build();
 
-        productService.manageProductImage(productId, requestDto, 1L);
+        productService.manageProductImage(productId, requestDto, userDetails);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "상품 이미지가 성공적으로 변경되었습니다."));
     }

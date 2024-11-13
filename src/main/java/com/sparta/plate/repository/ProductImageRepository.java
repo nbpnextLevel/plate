@@ -11,6 +11,8 @@ import java.util.UUID;
 
 @Repository
 public interface ProductImageRepository extends JpaRepository<ProductImage, UUID>, ProductImageRepositoryCustom {
-    @Query("SELECT pi FROM ProductImage pi WHERE pi.product.id = :productId AND pi.isDeleted = false")
-    List<ProductImage> findActiveImagesByProductId(@Param("productId") UUID productId);
+
+    @Query("SELECT pi FROM ProductImage pi " +
+            "WHERE pi.product.id = :productId AND pi.isDeleted = false AND pi.isPrimary = false AND pi.id != :imageId")
+    List<ProductImage> findNonPrimaryImages(@Param("productId") UUID productId, @Param("imageId") UUID imageId);
 }
