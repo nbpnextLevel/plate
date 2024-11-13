@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,13 +17,23 @@ public class ProductImageResponseDto {
     private String fileName;
     private String uploadPath;
     private boolean isPrimary;
+    private boolean isDeleted;
+    private LocalDateTime createdAt;
+    private Long createdBy;
+    private LocalDateTime deletedAt;
+    private Long deletedBy;
 
-    public static ProductImageResponseDto toDto(ProductImage productImage) {
+    public static ProductImageResponseDto toDto(ProductImage image) {
         return ProductImageResponseDto.builder()
-                .imageId(String.valueOf(productImage.getId()))
-                .fileName(productImage.getFileName())
-                .uploadPath(productImage.getUploadPath())
-                .isPrimary(productImage.isPrimary())
+                .imageId(String.valueOf(image.getId()))
+                .fileName(image.getFileName())
+                .uploadPath(image.getUploadPath())
+                .isPrimary(image.isPrimary())
+                .isDeleted(image.isDeleted())
+                .createdAt(image.getCreatedAt())
+                .createdBy(image.getCreatedBy())
+                .deletedAt(image.getDeletedAt())
+                .deletedBy(image.getDeletedBy())
                 .build();
     }
 }
