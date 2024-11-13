@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.plate.dto.response.StoreCategoryResponseDto;
 import com.sparta.plate.entity.StoreCategory;
-import com.sparta.plate.service.StoreCategoryService;
+import com.sparta.plate.service.store.StoreCategoryService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

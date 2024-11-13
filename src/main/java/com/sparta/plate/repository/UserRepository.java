@@ -2,6 +2,8 @@ package com.sparta.plate.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +18,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	User saveAndFlush(User user);
 
 	Optional<User> findByLoginId(String loginId);
+
+	Optional<User> findByIdAndIsDeletedFalse(Long id);
+
+	Page<User> findByIsDeletedFalse(Pageable pageable);
+
+	Page<User> findByLoginIdContainingAndIsDeletedFalse(Pageable pageable, String search);
 }
