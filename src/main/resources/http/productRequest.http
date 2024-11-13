@@ -1,12 +1,12 @@
 ### POST PRODUCT - 상품 등록
 POST http://localhost:8080/api/products
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvd25lcjEiLCJ0eXBlIjoiYWNjZXNzIiwiYXV0aCI6IlJPTEVfT1dORVIiLCJleHAiOjE3MzE0OTc4ODUsImlhdCI6MTczMTQ5NjA4NX0.gIQ0gPAQyTw76Va9PBck_XhwG4Zpja9uwNW0e3NmIBs
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvd25lcjEiLCJ0eXBlIjoiYWNjZXNzIiwiYXV0aCI6IlJPTEVfT1dORVIiLCJleHAiOjE3MzE1MDQ5NzQsImlhdCI6MTczMTUwMzE3NH0.DJysEkBe0gkBu3pxp1TvTThjvaOdTq4YwYYicF83HJs
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
 Content-Disposition: form-data; name="storeId"
 
-11d09b6b-da17-4fbc-8eef-5b9fa52dec8a
+f47c1f3b-89bb-4f7d-b380-b8e1a3e05d77
 --boundary
 Content-Disposition: form-data; name="productName"
 
