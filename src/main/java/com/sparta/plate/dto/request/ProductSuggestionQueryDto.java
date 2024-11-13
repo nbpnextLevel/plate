@@ -1,22 +1,25 @@
 package com.sparta.plate.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductSuggestionQueryDto {
     private UUID id;
     private String requestText;
-    @JsonProperty("isDeleted")
-    private boolean isDeleted;
-    @JsonProperty("isSuccess")
-    private boolean isSuccess;
+    private String isDeleted;
+    private String isSuccess;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String sort;
-    private int pageNumber;
-    private int pageSize;
+    private Integer pageNumber;
+    private Integer pageSize;
 }

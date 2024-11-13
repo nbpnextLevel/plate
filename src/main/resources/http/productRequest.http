@@ -1,11 +1,12 @@
 ### POST PRODUCT - 상품 등록
 POST http://localhost:8080/api/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvd25lcjEiLCJ0eXBlIjoiYWNjZXNzIiwiYXV0aCI6IlJPTEVfT1dORVIiLCJleHAiOjE3MzE0OTc4ODUsImlhdCI6MTczMTQ5NjA4NX0.gIQ0gPAQyTw76Va9PBck_XhwG4Zpja9uwNW0e3NmIBs
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
 Content-Disposition: form-data; name="storeId"
 
-37e8c0e2-234d-4304-9cc8-408125993b90
+11d09b6b-da17-4fbc-8eef-5b9fa52dec8a
 --boundary
 Content-Disposition: form-data; name="productName"
 
@@ -51,7 +52,8 @@ Content-Type: image/png
 
 
 ### PATCH PRODUCT IMAGE - 상품이미지 수정 및 관리
-PATCH http://localhost:8080/api/products/d8e9013f-6357-49ad-927a-4499c59e39de/images
+PATCH http://localhost:8080/api/products/d246d5a0-cc19-4495-bd37-932d56447989/images
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvd25lcjEiLCJ0eXBlIjoiYWNjZXNzIiwiYXV0aCI6IlJPTEVfT1dORVIiLCJleHAiOjE3MzE1MDE4ODMsImlhdCI6MTczMTUwMDA4M30.kd14lyBOOzGi0v6jLmklRB3vbOziFg-koyDoFQLchaE
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -76,3 +78,8 @@ Content-Disposition: form-data; name="files[]"; filename="jjal.jpg"
 Content-Type: image/jpg
 
 < C:\Users\misu\Downloads\jjal.jpg
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="icon-todo.png"
+Content-Type: image/png
+
+< C:\Users\misu\Downloads\icon-todo.png

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ProductHistoryRepository extends JpaRepository<ProductHistory, UUID> {
+public interface ProductHistoryRepository extends JpaRepository<ProductHistory, UUID>, ProductHistoryRepositoryCustom {
 
     boolean existsByProductId(UUID productId);
 }

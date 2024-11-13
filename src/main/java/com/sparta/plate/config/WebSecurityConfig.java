@@ -1,5 +1,10 @@
 package com.sparta.plate.config;
 
+import com.sparta.plate.jwt.JwtFilter;
+import com.sparta.plate.jwt.JwtTokenProvider;
+import com.sparta.plate.jwt.LoginFilter;
+import com.sparta.plate.security.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.sparta.plate.jwt.JwtFilter;
-import com.sparta.plate.jwt.LoginFilter;
-import com.sparta.plate.jwt.JwtTokenProvider;
-import com.sparta.plate.security.UserDetailsServiceImpl;
-
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -78,6 +76,13 @@ public class WebSecurityConfig {
 				.requestMatchers(HttpMethod.GET,"/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
 				.requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
 				.requestMatchers("/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                               
+        .requestMatchers("/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+        .requestMatchers("/api/products/images/{imageId}/delete", "/api/products/{productId}/images").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+        .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+        .requestMatchers(HttpMethod.GET, "/api/products/histories", "/api/products/images").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+        .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
+                               
 				.requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
 				.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);

@@ -34,6 +34,9 @@ public class ProductHistory extends TimestampedCreationDeletion {
     @Column(nullable = false, precision = 10)
     private BigDecimal price;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
+
     public static ProductHistory toEntity(ProductDetailsRequestDto requestDto, UUID productId) {
         return ProductHistory.builder()
                 .productId(productId)
@@ -43,4 +46,9 @@ public class ProductHistory extends TimestampedCreationDeletion {
                 .build();
     }
 
+    @Override
+    public void markAsDeleted(Long deletedBy) {
+        super.markAsDeleted(deletedBy);
+        this.isDeleted = true;
+    }
 }

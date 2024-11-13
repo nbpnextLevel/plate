@@ -18,8 +18,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class ProductResponseDto {
-    private UUID id;
-    private String storeId;
+    private UUID productId;
+    private UUID storeId;
+    private String storeName;
     private String productName;
     private String productDescription;
     private BigDecimal price;
@@ -34,8 +35,9 @@ public class ProductResponseDto {
 
     public static ProductResponseDto toDto(Product product, List<ProductImage> images) {
         return ProductResponseDto.builder()
-                .id(product.getId())
-                .storeId(String.valueOf(product.getStoreId()))
+                .productId(product.getId())
+                .storeId(product.getStore().getId())
+                .storeName(product.getStore().getStoreName())
                 .productName(product.getName())
                 .productDescription(product.getDescription())
                 .price(product.getPrice())
