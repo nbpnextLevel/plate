@@ -1,4 +1,4 @@
-package com.sparta.plate.service;
+package com.sparta.plate.service.store;
 
 import java.util.List;
 
