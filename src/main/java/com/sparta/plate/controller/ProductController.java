@@ -14,8 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class ProductController {
             @RequestParam(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
     ) throws IOException {
-        ProductImageRequestDto images = ProductImageRequestDto.builder()
+        ProductImageRequestDto imageRequestDto = ProductImageRequestDto.builder()
                 .files(files)
                 .primaryImageIndex(primaryImageIndex)
                 .build();
@@ -51,7 +50,7 @@ public class ProductController {
                 .maxOrderLimit(maxOrderLimit)
                 .displayStatus(displayStatus)
                 .isHidden(isHidden)
-                .images(images)
+                .images(imageRequestDto)
                 .build();
 
         UUID savedProductId = productService.createProduct(requestDto);
@@ -119,7 +118,22 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/images")
-    public ApiResponseDto manageProductImage(@PathVariable UUID productId, @RequestBody ProductImageRequestDto requestDto) throws IOException {
+    public ApiResponseDto manageProductImage(
+            @PathVariable UUID productId,
+            @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+            @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex,
+            @RequestParam(value = "deletedImageIds", required = false) List<String> deletedImageIds
+    ) throws IOException {
+        List<UUID> convertedDeletedImageIds = Optional.ofNullable(deletedImageIds)
+                .map(ids -> ids.stream().map(UUID::fromString).toList())
+                .orElseGet(Collections::emptyList);
+
+        ProductImageRequestDto requestDto = ProductImageRequestDto.builder()
+                .files(files)
+                .primaryImageIndex(primaryImageIndex)
+                .deletedImageIds(convertedDeletedImageIds)
+                .build();
+
         productService.manageProductImage(productId, requestDto, 1L);
 
         return ApiResponseDto.builder()

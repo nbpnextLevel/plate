@@ -108,21 +108,24 @@ public class ProductService {
         List<ProductImage> currentImages = product.getProductImages();
         List<ProductImage> newImages = imageService.processProductImages(product, requestDto);
 
+        if (requestDto.getDeletedImageIds() != null) {
+            currentImages.stream()
+                    .filter(image -> requestDto.getDeletedImageIds().contains(image.getId()))
+                    .forEach(image -> image.markAsDeleted(userId));
+        }
+
+        if (requestDto.getDeletedImageIds() != null) {
+            currentImages = currentImages.stream()
+                    .filter(image -> !requestDto.getDeletedImageIds().contains(image.getId()))
+                    .toList();
+        }
+
         List<ProductImage> allImages = new ArrayList<>(currentImages);
         allImages.addAll(newImages);
 
         allImages = imageService.updatePrimaryImage(allImages, requestDto);
 
-        if (requestDto.getDeletedImageIds() != null) {
-            for (ProductImage currentImage : currentImages) {
-                if (requestDto.getDeletedImageIds().contains(currentImage.getId())) {
-                    currentImage.markAsDeleted(userId);
-                }
-            }
-        }
-
         product.setProductImages(allImages);
-
         productRepository.save(product);
     }
 
