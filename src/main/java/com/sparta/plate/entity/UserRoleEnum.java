@@ -3,7 +3,7 @@ package com.sparta.plate.entity;
 public enum UserRoleEnum {
 	CUSTOMER(Authority.CUSTOMER, null),
 	OWNER(Authority.OWNER, "plate_owner"),
-	MANAGER(Authority.MANAGER, "plate_manger"),
+	MANAGER(Authority.MANAGER, "plate_manager"),
 	MASTER(Authority.MASTER, "plate_master");
 
 	private final String authority;
