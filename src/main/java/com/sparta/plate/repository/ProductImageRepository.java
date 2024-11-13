@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ProductImageRepository extends JpaRepository<ProductImage, UUID> {
+public interface ProductImageRepository extends JpaRepository<ProductImage, UUID>, ProductImageRepositoryCustom {
     @Query("SELECT pi FROM ProductImage pi WHERE pi.product.id = :productId AND pi.isDeleted = false")
     List<ProductImage> findActiveImagesByProductId(@Param("productId") UUID productId);
 }

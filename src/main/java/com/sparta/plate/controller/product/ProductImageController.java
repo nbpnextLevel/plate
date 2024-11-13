@@ -1,13 +1,15 @@
 package com.sparta.plate.controller.product;
 
+import com.sparta.plate.dto.request.ProductImageQueryDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
+import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.service.product.ProductImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,5 +25,31 @@ public class ProductImageController {
         imageService.deleteProductImage(imageId, 1L);
 
         return ApiResponseDto.success(Map.of("message", "상품 이미지가 성공적으로 삭제되었습니다."));
+    }
+
+    @GetMapping
+    public ApiResponseDto<List<ProductImageResponseDto>> getProductImages(
+            @RequestParam(value = "id", required = false) UUID id,
+            @RequestParam(value = "productId", required = false) UUID productId,
+            @RequestParam(value = "isDeleted", required = false) String isDeleted,
+            @RequestParam(value = "startDate", required = false) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) LocalDateTime endDate,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+
+        ProductImageQueryDto requestDto = ProductImageQueryDto.builder()
+                .id(id)
+                .productId(productId)
+                .isDeleted(isDeleted)
+                .startDate(startDate)
+                .endDate(endDate)
+                .sort(sort)
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .build();
+
+        Page<ProductImageResponseDto> responseDto = imageService.getProductImages(requestDto);
+        return ApiResponseDto.successPage(responseDto);
     }
 }

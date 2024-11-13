@@ -1,13 +1,18 @@
 package com.sparta.plate.service.product;
 
+import com.sparta.plate.dto.request.ProductImageQueryDto;
 import com.sparta.plate.dto.request.ProductImageRequestDto;
+import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.exception.ProductImageNotFoundException;
 import com.sparta.plate.repository.ProductImageRepository;
 import com.sparta.plate.service.S3Uploader;
+import com.sparta.plate.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,6 +73,11 @@ public class ProductImageService {
             }
         }
         return images;
+    }
+
+    public Page<ProductImageResponseDto> getProductImages(ProductImageQueryDto requestDto) {
+        Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
+        return imageRepository.searchAll(pageable, requestDto);
     }
 
     private boolean isPrimaryImage(ProductImageRequestDto requestDto, int index) {
