@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ProductSuggestionReuqestRepository extends JpaRepository<ProductSuggestionRequest, UUID> {
+public interface ProductSuggestionRepository extends JpaRepository<ProductSuggestionRequest, UUID> {
 }
 

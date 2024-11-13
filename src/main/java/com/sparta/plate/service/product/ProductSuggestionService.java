@@ -5,15 +5,17 @@ import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
 import com.sparta.plate.entity.ProductSuggestionRequest;
 import com.sparta.plate.exception.ProductHistoryNotFoundException;
 import com.sparta.plate.google.service.GoogleApiService;
-import com.sparta.plate.repository.ProductSuggestionReuqestRepository;
+import com.sparta.plate.repository.ProductSuggestionRepository;
+import com.sparta.plate.repository.impl.ProductSuggestionRepositoryImpl;
+import com.sparta.plate.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,7 +25,8 @@ import java.util.UUID;
 public class ProductSuggestionService {
 
     private final GoogleApiService googleApiService;
-    private final ProductSuggestionReuqestRepository suggestionRepository;
+    private final ProductSuggestionRepository suggestionRepository;
+    private final ProductSuggestionRepositoryImpl suggestionRepositoryImpl;
 
     @Transactional
     public String getProductSuggestion(String requestText, LocalDateTime requestAt) {
@@ -47,9 +50,10 @@ public class ProductSuggestionService {
         return responseText;
     }
 
-    // public List<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
-    //     return new ArrayList<>();
-    // }
+    public Page<ProductSuggestionResponseDto> getSuggestionsHistories(ProductSuggestionQueryDto requestDto) {
+        Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
+        return suggestionRepositoryImpl.searchAll(pageable, requestDto);
+    }
 
     @Transactional
     public void deleteProductSuggestion(UUID suggestionId, Long userId) {

@@ -15,6 +15,6 @@ public class ProductQueryDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String sort;
-    private int pageNumber;
-    private int pageSize;
+    private Integer pageNumber;
+    private Integer pageSize;
 }

@@ -1,5 +1,6 @@
 ### POST PRODUCT - 상품 등록
 POST http://localhost:8080/api/products
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXN0ZXIxIiwidHlwZSI6ImFjY2VzcyIsImF1dGgiOiJST0xFX01BU1RFUiIsImV4cCI6MTczMTQ5MDUyMywiaWF0IjoxNzMxNDg4NzIzfQ.SlnnzaIBpGJjIJpQcruUruoKbcq1Oyi7QcX4-OLqEps
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
