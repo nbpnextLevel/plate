@@ -68,8 +68,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
-    public ApiResponseDto<Map<String, Object>> updateProductDetails(@PathVariable UUID productId, @Valid @RequestBody ProductDetailsRequestDto requestDto) {
-        productService.updateProductDetails(productId, requestDto);
+    public ApiResponseDto<Map<String, Object>> updateProductDetails(@PathVariable UUID productId, @Valid @RequestBody ProductDetailsRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.updateProductDetails(productId, requestDto, userDetails);
 
         return ApiResponseDto.success(Map.of("message", "상품 정보가 성공적으로 수정되었습니다."));
     }
@@ -83,21 +83,21 @@ public class ProductController {
 
     @PatchMapping("/{productId}/inventory")
     public ApiResponseDto<Map<String, Object>> updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        productService.updateStockAndLimit(productId, requestDto);
+        productService.updateStockAndLimit(productId, requestDto, userDetails);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "재고와 주문 제한이 성공적으로 수정되었습니다."));
     }
 
     @PatchMapping("/{productId}/visibility")
-    public ApiResponseDto<Map<String, Object>> updateProductVisibility(@PathVariable UUID productId) {
-        productService.updateProductVisibility(productId);
+    public ApiResponseDto<Map<String, Object>> updateProductVisibility(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.updateProductVisibility(productId, userDetails);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "상품의 가시성이 성공적으로 수정되었습니다."));
     }
 
     @PatchMapping("/{productId}/display-status")
-    public ApiResponseDto<Map<String, Object>> updateProductDisplayStatus(@PathVariable UUID productId, @RequestParam String displayStatus) {
-        productService.updateProductDisplayStatus(productId, displayStatus);
+    public ApiResponseDto<Map<String, Object>> updateProductDisplayStatus(@PathVariable UUID productId, @RequestParam String displayStatus, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.updateProductDisplayStatus(productId, displayStatus, userDetails);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "상품 표시 상태가 성공적으로 수정되었습니다."));
     }

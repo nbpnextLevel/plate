@@ -58,22 +58,17 @@ public class ProductService {
     public void deleteProduct(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
-        Long userId = userDetails.getUser().getId();
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
-        boolean isOwner = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
-
-        if (isOwner) {
-            productOwnershipService.checkProductOwnership(product.getId(), userId);
-        }
-
-        product.markAsDeleted(userId);
+        product.markAsDeleted(userDetails.getUser().getId());
         productRepository.save(product);
     }
 
     @Transactional
-    public void updateProductDetails(UUID productId, ProductDetailsRequestDto requestDto) {
+    public void updateProductDetails(UUID productId, ProductDetailsRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
+
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         requestDto.setProductName(requestDto.getProductName() == null ? product.getName() : requestDto.getProductName());
         product.setName(requestDto.getProductName() != null ? requestDto.getProductName() : product.getName());
@@ -90,8 +85,10 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateStockAndLimit(UUID productId, ProductQuantityRequestDto requestDto) {
+    public void updateStockAndLimit(UUID productId, ProductQuantityRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
+
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setMaxOrderLimit(requestDto.getMaxOrderLimit() != null ? requestDto.getMaxOrderLimit() : product.getMaxOrderLimit());
         product.setStockQuantity(requestDto.getStockQuantity() != null ? requestDto.getStockQuantity() : product.getStockQuantity());
@@ -100,8 +97,10 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProductVisibility(UUID productId) {
+    public void updateProductVisibility(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
+
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setHidden(!product.isHidden());
 
@@ -109,8 +108,10 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProductDisplayStatus(UUID productId, String displayStatus) {
+    public void updateProductDisplayStatus(UUID productId, String displayStatus, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
+
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         ProductDisplayStatusEnum status = ProductDisplayStatusEnum.fromString(displayStatus);
         product.setDisplayStatus(status);
@@ -122,14 +123,7 @@ public class ProductService {
     public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         Product product = findProductById(productId);
 
-        Long userId = userDetails.getUser().getId();
-
-        boolean isOwner = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
-
-        if (isOwner) {
-            productOwnershipService.checkProductOwnership(product.getId(), userId);
-        }
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         List<ProductImage> currentImages = product.getProductImages();
         List<ProductImage> newImages = imageService.processProductImages(product, requestDto);
@@ -137,7 +131,7 @@ public class ProductService {
         if (requestDto.getDeletedImageIds() != null) {
             currentImages.stream()
                     .filter(image -> requestDto.getDeletedImageIds().contains(image.getId()))
-                    .forEach(image -> image.markAsDeleted(userId));
+                    .forEach(image -> image.markAsDeleted(userDetails.getUser().getId()));
         }
 
         if (requestDto.getDeletedImageIds() != null) {
@@ -175,7 +169,7 @@ public class ProductService {
         }
 
         if (isRoleOwner && product.isHidden()) {
-            productOwnershipService.checkProductOwnership(product.getId(), userDetails.getUser().getId());
+            productOwnershipService.checkProductOwnership(product.getId(), userDetails);
         }
 
         List<ProductImageResponseDto> imageResponseDtos = imageService.findActiveImages(productId).stream()
