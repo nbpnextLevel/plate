@@ -8,9 +8,11 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-//@AllArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequestDto {
 
 	@Pattern(regexp = "^[a-z0-9]{4,10}$",

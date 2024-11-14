@@ -74,8 +74,12 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
+
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()
-                        .requestMatchers("/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.POST,"/api/stores").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.POST, "/api/stores/admin").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
 
                         .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.PATCH, "/api/products/{productId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
@@ -84,7 +88,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/products/histories", "/api/products/images").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
 
-                        .requestMatchers("/api/**").permitAll() // '/api/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
