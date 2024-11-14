@@ -10,20 +10,11 @@ import com.sparta.plate.security.UserDetailsImpl;
 
 public class AuditorAwareImpl implements AuditorAware<Long> {
 
-	private static final ThreadLocal<Long> MANUAL_AUDITOR = new ThreadLocal<>();
-
-	// 현재 쓰레드에 현재 생성된 사용자 id 임시 저장
-	public static void setManualAuditor(Long userId) {
-		MANUAL_AUDITOR.set(userId);
-	}
-
-	public static void clearManualAuditor() {
-		MANUAL_AUDITOR.remove();
-	}
 
 	@Override
 	public Optional<Long> getCurrentAuditor() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
 		if(authentication == null || !authentication.isAuthenticated()){
 			return Optional.empty();
 		}

@@ -1,19 +1,18 @@
 package com.sparta.plate.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.sparta.plate.dto.request.StoreRequestDto;
 import com.sparta.plate.dto.request.UpdateUserRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_users")
 public class User extends Timestamped {
 
+	private static final Logger log = LoggerFactory.getLogger(User.class);
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -42,11 +42,7 @@ public class User extends Timestamped {
 	@NotNull @Column(nullable = false, length = 100)
 	private UserRoleEnum role;
 
-	// TODO 논의 필요
-	// @OneToMany(mappedBy = "user")
-	// private List<Store> storeList = new ArrayList<>();
-
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
 	private Store store;
 
 	@NotNull @Column(nullable = false)
@@ -94,5 +90,9 @@ public class User extends Timestamped {
 		this.email = request.getEmail();
 		this.phone = request.getPhone();
 		this.address = request.getAddress();
+	}
+
+	public void changeAuthority(UserRoleEnum role) {
+		this.role = role;
 	}
 }

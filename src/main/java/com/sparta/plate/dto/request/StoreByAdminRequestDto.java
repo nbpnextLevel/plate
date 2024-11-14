@@ -5,14 +5,10 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class StoreRequestDto {
+public class StoreByAdminRequestDto {
 
 	@NotNull
 	private UUID categoryId;
@@ -25,5 +21,8 @@ public class StoreRequestDto {
 
 	@NotNull
 	private String address;
+
+	@NotNull
+	private Long userId;
 
 }

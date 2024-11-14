@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sparta.plate.dto.request.StoreByAdminRequestDto;
 import com.sparta.plate.dto.request.StoreRequestDto;
 import com.sparta.plate.dto.request.StoreSearchRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
@@ -50,12 +51,11 @@ public class StoreController {
 		return ApiResponseDto.success(Map.of("uuid", store.getId()));
 	}
 
-	// TODO  관리자 권한의 유저는 특정 유저에 대해 가게를 생성해줄 수 있고, 권한 변경도 가능하도록 기능 개발 필요
-	// @PostMapping
-	// public CreteStoreResponseDto createStoreByMaster(@Valid @RequestBody StoreRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-	// 	Store store = createStoreService.createStore(request, userDetails.getUser());
-	// 	return new CreteStoreResponseDto(store.getId());
-	// }
+	@PostMapping("/admin")
+	public ApiResponseDto<Map<String, Object>> createStoreByAdmin(@Valid @RequestBody StoreByAdminRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+		Store store = createStoreService.createStoreByAdmin(request, userDetails.getUser());
+		return ApiResponseDto.success(Map.of("uuid", store.getId()));
+	}
 
 	@GetMapping
 	public ApiResponseDto<List<StoreResponseDto>> getAllStores(
