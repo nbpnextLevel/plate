@@ -16,6 +16,7 @@ public class ProductQueryDto {
     private UUID storeId;
     private UUID productId;
     private String productName;
+    private String displayStatus;
     private String isHidden;
     private String isDeleted;
     private LocalDateTime startDate;

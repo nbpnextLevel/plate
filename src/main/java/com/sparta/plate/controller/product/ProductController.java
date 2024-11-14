@@ -1,21 +1,20 @@
 package com.sparta.plate.controller.product;
 
-import com.sparta.plate.dto.request.ProductDetailsRequestDto;
-import com.sparta.plate.dto.request.ProductImageRequestDto;
-import com.sparta.plate.dto.request.ProductQuantityRequestDto;
-import com.sparta.plate.dto.request.ProductRequestDto;
+import com.sparta.plate.dto.request.*;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -65,6 +64,39 @@ public class ProductController {
         ProductResponseDto responseDto = productService.getProduct(productId, userDetails);
 
         return ApiResponseDto.success(responseDto);
+    }
+
+    @GetMapping("/search")
+    public ApiResponseDto<List<ProductResponseDto>> searchProducts(
+            @RequestParam(value = "storeId", required = false) UUID storeId,
+            @RequestParam(value = "productId", required = false) UUID productId,
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "displayStatus", required = false) String displayStatus,
+            @RequestParam(value = "isHidden", required = false) String isHidden,
+            @RequestParam(value = "isDeleted", required = false) String isDeleted,
+            @RequestParam(value = "startDate", required = false) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) LocalDateTime endDate,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        ProductQueryDto requestDto = ProductQueryDto.builder()
+                .storeId(storeId)
+                .productId(productId)
+                .productName(productName)
+                .displayStatus(displayStatus)
+                .isHidden(isHidden)
+                .isDeleted(isDeleted)
+                .startDate(startDate)
+                .endDate(endDate)
+                .sort(sort)
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .build();
+
+        Page<ProductResponseDto> responseDto = productService.searchProducts(requestDto, userDetails);
+        return ApiResponseDto.successPage(responseDto);
     }
 
     @PatchMapping("/{productId}")

@@ -1,23 +1,24 @@
 package com.sparta.plate.service.product;
 
-import com.sparta.plate.dto.request.ProductDetailsRequestDto;
-import com.sparta.plate.dto.request.ProductImageRequestDto;
-import com.sparta.plate.dto.request.ProductQuantityRequestDto;
-import com.sparta.plate.dto.request.ProductRequestDto;
+import com.sparta.plate.dto.request.*;
 import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.entity.Store;
+import com.sparta.plate.exception.InvalidDisplayStatusException;
 import com.sparta.plate.exception.ProductIsDeletedException;
 import com.sparta.plate.exception.ProductNotFoundException;
 import com.sparta.plate.exception.UnauthorizedAccessException;
 import com.sparta.plate.repository.ProductRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.GetStoreService;
+import com.sparta.plate.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,4 +185,33 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
 
+    public Page<ProductResponseDto> searchProducts(ProductQueryDto requestDto, UserDetailsImpl userDetails) {
+        String role = userDetails.getUser().getRole().getAuthority();
+        System.out.println("getAuthority(): " + role);
+
+        // User는 노출상태가 IN_STOCK인 상품만 조회 가능
+        // 해당 상품 등록한 Owner, Manager, Master는 PENDING_SALE, DISCONTINUED도 조회 가능
+        if ("ROLE_CUSTOMER".equals(role)) {
+            if (requestDto.getDisplayStatus() != null && !ProductDisplayStatusEnum.IN_STOCK.name().equals(requestDto.getDisplayStatus())) {
+                throw new InvalidDisplayStatusException("ROLE_CUSTOMER는 IN_STOCK 상태의 상품만 조회할 수 있습니다.");
+            }
+        }
+
+        // startDate와 endDate를 이용한 createdAt검색과 isHidden true인 상품은 해당 상품을 등록한 Owner, Manager, Master만 검색 조건에 포함 가능
+        // isDelete true인 상품은 Manager와 Master만 검색 조건에 포함 후 조회 가능
+        if (requestDto.getIsHidden() != null || requestDto.getStartDate() != null || requestDto.getEndDate() != null) {
+            if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
+                throw new UnauthorizedAccessException("isHidden이 true인 상품은 Owner, Manager, Master만 조회할 수 있습니다.");
+            }
+        }
+
+        if (requestDto.getIsDeleted() != null) {
+            if (!role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
+                throw new UnauthorizedAccessException("isDeleted가 true인 상품은 Manager와 Master만 조회할 수 있습니다.");
+            }
+        }
+
+        Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
+        return productRepository.searchAll(pageable, requestDto, role, userDetails.getUser().getId());
+    }
 }

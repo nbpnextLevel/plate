@@ -1,13 +1,15 @@
 package com.sparta.plate.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.plate.dto.request.ProductSuggestionQueryDto;
 import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
 import com.sparta.plate.entity.ProductSuggestionRequest;
+import com.sparta.plate.entity.QProductSuggestionRequest;
 import com.sparta.plate.repository.ProductSuggestionRepositoryCustom;
+import com.sparta.plate.repository.util.QueryUtil;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,16 +30,18 @@ public class ProductSuggestionRepositoryImpl implements ProductSuggestionReposit
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager em;
 
+    PathBuilder<Object> suggestionEntityPath = new PathBuilder<>(QProductSuggestionRequest.class, "productSuggestionRequest");
+
     @Override
     public Page<ProductSuggestionResponseDto> searchAll(Pageable pageable, ProductSuggestionQueryDto queryDto) {
         Long totalCnt = jpaQueryFactory
                 .select(productSuggestionRequest.count())
                 .from(productSuggestionRequest)
                 .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchByIsSuccess(queryDto.getIsSuccess()),
-                        searchById(queryDto.getId()),
-                        searchByRequestText(queryDto.getRequestText()),
+                        searchByBooleanType(queryDto.getIsDeleted(), "isDeleted", suggestionEntityPath),
+                        searchByBooleanType(queryDto.getIsSuccess(), "isSuccess", suggestionEntityPath),
+                        searchById(queryDto.getId(), "id", suggestionEntityPath),
+                        searchByText(queryDto.getRequestText(), "requestText", suggestionEntityPath),
                         searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
                 )
                 .fetchOne();
@@ -49,10 +53,10 @@ public class ProductSuggestionRepositoryImpl implements ProductSuggestionReposit
         List<ProductSuggestionRequest> suggestions = jpaQueryFactory
                 .selectFrom(productSuggestionRequest)
                 .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchByIsSuccess(queryDto.getIsSuccess()),
-                        searchById(queryDto.getId()),
-                        searchByRequestText(queryDto.getRequestText()),
+                        searchByBooleanType(queryDto.getIsDeleted(), "isDeleted", suggestionEntityPath),
+                        searchByBooleanType(queryDto.getIsSuccess(), "isSuccess", suggestionEntityPath),
+                        searchById(queryDto.getId(), "id", suggestionEntityPath),
+                        searchByText(queryDto.getRequestText(), "requestText", suggestionEntityPath),
                         searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
                 )
                 .orderBy(sort(queryDto.getSort()))
@@ -67,88 +71,23 @@ public class ProductSuggestionRepositoryImpl implements ProductSuggestionReposit
         return new PageImpl<>(responseDtos, pageable, totalCnt);
     }
 
-    private BooleanBuilder searchById(UUID id) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (id != null) {
-            booleanBuilder.and(productSuggestionRequest.id.eq(id));
-        }
-        return booleanBuilder;
-    }
-
-    private BooleanBuilder searchByRequestText(String requestText) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (requestText != null && !requestText.trim().isEmpty()) {
-            System.out.println("Searching with requestText: " + requestText);
-            booleanBuilder.and(productSuggestionRequest.requestText.lower().like("%" + requestText.toLowerCase() + "%"));
-        }
-        return booleanBuilder;
+    private BooleanBuilder searchById(UUID id, String fieldName, PathBuilder<Object> entityPath) {
+        return QueryUtil.searchById(id, fieldName, entityPath);
     }
 
     private BooleanBuilder searchByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        if (startDate != null) {
-            booleanBuilder.and(productSuggestionRequest.createdAt.goe(startDate));
-        }
-
-        if (endDate != null) {
-            booleanBuilder.and(productSuggestionRequest.createdAt.loe(endDate));
-        }
-
-        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("startDate cannot be after endDate");
-        }
-
-        return booleanBuilder;
+        return QueryUtil.searchByDateRange(startDate, endDate, productSuggestionRequest.createdAt);
     }
 
-    private BooleanBuilder searchByIsDeleted(String isDeleted) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (isDeleted != null && !isDeleted.isEmpty()) {
-            switch (isDeleted) {
-                case "true":
-                    booleanBuilder.and(productSuggestionRequest.isDeleted.isTrue());
-                    break;
-                case "false":
-                    booleanBuilder.and(productSuggestionRequest.isDeleted.isFalse());
-                    break;
-                case "all":
-                default:
-                    break;
-            }
-        }
-        return booleanBuilder;
+    private BooleanBuilder searchByText(String requestText, String fieldName, PathBuilder<Object> entityPath) {
+        return QueryUtil.searchByText(requestText, fieldName, entityPath);
     }
 
-    private BooleanBuilder searchByIsSuccess(String isSuccess) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (isSuccess != null && !isSuccess.isEmpty()) {
-            switch (isSuccess) {
-                case "true":
-                    booleanBuilder.and(productSuggestionRequest.isSuccess.isTrue());
-                    break;
-                case "false":
-                    booleanBuilder.and(productSuggestionRequest.isSuccess.isFalse());
-                    break;
-                case "all":
-                default:
-                    break;
-            }
-        }
-        return booleanBuilder;
+    private BooleanBuilder searchByBooleanType(String text, String fieldName, PathBuilder<Object> entityPath) {
+        return QueryUtil.searchByBooleanType(text, fieldName, entityPath);
     }
 
     private OrderSpecifier<?> sort(String sort) {
-        if (sort == null || sort.isEmpty()) {
-            return new OrderSpecifier<>(Order.DESC, productSuggestionRequest.createdAt);
-        }
-
-        switch (sort) {
-            case "byRegistrationDate":
-                return new OrderSpecifier<>(Order.ASC, productSuggestionRequest.createdAt);
-            case "byRecentRegistrationDate":
-            default:
-                return new OrderSpecifier<>(Order.DESC, productSuggestionRequest.createdAt);
-        }
+        return QueryUtil.sort(sort, productSuggestionRequest.createdAt);
     }
 }
