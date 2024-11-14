@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.sparta.plate.entity.Store;
 
 @Repository
-public interface StoreRepository extends JpaRepository<Store, UUID> {
+public interface StoreRepository extends JpaRepository<Store, UUID>, StoreRepositoryCustom {
 
 	Store saveAndFlush(Store store);
 

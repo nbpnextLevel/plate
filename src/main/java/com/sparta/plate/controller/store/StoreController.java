@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.plate.dto.request.StoreRequestDto;
+import com.sparta.plate.dto.request.StoreSearchRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.StoreResponseDto;
 import com.sparta.plate.entity.Store;
@@ -62,9 +63,19 @@ public class StoreController {
 		@RequestParam(value = "size", defaultValue = "10") int size,
 		@RequestParam("sortBy") String sortBy,
 		@RequestParam("isAsc") boolean isAsc,
-		@RequestParam(value = "search", required = false) String search
+		@RequestParam(value = "categoryId", required = false) UUID categoryId,
+		@RequestParam(value = "storeName", required = false) String storeName
 	) {
-		Page<StoreResponseDto> storeList = getStoreListService.getStoreList(page - 1, size, sortBy, isAsc, search);
+		StoreSearchRequestDto request = StoreSearchRequestDto.builder()
+			.page(page-1)
+			.size(size)
+			.sortBy(sortBy)
+			.isAsc(isAsc)
+			.categoryId(categoryId)
+			.storeName(storeName)
+			.build();
+
+		Page<StoreResponseDto> storeList = getStoreListService.getStoreList(request);
 
 		return ApiResponseDto.successPage(storeList);
 	}
