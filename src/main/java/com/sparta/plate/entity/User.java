@@ -46,7 +46,7 @@ public class User extends Timestamped {
 	// @OneToMany(mappedBy = "user")
 	// private List<Store> storeList = new ArrayList<>();
 
-	@OneToOne
+	@OneToOne(mappedBy = "user")
 	private Store store;
 
 	@NotNull @Column(nullable = false)
