@@ -5,6 +5,7 @@ import com.sparta.plate.dto.request.ProductImageRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
+import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductService;
 import jakarta.validation.Valid;
@@ -59,11 +60,11 @@ public class ProductController {
         return ApiResponseDto.success(Map.of("id", savedProductId));
     }
 
-    @PatchMapping("/{productId}/delete")
-    public ApiResponseDto<Map<String, Object>> deleteProduct(@PathVariable UUID productId) {
-        productService.deleteProduct(productId, 1L);
+    @GetMapping("/{productId}")
+    public ApiResponseDto<ProductResponseDto> getProduct(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ProductResponseDto responseDto = productService.getProduct(productId, userDetails);
 
-        return ApiResponseDto.success(Map.of("message", "상품이 성공적으로 삭제되었습니다."));
+        return ApiResponseDto.success(responseDto);
     }
 
     @PatchMapping("/{productId}")
@@ -73,8 +74,15 @@ public class ProductController {
         return ApiResponseDto.success(Map.of("message", "상품 정보가 성공적으로 수정되었습니다."));
     }
 
+    @PatchMapping("/{productId}/delete")
+    public ApiResponseDto<Map<String, Object>> deleteProduct(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        productService.deleteProduct(productId, userDetails);
+
+        return ApiResponseDto.success(Map.of("message", "상품이 성공적으로 삭제되었습니다."));
+    }
+
     @PatchMapping("/{productId}/inventory")
-    public ApiResponseDto<Map<String, Object>> updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto) {
+    public ApiResponseDto<Map<String, Object>> updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateStockAndLimit(productId, requestDto);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "재고와 주문 제한이 성공적으로 수정되었습니다."));

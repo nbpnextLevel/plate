@@ -4,23 +4,27 @@ import com.sparta.plate.dto.request.ProductDetailsRequestDto;
 import com.sparta.plate.dto.request.ProductImageRequestDto;
 import com.sparta.plate.dto.request.ProductQuantityRequestDto;
 import com.sparta.plate.dto.request.ProductRequestDto;
+import com.sparta.plate.dto.response.ProductImageResponseDto;
+import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.entity.Store;
+import com.sparta.plate.exception.ProductIsDeletedException;
 import com.sparta.plate.exception.ProductNotFoundException;
+import com.sparta.plate.exception.UnauthorizedAccessException;
 import com.sparta.plate.repository.ProductRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.GetStoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,11 +55,19 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(UUID productId, Long userId) {
+    public void deleteProduct(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
-        product.markAsDeleted(userId);
+        Long userId = userDetails.getUser().getId();
 
+        boolean isOwner = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
+
+        if (isOwner) {
+            productOwnershipService.checkProductOwnership(product.getId(), userId);
+        }
+
+        product.markAsDeleted(userId);
         productRepository.save(product);
     }
 
@@ -72,7 +84,6 @@ public class ProductService {
         requestDto.setPrice(requestDto.getPrice() == null ? product.getPrice() : requestDto.getPrice());
         product.setPrice(requestDto.getPrice() != null ? requestDto.getPrice() : product.getPrice());
 
-        System.out.println("productId: " + product.getId());
         productRepository.saveAndFlush(product);
 
         historyService.createProductHistory(requestDto, productId);
@@ -144,9 +155,39 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    public ProductResponseDto getProduct(UUID productId, UserDetailsImpl userDetails) {
+        Product product = findProductById(productId);
+
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        Set<String> roles = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        boolean isRoleCustomer = roles.contains("ROLE_CUSTOMER");
+        boolean isRoleOwner = roles.contains("ROLE_OWNER");
+
+        if ((isRoleCustomer || isRoleOwner) && product.isDeleted()) {
+            throw new ProductIsDeletedException("The product has been deleted.");
+        }
+
+        if (isRoleCustomer && product.isHidden()) {
+            throw new UnauthorizedAccessException("You do not have permission to view this hidden product.");
+        }
+
+        if (isRoleOwner && product.isHidden()) {
+            productOwnershipService.checkProductOwnership(product.getId(), userDetails.getUser().getId());
+        }
+
+        List<ProductImageResponseDto> imageResponseDtos = imageService.findActiveImages(productId).stream()
+                .map(ProductImageResponseDto::toDto)
+                .collect(Collectors.toList());
+
+        return ProductResponseDto.toDto(product, imageResponseDtos);
+    }
+
     private Product findProductById(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
-    // 상품 수정 시 해당 상품을 등록한 Owner인지 확인하는 메소드 추후 구현
+
 }

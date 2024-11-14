@@ -103,6 +103,10 @@ public class ProductImageService {
         return images;
     }
 
+    public List<ProductImage> findActiveImages(UUID productId) {
+        return imageRepository.findActiveImages(productId);
+    }
+
     public Page<ProductImageResponseDto> getProductImages(ProductImageQueryDto requestDto) {
         Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
         return imageRepository.searchAll(pageable, requestDto);
