@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()
                         .requestMatchers("/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
 
                         .requestMatchers("/api/products/suggestion").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")

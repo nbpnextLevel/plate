@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class Store extends Timestamped {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
@@ -50,8 +49,7 @@ public class Store extends Timestamped {
 	private boolean isDeleted;
 
 	@Builder
-	public Store(UUID id, User user, StoreCategory storeCategory, String storeName, String storeNumber, String address, boolean isDeleted) {
-		this.id = id;
+	public Store(User user, StoreCategory storeCategory, String storeName, String storeNumber, String address) {
 		this.user = user;
 		this.storeCategory = storeCategory;
 		this.storeName = storeName;

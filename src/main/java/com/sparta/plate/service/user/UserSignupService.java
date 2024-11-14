@@ -34,7 +34,6 @@ public class UserSignupService {
 			.role(role)
 			.email(request.getEmail())
 			.phone(request.getPhone())
-			.isDeleted(false)
 			.address(request.getAddress())
 			.build();
 
