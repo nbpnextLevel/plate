@@ -3,9 +3,11 @@ package com.sparta.plate.controller.product;
 import com.sparta.plate.dto.request.ProductHistoryQueryDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductHistoryResponseDto;
+import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,8 +23,8 @@ public class ProductHistoryController {
     private final ProductHistoryService historyService;
 
     @PatchMapping("/{historyId}/delete")
-    public ApiResponseDto<Map<String, Object>> deleteProductHistory(@PathVariable UUID historyId, Long userId) {
-        historyService.deleteProductHistory(historyId, 1L);
+    public ApiResponseDto<Map<String, Object>> deleteProductHistory(@PathVariable UUID historyId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        historyService.deleteProductHistory(historyId, userDetails.getUser().getId());
 
         return ApiResponseDto.success(Map.of("message", "상품 이력이 성공적으로 삭제되었습니다."));
     }

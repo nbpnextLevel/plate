@@ -46,20 +46,6 @@ public class ProductSuggestionRepositoryImpl implements ProductSuggestionReposit
             totalCnt = 0L;
         }
 
-        System.out.println("totalCnt: " + totalCnt);
-        System.out.println(jpaQueryFactory.selectFrom(productSuggestionRequest)
-                .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchByIsSuccess(queryDto.getIsSuccess()),
-                        searchById(queryDto.getId()),
-                        searchByRequestText(queryDto.getRequestText()),
-                        searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
-                )
-                .orderBy(sort(queryDto.getSort()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toString());
-
         List<ProductSuggestionRequest> suggestions = jpaQueryFactory
                 .selectFrom(productSuggestionRequest)
                 .where(
@@ -73,8 +59,6 @@ public class ProductSuggestionRepositoryImpl implements ProductSuggestionReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        System.out.println("suggestions.size : " + suggestions.size());
 
         List<ProductSuggestionResponseDto> responseDtos = suggestions.stream()
                 .map(ProductSuggestionResponseDto::toDto)

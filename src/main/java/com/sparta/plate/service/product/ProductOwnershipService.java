@@ -2,6 +2,7 @@ package com.sparta.plate.service.product;
 
 import com.sparta.plate.exception.ProductOwnerMismatchException;
 import com.sparta.plate.repository.ProductRepository;
+import com.sparta.plate.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,17 @@ public class ProductOwnershipService {
         Long foundUserId = productRepository.findUserIdByProductId(productId);
         return foundUserId != null && foundUserId.equals(userId);
     }
+    
+    public void checkProductOwnership(UUID productId, UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getId();
 
-    public void checkProductOwnership(UUID productId, Long userId) {
-        if (!isProductOwner(productId, userId)) {
-            throw new ProductOwnerMismatchException("You are not the owner of this product");
+        boolean isOwner = userDetails.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
+
+        if (isOwner) {
+            if (!isProductOwner(productId, userId)) {
+                throw new ProductOwnerMismatchException("You are not the owner of this product");
+            }
         }
     }
 }

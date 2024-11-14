@@ -45,19 +45,6 @@ public class ProductHistoryRepositoryImpl implements ProductHistoryRepositoryCus
             totalCnt = 0L;
         }
 
-        System.out.println("totalCnt: " + totalCnt);
-        System.out.println(jpaQueryFactory.selectFrom(productHistory)
-                .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchById(queryDto.getId()),
-                        searchByProductId(queryDto.getProductId()),
-                        searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
-                )
-                .orderBy(sort(queryDto.getSort()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toString());
-
         List<ProductHistory> histories = jpaQueryFactory
                 .selectFrom(productHistory)
                 .where(
@@ -70,8 +57,6 @@ public class ProductHistoryRepositoryImpl implements ProductHistoryRepositoryCus
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        System.out.println("suggestions.size : " + histories.size());
 
         List<ProductHistoryResponseDto> responseDtos = histories.stream()
                 .map(ProductHistoryResponseDto::toDto)

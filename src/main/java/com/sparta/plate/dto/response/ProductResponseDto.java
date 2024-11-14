@@ -1,7 +1,6 @@
 package com.sparta.plate.dto.response;
 
 import com.sparta.plate.entity.Product;
-import com.sparta.plate.entity.ProductImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -33,7 +31,7 @@ public class ProductResponseDto {
     @Builder.Default
     private List<ProductImageResponseDto> productImageList = new ArrayList<>();
 
-    public static ProductResponseDto toDto(Product product, List<ProductImage> images) {
+    public static ProductResponseDto toDto(Product product, List<ProductImageResponseDto> images) {
         return ProductResponseDto.builder()
                 .productId(product.getId())
                 .storeId(product.getStore().getId())
@@ -46,11 +44,7 @@ public class ProductResponseDto {
                 .stockQuantity(product.getStockQuantity())
                 .isHidden(product.isHidden())
                 .isDeleted(product.isDeleted())
-                .productImageList(
-                        images.stream()
-                                .map(ProductImageResponseDto::toDto)
-                                .collect(Collectors.toList())
-                )
+                .productImageList(images)
                 .build();
     }
 }

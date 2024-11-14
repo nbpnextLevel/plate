@@ -3,9 +3,11 @@ package com.sparta.plate.controller.product;
 import com.sparta.plate.dto.request.ProductSuggestionQueryDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
+import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductSuggestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -56,8 +58,8 @@ public class ProductSuggestionController {
     }
 
     @PatchMapping("/{suggestionId}/delete")
-    public ApiResponseDto<Map<String, Object>> deleteProductSuggestion(@PathVariable UUID suggestionId, Long userId) {
-        suggestionService.deleteProductSuggestion(suggestionId, 1L);
+    public ApiResponseDto<Map<String, Object>> deleteProductSuggestion(@PathVariable UUID suggestionId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        suggestionService.deleteProductSuggestion(suggestionId, userDetails.getUser().getId());
 
         return ApiResponseDto.success(Map.of("message", "상품 정보 제안 이력이 성공적으로 삭제되었습니다."));
     }

@@ -41,12 +41,7 @@ public class ProductImageService {
 
         Long userId = userDetails.getUser().getId();
 
-        boolean isOwner = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_OWNER"));
-
-        if (isOwner) {
-            productOwnershipService.checkProductOwnership(product.getId(), userId);
-        }
+        productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         if (image.isPrimary()) {
             List<ProductImage> nonPrimaryImages = imageRepository.findNonPrimaryImages(product.getId(), image.getId());
@@ -101,6 +96,10 @@ public class ProductImageService {
             }
         }
         return images;
+    }
+
+    public List<ProductImage> findActiveImages(UUID productId) {
+        return imageRepository.findActiveImages(productId);
     }
 
     public Page<ProductImageResponseDto> getProductImages(ProductImageQueryDto requestDto) {
