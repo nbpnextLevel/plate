@@ -12,10 +12,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderProduct extends Timestamped{
+public class OrderProduct {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_product_id", updatable = false, nullable = false)
     private UUID orderProductId;
 
@@ -30,51 +29,31 @@ public class OrderProduct extends Timestamped{
     @Column(nullable = false)
     private int orderQuantity; // 주문 수량
 
-    @Column(nullable = false)
-    private Boolean isDeleted;  // 삭제 여부 (BOOLEAN)
 
-    // 기본 생성자와 매개변수화된 생성자 (선택사항)
-    public OrderProduct(UUID orderProductId, Order order, Product product, int orderQuantity) {
-        this.orderProductId = orderProductId;
-        this.order = order;
-        this.product = product;
-        this.orderQuantity = orderQuantity;
+    // 상품의 총 가격 계산 (수량 * 상품 가격)
+    public long getTotalPrice() {
+        return this.product.getPrice().longValue() * this.orderQuantity;
     }
 
     public void changeOrder(Order order) {
         this.order = order;
     }
 
-    /**
-     * OrderProduct 생성
-     */
-    public static OrderProduct createOrderProduct(Product product, int orderQuantity) {
-        OrderProduct orderProduct = new OrderProduct();
-        orderProduct.changeProduct(product);
-        orderProduct.changeCount(orderQuantity);
-
-        //product.removeStock(count);
-        return orderProduct;
-    }
-
     private void changeCount(int orderQuantity) {
         this.orderQuantity = orderQuantity;
     }
 
-    private void changeProduct(Product product) {
-        this.product = product;
+    public boolean getOrderLimit(){
+        return this.product.getMaxOrderLimit() < this.orderQuantity;
     }
 
-   /*
-    public void cancel() {
-
-        getProduct().addStock(count);
+    public boolean getOrderQuantityLimit(){
+        return this.product.getStockQuantity() < this.orderQuantity;
     }
-    */
 
-
-    public int getTotalPrice() {
-        return getProduct().getPrice().intValue() * getOrderQuantity();
+    public void setProductStockQuantity() {
+        this.product.setStockQuantity(this.product.getStockQuantity() - this.orderQuantity);
     }
+
 
 }
