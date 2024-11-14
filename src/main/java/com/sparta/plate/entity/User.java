@@ -1,5 +1,9 @@
 package com.sparta.plate.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sparta.plate.dto.request.StoreRequestDto;
 import com.sparta.plate.dto.request.UpdateUserRequestDto;
 
 import jakarta.persistence.Column;
@@ -9,6 +13,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -35,6 +41,13 @@ public class User extends Timestamped {
 	@Enumerated(EnumType.STRING)
 	@NotNull @Column(nullable = false, length = 100)
 	private UserRoleEnum role;
+
+	// TODO 논의 필요
+	// @OneToMany(mappedBy = "user")
+	// private List<Store> storeList = new ArrayList<>();
+
+	@OneToOne
+	private Store store;
 
 	@NotNull @Column(nullable = false)
 	private String email;
