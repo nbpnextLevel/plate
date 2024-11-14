@@ -25,7 +25,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_users")
 public class User extends Timestamped {
 
-	private static final Logger log = LoggerFactory.getLogger(User.class);
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
