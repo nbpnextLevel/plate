@@ -45,19 +45,6 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
             totalCnt = 0L;
         }
 
-        System.out.println("totalCnt: " + totalCnt);
-        System.out.println(jpaQueryFactory.selectFrom(productImage)
-                .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchById(queryDto.getId()),
-                        searchByProductId(queryDto.getProductId()),
-                        searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
-                )
-                .orderBy(sort(queryDto.getSort()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toString());
-
         List<ProductImage> images = jpaQueryFactory
                 .selectFrom(productImage)
                 .where(
@@ -70,8 +57,6 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        System.out.println("suggestions.size : " + images.size());
 
         List<ProductImageResponseDto> responseDtos = images.stream()
                 .map(ProductImageResponseDto::toDto)
