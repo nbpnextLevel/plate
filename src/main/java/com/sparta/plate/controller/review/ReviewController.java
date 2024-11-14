@@ -1,6 +1,7 @@
 package com.sparta.plate.controller.review;
 
 import com.sparta.plate.dto.request.ReviewRequestDto;
+import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.PaymentResponseDto;
 import com.sparta.plate.dto.response.ReviewResponseDto;
 import com.sparta.plate.entity.Payment;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,58 +32,58 @@ public class ReviewController {
     private final ReviewResponseDto reviewResponseDto;
     private final PaymentService paymentService;
 
-//     리뷰 작성
+    //리뷰 작성
     @PostMapping("/{paymentId}")
-    public ReviewResponseDto createReview(@PathVariable("paymentId") UUID paymentId,
-                                          @RequestBody ReviewRequestDto reviewRequestDto) {
-        return reviewService.createReview(reviewRequestDto);
+    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> createReview(@PathVariable("paymentId") UUID paymentId,
+                                                                          @RequestBody ReviewRequestDto reviewRequestDto,
+                                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Long userId = userDetails.getUser().getId();  // 로그인한 사용자 ID
+
+        // 리뷰 서비스 호출
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewRequestDto, userId);
+
+        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 생성되었습니다.", reviewResponseDto));
     }
-//    @PostMapping("/{paymentId}")
-//    public ReviewResponseDto createReview(@PathVariable("paymentId") UUID paymentId,
-//                                          @RequestBody ReviewRequestDto reviewRequestDto,
-//                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        // 1. 로그인한 사용자 확인
-//        if(userDetails == null){
-//            throw new IllegalArgumentException("User not authenticated");
-//        }
-//
-//        // paymentId 해당하는 결제 정보 조회
-//        paymentService.getPaymentBypaymentId(paymentId);
-//
-//
-//
-//        return reviewService.createReview(reviewRequestDto);
-//    }
 
     // 리뷰 수정
     @PutMapping("/{paymentId}/update")
-    public ReviewResponseDto updateReview(@PathVariable("paymentId") UUID paymentId,
-                                          @RequestBody ReviewRequestDto reviewRequestDto) {
+    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> updateReview(@PathVariable("paymentId") UUID paymentId,
+                                          @RequestBody ReviewRequestDto reviewRequestDto,
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        reviewRequestDto.setPaymentId(paymentId);
+        Long userId = userDetails.getUser().getId();
+        ReviewResponseDto reviewResponseDto = reviewService.updateReview(reviewRequestDto, userId);
 
-        return reviewService.updateReview(reviewRequestDto);
+        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 수정되었습니다.", reviewResponseDto));
     }
 
     // 리뷰 삭제
     @PutMapping("/{paymentId}/delete")
-    public ReviewResponseDto deleteReview(@PathVariable("paymentId") UUID paymentId) {
+    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> deleteReview(@PathVariable("paymentId") UUID paymentId,
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        //reviewResponseDto.setDeletedBy(); > 현재 로그인한 user의 아이디를
+        Long userId = userDetails.getUser().getId();
+        ReviewResponseDto reviewResponseDto = reviewService.deleteReview(paymentId, userId);
 
-        return reviewService.deleteReview(paymentId);
+        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 삭제되었습니다.", reviewResponseDto));
     }
 
-    // 리뷰 단건 조회
+    // 리뷰ID로 단건 조회
     @GetMapping("/{reviewId}")
-    public ReviewResponseDto findById(@PathVariable("reviewId") UUID reviewId){
-        return reviewService.findById(reviewId);
+    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> findById(@PathVariable("reviewId") UUID reviewId,
+                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ReviewResponseDto reviewResponseDto = reviewService.findById(reviewId, userDetails);
+        return ResponseEntity.ok(ApiResponseDto.success(reviewResponseDto));
     }
 
-    // 사용자별 리뷰 조회
+    // userId 사용자별 리뷰 조회
     @GetMapping("/user/{userId}")
-    public Page<ReviewResponseDto> findReviewByUserId(@PathVariable("userId") Long userId, Pageable pageable){
-        return reviewService.findReviewByUserId(userId, pageable);
+    public ResponseEntity<ApiResponseDto<Page<ReviewResponseDto>>> findReviewByUserId(@PathVariable("userId") Long userId,
+                                                                                      Pageable pageable,
+                                                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Page<ReviewResponseDto> reviewResponseDto = reviewService.findReviewByUserId(userId, pageable, userDetails);
+
+        return ResponseEntity.ok(ApiResponseDto.success(reviewResponseDto));
     }
 
     // 사용자별 리뷰 조회 + search
@@ -92,13 +94,13 @@ public class ReviewController {
      @RequestParam("page") int page, // 페이지 번호
      @RequestParam("size") int size, // 페이지 사이즈
      @RequestParam("sortBy") String sortBy, // 정렬 기준
-     @RequestParam("isAcs") boolean isAcs){
+     @RequestParam("isAcs") boolean isAcs,
+     @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         Pageable pageable = createPageable(page, size, sortBy, isAcs);
-        Page<Review> reviewPage = reviewService.searchReviewByUserIdAndStoreName(userId, storeName, pageable);
-        Page<ReviewResponseDto> responseDtoPage = reviewPage.map(ReviewResponseDto::new);
 
-        return responseDtoPage;
+        Page<ReviewResponseDto> reviewPage = reviewService.searchReviewByUserIdAndStoreName(userId, storeName, pageable, userDetails);
+        return reviewPage;
     }
 
 
