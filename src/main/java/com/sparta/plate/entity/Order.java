@@ -69,5 +69,4 @@ public class Order extends Timestamped{
         this.orderStatus = ORDER_CANCELLED;
     }
 
-
 }
