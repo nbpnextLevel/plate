@@ -62,6 +62,10 @@ public class ReviewService {
         Review review = reviewRepository.findByPayment(payment)
                 .orElseThrow(() -> new NotFoundReviewException("해당 리뷰를 찾을 수 없습니다."));
 
+        if(!reviewRequestDto.isReviewStatus()){
+            throw new NotFoundReviewException("해당 리뷰는 이미 삭제 되었습니다.");
+        }
+
         if (!review.getPayment().getOrder().getUser().getId().equals(userId)) {
             throw new UnauthorizedAccessException("리뷰를 수정할 권한이 없습니다.");
         }
@@ -80,26 +84,26 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public ReviewResponseDto deleteReview(UUID paymentId, Long userId) {
-
-        // 결제 ID로 결제 정보 찾기
-        Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NotFoundPaymentException("결제 내역이 존재하지 않습니다."));
+    public ReviewResponseDto deleteReview(UUID reviewId, Long userId) {
 
         // 결제 ID랑 연관 된 리뷰 찾기
-        Review review = reviewRepository.findByPayment(payment)
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundReviewException("리뷰가 존재하지 않습니다."));
 
-        // 리뷰 작성자 확인
-        if (!review.getPayment().getOrder().getUser().getId().equals(userId)) {
-            throw new UnauthorizedAccessException("리뷰를 삭제할 권한이 없습니다.");
-        }
+//        // 결제 ID로 결제 정보 찾기
+//        Payment payment = paymentRepository.findById(paymentId)
+//                .orElseThrow(() -> new NotFoundPaymentException("결제 내역이 존재하지 않습니다."));
 
         // 이미 삭제된 리뷰인지
         if (!review.isReviewStatus()) {
             throw new IllegalArgumentException("리뷰는 이미 삭제 되었습니다.");
         }else{
             review.setReviewStatus(false);
+        }
+
+        // 리뷰 작성자 확인
+        if (!review.getPayment().getOrder().getUser().getId().equals(userId)) {
+            throw new UnauthorizedAccessException("리뷰를 삭제할 권한이 없습니다.");
         }
 
         review.markAsDeleted(userId);

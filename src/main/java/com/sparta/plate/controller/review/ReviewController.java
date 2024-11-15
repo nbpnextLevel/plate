@@ -48,8 +48,8 @@ public class ReviewController {
     }
 
     // 리뷰 수정
-    @PatchMapping("/{paymentId}/update")
-    public ApiResponseDto<Map<String, Object>> updateReview(@PathVariable("paymentId") UUID paymentId,
+    @PatchMapping("/{reviewId}/update")
+    public ApiResponseDto<Map<String, Object>> updateReview(@PathVariable("reviewId") UUID reviewId,
                                           @RequestBody ReviewRequestDto reviewRequestDto,
                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -62,12 +62,12 @@ public class ReviewController {
     }
 
     // 리뷰 삭제
-    @PatchMapping("/{paymentId}/delete")
-    public ApiResponseDto<Map<String, Object>> deleteReview(@PathVariable("paymentId") UUID paymentId,
+    @PatchMapping("/{reviewId}/delete")
+    public ApiResponseDto<Map<String, Object>> deleteReview(@PathVariable("reviewId") UUID reviewId,
                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Long userId = userDetails.getUser().getId();
-        ReviewResponseDto reviewResponseDto = reviewService.deleteReview(paymentId, userId);
+        ReviewResponseDto reviewResponseDto = reviewService.deleteReview(reviewId, userId);
 
         String successMessage = "리뷰가 성공적으로 삭제되었습니다.";
 
