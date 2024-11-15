@@ -187,18 +187,13 @@ public class ProductService {
 
     public Page<ProductResponseDto> searchProducts(ProductQueryDto requestDto, UserDetailsImpl userDetails) {
         String role = userDetails.getUser().getRole().getAuthority();
-        System.out.println("getAuthority(): " + role);
 
-        // User는 노출상태가 IN_STOCK인 상품만 조회 가능
-        // 해당 상품 등록한 Owner, Manager, Master는 PENDING_SALE, DISCONTINUED도 조회 가능
         if ("ROLE_CUSTOMER".equals(role)) {
             if (requestDto.getDisplayStatus() != null && !ProductDisplayStatusEnum.IN_STOCK.name().equals(requestDto.getDisplayStatus())) {
                 throw new InvalidDisplayStatusException("ROLE_CUSTOMER는 IN_STOCK 상태의 상품만 조회할 수 있습니다.");
             }
         }
 
-        // startDate와 endDate를 이용한 createdAt검색과 isHidden true인 상품은 해당 상품을 등록한 Owner, Manager, Master만 검색 조건에 포함 가능
-        // isDelete true인 상품은 Manager와 Master만 검색 조건에 포함 후 조회 가능
         if (requestDto.getIsHidden() != null || requestDto.getStartDate() != null || requestDto.getEndDate() != null) {
             if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
                 throw new UnauthorizedAccessException("isHidden이 true인 상품은 Owner, Manager, Master만 조회할 수 있습니다.");
