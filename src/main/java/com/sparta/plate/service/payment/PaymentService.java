@@ -12,7 +12,9 @@ import com.sparta.plate.repository.PaymentRepository;
 import com.sparta.plate.repository.StoreRepository;
 import com.sparta.plate.repository.UserRepository;
 import com.sparta.plate.security.UserDetailsImpl;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +35,19 @@ public class PaymentService {
     @Autowired
     private StoreRepository storeRepository;
 
+//    @Transactional
+//    public PaymentResponseDto getPaymentDetails(UUID orderId) {
+//        Payment payment = paymentRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Payment not found"));
+//
+//        // 지연 로딩된 User 객체 초기화
+//        Hibernate.initialize(payment.getOrder().getUser());
+//
+//        // PaymentResponseDto로 변환하여 반환
+//        return new PaymentResponseDto(payment);
+//    }
 
     // 결제 요청(orderId를 받아서)
+    @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto, Long userId) {
 
         // 주문 존재 여부 확인
@@ -42,8 +55,9 @@ public class PaymentService {
                 .orElseThrow(()-> new OrderNotFoundException("해당 주문이 존재하지 않습니다.")
         );;
 
+        User user = order.getUser();
         // 주문을 요청한 사용자가 로그인한 사용자가 동일한지 확인
-        if(!order.getUser().getId().equals(userId)) {
+        if(!user.getId().equals(userId)) {
             throw new UserNotAuthorizedException("인증 되지 않은 사용자 입니다.");
         }
 

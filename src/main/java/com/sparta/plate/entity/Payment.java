@@ -23,7 +23,7 @@ public class Payment extends TimestampedCreationDeletion{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID paymentId = UUID.randomUUID();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
@@ -54,6 +54,10 @@ public class Payment extends TimestampedCreationDeletion{
 
     public Payment(Order order, PaymentRequestDto paymentRequestDto) {
         super();
+        this.amount = paymentRequestDto.getOrderPrice() != null ? paymentRequestDto.getOrderPrice() : order.getOrderPrice();
+        this.paymentNumber = "PAY_" + UUID.randomUUID().toString();
+        this.isPaid = paymentRequestDto.isCanceled(); // DTO에 결제 여부가 있다면 사용
+        this.order = order;
     }
 
     @PrePersist  // 엔티티가 저장되기 전에 UUID 자동 생성
