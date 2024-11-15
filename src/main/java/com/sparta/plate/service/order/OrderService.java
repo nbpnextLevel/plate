@@ -17,7 +17,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,9 +54,8 @@ public class OrderService {
         order.setOrderId(orderId);
 
         order.setOrderProductList(requestDto.getOrderProductList().stream()
-                .map(dto -> {
-                     return createOrderProduct(dto, order);
-                }).toList());
+                .map(dto -> createOrderProduct(dto, order))
+                .toList());
 
         // 총 가격 계산
         order.calculateTotalPrice();

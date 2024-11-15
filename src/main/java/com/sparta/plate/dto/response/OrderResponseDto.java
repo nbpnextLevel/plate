@@ -1,6 +1,5 @@
 package com.sparta.plate.dto.response;
 
-import com.sparta.plate.dto.request.OrderProductRequestDto;
 import com.sparta.plate.entity.Order;
 import com.sparta.plate.entity.OrderTypeEnum;
 import lombok.AllArgsConstructor;
