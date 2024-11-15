@@ -77,8 +77,7 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler({ProductHistoryNotFoundException.class})
-    public ResponseEntity<RestApiException> NotFoundPaymentException(ProductHistoryNotFoundException ex) {
+
 
     @ExceptionHandler({OrderNotFoundException.class})
     public ResponseEntity<RestApiException> handleOrderNotFoundException(OrderNotFoundException ex) {
@@ -90,16 +89,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({UserNotAuthorizedException.class})
-    public ResponseEntity<RestApiException> UserNotAuthorizedException(OrderNotFoundException ex) {
+    public ResponseEntity<RestApiException> UserNotAuthorizedException(UserNotAuthorizedException ex) {
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 restApiException,
-                HttpStatus.NOT_FOUND
+                HttpStatus.BAD_REQUEST
         );
     }
 
     @ExceptionHandler({PaymentNotFoundException.class})
-    public ResponseEntity<RestApiException> PaymentNotFoundException(OrderNotFoundException ex) {
+    public ResponseEntity<RestApiException> PaymentNotFoundException(PaymentNotFoundException ex) {
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 restApiException,
@@ -108,8 +107,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({StoreNotFoundException.class})
-    public ResponseEntity<RestApiException> StoreNotFoundException(OrderNotFoundException ex) {
-
+    public ResponseEntity<RestApiException> StoreNotFoundException(StoreNotFoundException ex) {
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 restApiException,
