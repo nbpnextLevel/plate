@@ -1,13 +1,15 @@
 package com.sparta.plate.repository.impl;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.plate.dto.request.ProductImageQueryDto;
 import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.entity.ProductImage;
+import com.sparta.plate.entity.QProductImage;
 import com.sparta.plate.repository.ProductImageRepositoryCustom;
+import com.sparta.plate.repository.util.QueryUtil;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,14 +30,17 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager em;
 
+    PathBuilder<Object> imageEntityPath = new PathBuilder<>(QProductImage.class, "productImage");
+
+
     @Override
     public Page<ProductImageResponseDto> searchAll(Pageable pageable, ProductImageQueryDto queryDto) {
         Long totalCnt = jpaQueryFactory
                 .select(productImage.count())
                 .from(productImage)
                 .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchById(queryDto.getId()),
+                        searchByBooleanType(queryDto.getIsDeleted(), "isDeleted", imageEntityPath),
+                        searchById(queryDto.getId(), "id", imageEntityPath),
                         searchByProductId(queryDto.getProductId()),
                         searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
                 )
@@ -48,8 +53,8 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
         List<ProductImage> images = jpaQueryFactory
                 .selectFrom(productImage)
                 .where(
-                        searchByIsDeleted(queryDto.getIsDeleted()),
-                        searchById(queryDto.getId()),
+                        searchByBooleanType(queryDto.getIsDeleted(), "isDeleted", imageEntityPath),
+                        searchById(queryDto.getId(), "id", imageEntityPath),
                         searchByProductId(queryDto.getProductId()),
                         searchByDateRange(queryDto.getStartDate(), queryDto.getEndDate())
                 )
@@ -65,14 +70,6 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
         return new PageImpl<>(responseDtos, pageable, totalCnt);
     }
 
-    private BooleanBuilder searchById(UUID id) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (id != null) {
-            booleanBuilder.and(productImage.id.eq(id));
-        }
-        return booleanBuilder;
-    }
-
     private BooleanBuilder searchByProductId(UUID productId) {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         if (productId != null) {
@@ -81,53 +78,19 @@ public class ProductImageRepositoryImpl implements ProductImageRepositoryCustom 
         return booleanBuilder;
     }
 
-    private BooleanBuilder searchByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-
-        if (startDate != null) {
-            booleanBuilder.and(productImage.createdAt.goe(startDate));
-        }
-
-        if (endDate != null) {
-            booleanBuilder.and(productImage.createdAt.loe(endDate));
-        }
-
-        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("startDate cannot be after endDate");
-        }
-
-        return booleanBuilder;
+    private BooleanBuilder searchById(UUID id, String fieldName, PathBuilder<Object> entityPath) {
+        return QueryUtil.searchById(id, fieldName, entityPath);
     }
 
-    private BooleanBuilder searchByIsDeleted(String isDeleted) {
-        BooleanBuilder booleanBuilder = new BooleanBuilder();
-        if (isDeleted != null && !isDeleted.isEmpty()) {
-            switch (isDeleted) {
-                case "true":
-                    booleanBuilder.and(productImage.isDeleted.isTrue());
-                    break;
-                case "false":
-                    booleanBuilder.and(productImage.isDeleted.isFalse());
-                    break;
-                case "all":
-                default:
-                    break;
-            }
-        }
-        return booleanBuilder;
+    private BooleanBuilder searchByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return QueryUtil.searchByDateRange(startDate, endDate, productImage.createdAt);
+    }
+
+    private BooleanBuilder searchByBooleanType(String text, String fieldName, PathBuilder<Object> entityPath) {
+        return QueryUtil.searchByBooleanType(text, fieldName, entityPath);
     }
 
     private OrderSpecifier<?> sort(String sort) {
-        if (sort == null || sort.isEmpty()) {
-            return new OrderSpecifier<>(Order.DESC, productImage.createdAt);
-        }
-
-        switch (sort) {
-            case "byRegistrationDate":
-                return new OrderSpecifier<>(Order.ASC, productImage.createdAt);
-            case "byRecentRegistrationDate":
-            default:
-                return new OrderSpecifier<>(Order.DESC, productImage.createdAt);
-        }
+        return QueryUtil.sort(sort, productImage.createdAt);
     }
 }
