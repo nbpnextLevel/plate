@@ -101,6 +101,14 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "api/reviews/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER","ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "api/store/{storeId}").permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/api/payments/{orderId}").hasAnyAuthority("ROLE_CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/{paymentId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/payments/store/{storeId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+
+
+
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
