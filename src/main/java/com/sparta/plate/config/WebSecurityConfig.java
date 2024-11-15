@@ -73,6 +73,8 @@ public class WebSecurityConfig {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
+
+
         // TODO 각자 권한에 따른 설정 필요
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
@@ -95,14 +97,13 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/products/suggestion/{suggestionId}/delete", "/api/products/histories/{historyId}/delete").hasAnyAuthority("ROLE_MASTER")
 
 
-                        .requestMatchers("/api/reviews/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.POST, "/api/reviews/{paymentId}").hasAuthority("ROLE_CUSTOMER")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/update}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/delete}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/{reviewId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "api/reviews/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "api/reviews/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "api/store/{storeId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/store/{storeId}").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/payments/{orderId}").hasAnyAuthority("ROLE_CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/payments/{paymentId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")

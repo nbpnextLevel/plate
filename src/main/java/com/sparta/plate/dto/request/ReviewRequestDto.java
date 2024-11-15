@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewRequestDto {
-    private String loginId;
+    private Long userId;
 
     private UUID paymentId;
 
