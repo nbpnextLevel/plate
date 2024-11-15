@@ -37,11 +37,6 @@ public class ProductController {
             @RequestParam(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
     ) throws IOException {
-        ProductImageRequestDto imageRequestDto = ProductImageRequestDto.builder()
-                .files(files)
-                .primaryImageIndex(primaryImageIndex)
-                .build();
-
         ProductRequestDto requestDto = ProductRequestDto.builder()
                 .storeId(UUID.fromString(storeId))
                 .productName(productName)
@@ -51,8 +46,15 @@ public class ProductController {
                 .maxOrderLimit(maxOrderLimit)
                 .displayStatus(displayStatus)
                 .isHidden(isHidden)
-                .images(imageRequestDto)
                 .build();
+
+        if (files != null && files.length != 0) {
+            ProductImageRequestDto imageRequestDto = ProductImageRequestDto.builder()
+                    .files(files)
+                    .primaryImageIndex(primaryImageIndex)
+                    .build();
+            requestDto.setImages(imageRequestDto);
+        }
 
         UUID savedProductId = productService.createProduct(requestDto);
 
@@ -146,11 +148,15 @@ public class ProductController {
                 .map(ids -> ids.stream().map(UUID::fromString).toList())
                 .orElseGet(Collections::emptyList);
 
+
         ProductImageRequestDto requestDto = ProductImageRequestDto.builder()
-                .files(files)
                 .primaryImageIndex(primaryImageIndex)
                 .deletedImageIds(convertedDeletedImageIds)
                 .build();
+
+        if (files != null && files.length != 0) {
+            requestDto.setFiles(files);
+        }
 
         productService.manageProductImage(productId, requestDto, userDetails);
 
