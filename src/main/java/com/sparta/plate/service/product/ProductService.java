@@ -59,6 +59,10 @@ public class ProductService {
     public void deleteProduct(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        if (product.isDeleted()) {
+            throw new ProductIsDeletedException("This product has already been deleted.");
+        }
+
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.markAsDeleted(userDetails.getUser().getId());
@@ -69,6 +73,7 @@ public class ProductService {
     public void updateProductDetails(UUID productId, ProductDetailsRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         requestDto.setProductName(requestDto.getProductName() == null ? product.getName() : requestDto.getProductName());
@@ -89,6 +94,7 @@ public class ProductService {
     public void updateStockAndLimit(UUID productId, ProductQuantityRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setMaxOrderLimit(requestDto.getMaxOrderLimit() != null ? requestDto.getMaxOrderLimit() : product.getMaxOrderLimit());
@@ -101,6 +107,7 @@ public class ProductService {
     public void updateProductVisibility(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setHidden(!product.isHidden());
@@ -112,6 +119,7 @@ public class ProductService {
     public void updateProductDisplayStatus(UUID productId, String displayStatus, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         ProductDisplayStatusEnum status = ProductDisplayStatusEnum.fromString(displayStatus);
@@ -124,6 +132,7 @@ public class ProductService {
     public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         List<ProductImage> currentImages = product.getProductImages();
@@ -183,6 +192,12 @@ public class ProductService {
     private Product findProductById(UUID productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
+    }
+
+    private void checkProductIsDeleted(boolean isDeleted) {
+        if (isDeleted) {
+            throw new ProductIsDeletedException("The product has been deleted.");
+        }
     }
 
     public Page<ProductResponseDto> searchProducts(ProductQueryDto requestDto, UserDetailsImpl userDetails) {
