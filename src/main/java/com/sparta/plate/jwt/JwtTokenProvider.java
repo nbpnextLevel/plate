@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 /*
 	Jwt 토큰 생성, 토큰 복호화, 정보추출, 토큰 유효성 검증
  */
-@Slf4j(topic = "JwtUtil")
+@Slf4j(topic = "JwtTokenProvider")
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -79,10 +80,14 @@ public class JwtTokenProvider {
 			.signWith(key, signatureAlgorithm) // JWT 서명 키
 			.compact();
 
-		// redis에 저장
-		redisTemplate.opsForValue().set( // key value timeout timeUnit
-			loginId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS
-		);
+		try {
+			redisTemplate.opsForValue().set( // key value timeout timeUnit
+				loginId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS
+			);
+		} catch (RedisConnectionFailureException e) {
+			log.error("[Redis] Redis Connection failed ");
+		}
+
 
 		return refreshToken;
 	}
