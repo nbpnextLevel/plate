@@ -4,6 +4,7 @@ import com.sparta.plate.dto.request.ReviewRequestDto;
 import com.sparta.plate.dto.response.ReviewResponseDto;
 import com.sparta.plate.entity.Payment;
 import com.sparta.plate.entity.Review;
+import com.sparta.plate.entity.User;
 import com.sparta.plate.exception.*;
 import com.sparta.plate.repository.PaymentRepository;
 import com.sparta.plate.repository.ReviewRepository;
@@ -30,20 +31,21 @@ public class ReviewService {
 
 
     // 리뷰 작성
+    @Transactional
     public ReviewResponseDto createReview(ReviewRequestDto reviewRequestDto, Long userId) {
 
         Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId())
                 .orElseThrow(()->new NotFoundPaymentException("결제 내역이 존재하지 않습니다."));
 
-        if (payment.getOrder() == null || payment.getOrder().getUser() == null) {
-            throw new UnauthorizedAccessException("결제에 대한 유효한 주문 또는 사용자 정보가 없습니다.");
-        }
+        User user = payment.getOrder().getUser();
 
-        if (!payment.getOrder().getUser().getId().equals(userId)) {
+        if (!user.getId().equals(userId)) {
             throw new UnauthorizedAccessException("이 결제에 대한 리뷰를 작성할 권한이 없습니다.");
         }
 
+
         Review review = new Review(reviewRequestDto, payment);
+
         reviewRepository.save(review);
 
         return new ReviewResponseDto(review);
