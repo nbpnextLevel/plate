@@ -81,13 +81,13 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
 
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/stores").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.POST, "/api/stores/admin").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.PATCH, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
 
-						.requestMatchers(HttpMethod.GET, "/api/products/{productId}", "/api/products/search", "/api/products/stores/{storeId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-						.requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/products/{productId}", "/api/products/search", "/api/products/stores/{storeId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.PATCH, "/api/products/{productId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion", "/api/products/images/{imageId}/delete", "/api/products/{productId}/images", "/api/products/{productId}/delete", "/api/products/{productId}/inventory", "/api/products/{productId}/visibility", "/api/products/{productId}/display-status").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
@@ -97,11 +97,11 @@ public class WebSecurityConfig {
 
                         .requestMatchers("/api/reviews/**").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.POST, "/api/reviews/{paymentId}").hasAuthority("ROLE_CUSTOMER")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/update}").hasAnyAuthority("ROLE_CUSTOMER","ROLE_MANAGER","ROLE_MASTER")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/delete}").hasAnyAuthority("ROLE_CUSTOMER","ROLE_MANAGER","ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/{reviewId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER","ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "api/reviews/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER","ROLE_MASTER")
-                        .requestMatchers(HttpMethod.GET, "api/reviews/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER","ROLE_MASTER")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/update}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{paymentId/delete}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/{reviewId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "api/reviews/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "api/reviews/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "api/store/{storeId}").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/payments/{orderId}").hasAnyAuthority("ROLE_CUSTOMER")
@@ -109,7 +109,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/payments/user/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "/api/payments/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "/api/payments/store/{storeId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-
 
 
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
