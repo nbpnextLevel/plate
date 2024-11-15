@@ -1,5 +1,6 @@
 package com.sparta.plate.config;
 
+import com.sparta.plate.jwt.CustomLogoutFilter;
 import com.sparta.plate.jwt.JwtFilter;
 import com.sparta.plate.jwt.JwtTokenProvider;
 import com.sparta.plate.jwt.LoginFilter;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -18,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
 @Configuration
@@ -28,6 +31,7 @@ public class WebSecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -82,8 +86,8 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.DELETE, "/api/stores/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
 
-                        .requestMatchers(HttpMethod.GET, "/api/products/{productId}", "/api/products/search", "/api/products/stores/{storeId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+						.requestMatchers(HttpMethod.GET, "/api/products/{productId}", "/api/products/search", "/api/products/stores/{storeId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+						.requestMatchers(HttpMethod.POST, "/api/products").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.PATCH, "/api/products/{productId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion", "/api/products/images/{imageId}/delete", "/api/products/{productId}/images", "/api/products/{productId}/delete", "/api/products/{productId}/inventory", "/api/products/{productId}/visibility", "/api/products/{productId}/display-status").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers("/api/products/suggestion/history").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
@@ -111,8 +115,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
-        http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter(), LoginFilter.class);
+        http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(jwtTokenProvider, redisTemplate), LogoutFilter.class);
 
         return http.build();
     }
