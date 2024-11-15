@@ -2,6 +2,7 @@ package com.sparta.plate.entity;
 
 import com.sparta.plate.dto.request.PaymentRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,8 +40,16 @@ public class Payment extends TimestampedCreationDeletion{
         this.amount = order.getOrderPrice();
         this.paymentNumber = "PAY_" + this.paymentId.toString();
         this.isPaid = true;
-//        this.user = order.getUser();
         this.order = order;
+    }
+
+    @Builder
+    public Payment(UUID paymentId, Order order, String paymentNumber, Long amount) {
+        this.paymentId = paymentId;
+        this.order = order;
+        this.paymentNumber = paymentNumber;
+        this.isPaid = true;
+        this.amount = amount;
     }
 
     public Payment(Order order, PaymentRequestDto paymentRequestDto) {
