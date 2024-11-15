@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,9 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.plate.dto.request.LoginRequestDto;
-import com.sparta.plate.entity.RefreshEntity;
 import com.sparta.plate.entity.UserRoleEnum;
-import com.sparta.plate.repository.RefreshRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 
 import jakarta.servlet.FilterChain;
@@ -33,11 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
-	private final RefreshRepository refreshRepository;
 
-	public LoginFilter(JwtTokenProvider jwtTokenProvider, RefreshRepository refreshRepository) {
+	public LoginFilter(JwtTokenProvider jwtTokenProvider) {
 		this.jwtTokenProvider = jwtTokenProvider;
-		this.refreshRepository = refreshRepository;
 		setFilterProcessesUrl("/api/users/login");
 	}
 
@@ -75,22 +70,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String accessToken = jwtTokenProvider.createAccessToken(loginId, role);
 		String refreshToken = jwtTokenProvider.createRefreshToken(loginId, role);
 
-		// refresh token 저장
-		addRefreshEntity(loginId, refreshToken);
-
+		// response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, accessToken);
 		response.setHeader("access", accessToken);
 		response.addCookie(createCookie("refresh", refreshToken));
 		response.setStatus(HttpStatus.OK.value());
-	}
-
-	private void addRefreshEntity(String loginId, String refreshToken) {
-		RefreshEntity refreshEntity = new RefreshEntity();
-		refreshEntity.setLoginId(loginId);
-		refreshEntity.setRefresh(refreshToken);
-		// 만료시간
-		//refreshEntity.setExpiration();
-
-		refreshRepository.save(refreshEntity);
 	}
 
 	@Override

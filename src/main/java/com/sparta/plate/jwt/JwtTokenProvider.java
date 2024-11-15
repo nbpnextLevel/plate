@@ -3,8 +3,10 @@ package com.sparta.plate.jwt;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -20,6 +22,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /*
@@ -27,7 +30,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j(topic = "JwtUtil")
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
+
+	private final RedisTemplate<String, String> redisTemplate;
 
 	public static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final String AUTHORIZATION_KEY = "auth";
@@ -74,12 +80,9 @@ public class JwtTokenProvider {
 			.compact();
 
 		// redis에 저장
-		// redisTemplate.opsForValue().set(
-		// 	authentication.getName(),
-		// 	refreshToken,
-		// 	refreshExpirationTime,
-		// 	TimeUnit.MILLISECONDS
-		// );
+		redisTemplate.opsForValue().set( // key value timeout timeUnit
+			loginId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS
+		);
 
 		return refreshToken;
 	}
