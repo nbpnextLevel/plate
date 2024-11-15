@@ -43,9 +43,11 @@ public class ProductService {
         Store store = storeService.getStore(requestDto.getStoreId());
         Product product = Product.toEntity(requestDto, store);
 
-        List<ProductImage> newImages = imageService.processProductImages(product, requestDto.getImages());
+        if (requestDto.getImages() != null) {
+            List<ProductImage> newImages = imageService.processProductImages(product, requestDto.getImages());
 
-        product.setProductImages(newImages);
+            product.setProductImages(newImages);
+        }
 
         Product savedProduct = productRepository.saveAndFlush(product);
 
@@ -136,7 +138,11 @@ public class ProductService {
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         List<ProductImage> currentImages = product.getProductImages();
-        List<ProductImage> newImages = imageService.processProductImages(product, requestDto);
+        List<ProductImage> newImages = new ArrayList<>();
+
+        if (requestDto.getFiles() != null) {
+            newImages = imageService.processProductImages(product, requestDto);
+        }
 
         if (requestDto.getDeletedImageIds() != null) {
             currentImages.stream()
