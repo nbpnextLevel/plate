@@ -18,10 +18,12 @@ public class OrderProductRequestDto {
     private UUID orderId;
     private UUID productId;
     private int orderQuantity;
+    private String flagStatus;
 
     // DTO -> Entity 변환
     public OrderProduct toEntity(Product product, Order order) {
         OrderProduct orderProduct = new OrderProduct();
+        orderProduct.setOrderProductId(orderProductId);
         orderProduct.setOrder(order);
         orderProduct.setProduct(product);
         orderProduct.setOrderQuantity(orderQuantity);

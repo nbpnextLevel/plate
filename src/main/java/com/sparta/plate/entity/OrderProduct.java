@@ -35,14 +35,6 @@ public class OrderProduct {
         return this.product.getPrice().longValue() * this.orderQuantity;
     }
 
-    public void changeOrder(Order order) {
-        this.order = order;
-    }
-
-    private void changeCount(int orderQuantity) {
-        this.orderQuantity = orderQuantity;
-    }
-
     public boolean getOrderLimit(){
         return this.product.getMaxOrderLimit() < this.orderQuantity;
     }
@@ -53,6 +45,10 @@ public class OrderProduct {
 
     public void setProductStockQuantity() {
         this.product.setStockQuantity(this.product.getStockQuantity() - this.orderQuantity);
+    }
+
+    public void resetProductStockQuantity() {
+        this.product.setStockQuantity(this.product.getStockQuantity() + this.orderQuantity);
     }
 
 
