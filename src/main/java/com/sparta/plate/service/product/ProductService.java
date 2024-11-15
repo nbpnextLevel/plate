@@ -1,23 +1,24 @@
 package com.sparta.plate.service.product;
 
-import com.sparta.plate.dto.request.ProductDetailsRequestDto;
-import com.sparta.plate.dto.request.ProductImageRequestDto;
-import com.sparta.plate.dto.request.ProductQuantityRequestDto;
-import com.sparta.plate.dto.request.ProductRequestDto;
+import com.sparta.plate.dto.request.*;
 import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.entity.Store;
+import com.sparta.plate.exception.InvalidDisplayStatusException;
 import com.sparta.plate.exception.ProductIsDeletedException;
 import com.sparta.plate.exception.ProductNotFoundException;
 import com.sparta.plate.exception.UnauthorizedAccessException;
 import com.sparta.plate.repository.ProductRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.GetStoreService;
+import com.sparta.plate.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,10 @@ public class ProductService {
     public void deleteProduct(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        if (product.isDeleted()) {
+            throw new ProductIsDeletedException("This product has already been deleted.");
+        }
+
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.markAsDeleted(userDetails.getUser().getId());
@@ -68,6 +73,7 @@ public class ProductService {
     public void updateProductDetails(UUID productId, ProductDetailsRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         requestDto.setProductName(requestDto.getProductName() == null ? product.getName() : requestDto.getProductName());
@@ -88,6 +94,7 @@ public class ProductService {
     public void updateStockAndLimit(UUID productId, ProductQuantityRequestDto requestDto, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setMaxOrderLimit(requestDto.getMaxOrderLimit() != null ? requestDto.getMaxOrderLimit() : product.getMaxOrderLimit());
@@ -100,6 +107,7 @@ public class ProductService {
     public void updateProductVisibility(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         product.setHidden(!product.isHidden());
@@ -111,6 +119,7 @@ public class ProductService {
     public void updateProductDisplayStatus(UUID productId, String displayStatus, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         ProductDisplayStatusEnum status = ProductDisplayStatusEnum.fromString(displayStatus);
@@ -123,6 +132,7 @@ public class ProductService {
     public void manageProductImage(UUID productId, ProductImageRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         Product product = findProductById(productId);
 
+        checkProductIsDeleted(product.isDeleted());
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
         List<ProductImage> currentImages = product.getProductImages();
@@ -184,4 +194,34 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
 
+    private void checkProductIsDeleted(boolean isDeleted) {
+        if (isDeleted) {
+            throw new ProductIsDeletedException("The product has been deleted.");
+        }
+    }
+
+    public Page<ProductResponseDto> searchProducts(ProductQueryDto requestDto, UserDetailsImpl userDetails) {
+        String role = userDetails.getUser().getRole().getAuthority();
+
+        if ("ROLE_CUSTOMER".equals(role)) {
+            if (requestDto.getDisplayStatus() != null && !ProductDisplayStatusEnum.IN_STOCK.name().equals(requestDto.getDisplayStatus())) {
+                throw new InvalidDisplayStatusException("ROLE_CUSTOMER는 IN_STOCK 상태의 상품만 조회할 수 있습니다.");
+            }
+        }
+
+        if (requestDto.getIsHidden() != null || requestDto.getStartDate() != null || requestDto.getEndDate() != null) {
+            if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
+                throw new UnauthorizedAccessException("isHidden이 true인 상품은 Owner, Manager, Master만 조회할 수 있습니다.");
+            }
+        }
+
+        if (requestDto.getIsDeleted() != null) {
+            if (!role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
+                throw new UnauthorizedAccessException("isDeleted가 true인 상품은 Manager와 Master만 조회할 수 있습니다.");
+            }
+        }
+
+        Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
+        return productRepository.searchAll(pageable, requestDto, role, userDetails.getUser().getId());
+    }
 }
