@@ -34,6 +34,11 @@ public class ReviewService {
 
         Payment payment = paymentRepository.findByPaymentId(reviewRequestDto.getPaymentId())
                 .orElseThrow(()->new NotFoundPaymentException("결제 내역이 존재하지 않습니다."));
+
+        if (payment.getOrder() == null || payment.getOrder().getUser() == null) {
+            throw new UnauthorizedAccessException("결제에 대한 유효한 주문 또는 사용자 정보가 없습니다.");
+        }
+
         if (!payment.getOrder().getUser().getId().equals(userId)) {
             throw new UnauthorizedAccessException("이 결제에 대한 리뷰를 작성할 권한이 없습니다.");
         }
