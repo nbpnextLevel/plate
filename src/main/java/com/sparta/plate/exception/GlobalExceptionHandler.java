@@ -76,6 +76,10 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
+
+    @ExceptionHandler({ProductHistoryNotFoundException.class})
+    public ResponseEntity<RestApiException> NotFoundPaymentException(ProductHistoryNotFoundException ex) {
+
     @ExceptionHandler({OrderNotFoundException.class})
     public ResponseEntity<RestApiException> handleOrderNotFoundException(OrderNotFoundException ex) {
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
@@ -105,6 +109,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({StoreNotFoundException.class})
     public ResponseEntity<RestApiException> StoreNotFoundException(OrderNotFoundException ex) {
+
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(
                 restApiException,

@@ -4,6 +4,7 @@ import com.sparta.plate.dto.request.ReviewRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,6 +44,15 @@ public class Review extends Timestamped {
         this.reviewScore = reviewRequestDto.getReviewScore();
         this.payment = payment;
         this.reviewStatus = reviewRequestDto.isReviewStatus();
+    }
+
+    @Builder
+    public Review(UUID reviewId, Payment payment, String reviewDetail, int reviewScore, boolean reviewStatus) {
+        this.reviewId = reviewId;
+        this.payment = payment;
+        this.reviewDetail = reviewDetail;
+        this.reviewScore = reviewScore;
+        this.reviewStatus = reviewStatus;
     }
 
     @PrePersist  // 엔티티가 저장되기 전에 UUID 자동 생성
