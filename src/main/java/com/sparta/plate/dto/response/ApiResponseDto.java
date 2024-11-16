@@ -96,4 +96,22 @@ public class ApiResponseDto<T> {
             .build();
     }
 
+    // 401 Unauthorized 응답
+    public static <T> ApiResponseDto<T> unauthorized(String message) {
+        return ApiResponseDto.<T>builder()
+            .statusCode(HttpStatus.UNAUTHORIZED.value())
+            .statusMessage(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .message(message)
+            .build();
+    }
+
+    // 403 Forbidden 응답
+    public static <T> ApiResponseDto<T> forbidden(String message) {
+        return ApiResponseDto.<T>builder()
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .statusMessage(HttpStatus.FORBIDDEN.getReasonPhrase())
+            .message(message)
+            .build();
+    }
+
 }
