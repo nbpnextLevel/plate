@@ -3,7 +3,9 @@ package com.sparta.plate.service;
 import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
+import com.sparta.plate.entity.Store;
 import com.sparta.plate.repository.ProductRepository;
+import com.sparta.plate.repository.StoreRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,12 +26,16 @@ class ProductServiceTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private StoreRepository storeRepository;
+
     @Test
     @Transactional
     @DisplayName("Product 생성 및 저장 테스트")
     void createProductAndSave() {
+        Store store = storeRepository.findAll().get(0);
         Product product = Product.builder()
-                .storeId(UUID.randomUUID())
+                .store(store)
                 .name("연어 샐러드")
                 .description("설명")
                 .price(new BigDecimal("18000"))
@@ -54,7 +59,7 @@ class ProductServiceTest {
                 .isPrimary(false)
                 .product(product)
                 .build();
-        
+
         productImages.add(image1);
         productImages.add(image2);
 
