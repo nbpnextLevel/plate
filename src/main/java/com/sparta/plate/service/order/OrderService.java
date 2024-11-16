@@ -248,7 +248,7 @@ public class OrderService {
         Product product = productRepository.findById(requestDto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + requestDto.getProductId()));
 
-        if(!product.getStoreId().equals(order.getStore().getId())){
+        if(!product.getStore().getId().equals(order.getStore().getId())){
             throw new IllegalArgumentException("Product is not in order store");
         }
 
