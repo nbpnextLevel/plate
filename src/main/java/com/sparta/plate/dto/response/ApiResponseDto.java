@@ -86,4 +86,14 @@ public class ApiResponseDto<T> {
             .data(page.getContent())
             .build();
     }
+
+    // 기본 에러 응답
+    public static <T> ApiResponseDto<T> error(String message) {
+        return ApiResponseDto.<T>builder()
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .statusMessage(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .message(message)
+            .build();
+    }
+
 }

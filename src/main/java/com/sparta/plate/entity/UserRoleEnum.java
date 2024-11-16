@@ -31,7 +31,7 @@ public enum UserRoleEnum {
 
 	public UserRoleEnum validateVerificationCode(String inputCode) {
 		if (this != CUSTOMER && !this.verificationCode.equals(inputCode)) {
-			throw new IllegalArgumentException("인증코드가 틀려 등록이 불가능합니다.");
+			throw new IllegalArgumentException("유효하지않은 인증코드입니다.");
 		}
 
 		return this;
