@@ -33,6 +33,9 @@ public class UpdateUserService {
 		if(isSelfUpdate) { // 본인거 수정하는 경우
 			selfUpdate(request, savedUser);
 		} else { // 매니저, 마스터가 고객, 오너 정보수정하는 경우
+			if(request.getPassword() != null) {
+				throw new IllegalArgumentException("비밀번호는 당사자에 의해서만 변경 가능합니다.");
+			}
 			savedUser.updateWithoutPassword(request);
 		}
 
