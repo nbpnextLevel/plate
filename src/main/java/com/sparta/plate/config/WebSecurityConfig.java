@@ -79,9 +79,11 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+                        .requestMatchers("/h2-console/**", "/favicon.ico", "/error", "/swagger-ui/**",
+                            "/swagger-resources/**", "/v3/api-docs/**").permitAll() // swagger
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
-
+                        .requestMatchers(HttpMethod.GET, "/swagger-ui/index.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.POST, "/api/stores/admin").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")

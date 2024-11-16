@@ -12,13 +12,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<RestApiException> illegalArgumentExceptionHandler(IllegalArgumentException ex) {
-        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(
-                restApiException,
-                HttpStatus.BAD_REQUEST
-        );
+    // @ExceptionHandler({IllegalArgumentException.class})
+    // public ResponseEntity<RestApiException> illegalArgumentExceptionHandler(IllegalArgumentException ex) {
+    //     RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    //     return new ResponseEntity<>(
+    //             restApiException,
+    //             HttpStatus.BAD_REQUEST
+    //     );
+    // }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponseDto> illegalArgumentExceptionHandler(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest()
+            .body(ApiResponseDto.error(ex.getMessage()));
     }
 
     @ExceptionHandler({NullPointerException.class})
