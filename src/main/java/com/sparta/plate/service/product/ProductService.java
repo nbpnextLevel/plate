@@ -211,19 +211,25 @@ public class ProductService {
 
         if ("ROLE_CUSTOMER".equals(role)) {
             if (requestDto.getDisplayStatus() != null && !ProductDisplayStatusEnum.IN_STOCK.name().equals(requestDto.getDisplayStatus())) {
-                throw new InvalidDisplayStatusException("ROLE_CUSTOMER는 IN_STOCK 상태의 상품만 조회할 수 있습니다.");
+                throw new InvalidDisplayStatusException("Customer는 판매중인 상품만 조회할 수 있습니다.");
             }
         }
 
-        if (requestDto.getIsHidden() != null || requestDto.getStartDate() != null || requestDto.getEndDate() != null) {
+        if (requestDto.getStartDate() != null || requestDto.getEndDate() != null) {
             if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
-                throw new UnauthorizedAccessException("isHidden이 true인 상품은 Owner, Manager, Master만 조회할 수 있습니다.");
+                throw new UnauthorizedAccessException("상품의 기간 검색은 Owner, Manager, Master만 수행할 수 있습니다.");
+            }
+        }
+
+        if (requestDto.getIsHidden() != null) {
+            if (!role.equals("ROLE_OWNER") && !role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
+                throw new UnauthorizedAccessException("숨겨진 상품은 Owner, Manager, Master만 조회할 수 있습니다.");
             }
         }
 
         if (requestDto.getIsDeleted() != null) {
             if (!role.equals("ROLE_MANAGER") && !role.equals("ROLE_MASTER")) {
-                throw new UnauthorizedAccessException("isDeleted가 true인 상품은 Manager와 Master만 조회할 수 있습니다.");
+                throw new UnauthorizedAccessException("삭제된 상품은 Manager와 Master만 조회할 수 있습니다.");
             }
         }
 
