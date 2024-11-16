@@ -4,6 +4,8 @@ import com.sparta.plate.jwt.CustomLogoutFilter;
 import com.sparta.plate.jwt.JwtFilter;
 import com.sparta.plate.jwt.JwtTokenProvider;
 import com.sparta.plate.jwt.LoginFilter;
+import com.sparta.plate.security.CustomAccessDeniedHandler;
+import com.sparta.plate.security.CustomAuthenticationEntryPoint;
 import com.sparta.plate.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -32,6 +34,8 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final RedisTemplate<String, String> redisTemplate;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -73,16 +77,22 @@ public class WebSecurityConfig {
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
+        // 시큐리티 예외 처리 설정
+        http.exceptionHandling(handler ->
+            handler
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
 
-
-        // TODO 각자 권한에 따른 설정 필요
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/h2-console/**", "/favicon.ico", "/error", "/swagger-ui/**",
                             "/swagger-resources/**", "/v3/api-docs/**").permitAll() // swagger
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER")
+                  
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/index.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/stores").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")

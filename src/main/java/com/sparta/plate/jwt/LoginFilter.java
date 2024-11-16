@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.plate.dto.request.LoginRequestDto;
+import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.entity.UserRoleEnum;
 import com.sparta.plate.security.UserDetailsImpl;
 
@@ -25,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 /*
 	JWT 인증을 하기 위해 설치하는 Custom Filter로 UsernamePasswordAuthenticationFilter 이전에 실행
  */
-// TODO 로그인 성공, 실패 시 공통응답 형태로 반환해주기
 @Slf4j(topic = "로그인 및 JWT 생성을 위한 Filter")
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -80,11 +80,16 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws
 		IOException {
 
-		log.error("로그인 실패: {}", failed.getMessage());
-
-		response.setStatus(401);
-		response.getWriter().print("자격증명 실패로 인한 로그인 실패");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+
+		ApiResponseDto<?> responseDto = ApiResponseDto.unauthorized("로그인 실패 : 자격 증명에 실패하였습니다.");
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String jsonResponse = objectMapper.writeValueAsString(responseDto);
+
+		response.getWriter().write(jsonResponse);
 	}
 
 	private Cookie createCookie(String key, String value) throws UnsupportedEncodingException {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.plate.dto.request.SignupRequestDto;
 import com.sparta.plate.dto.request.UpdateUserRequestDto;
+import com.sparta.plate.dto.request.UserSearchRequestDto;
 import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.UserResponseDto;
 import com.sparta.plate.entity.User;
@@ -69,8 +70,15 @@ public class UserController {
 		@RequestParam("isAsc") boolean isAsc,
 		@RequestParam(value = "search", required = false) String search
 	) {
+		UserSearchRequestDto request = UserSearchRequestDto.builder()
+			.page(page - 1)
+			.size(size)
+			.sortBy(sortBy)
+			.isAsc(isAsc)
+			.search(search)
+			.build();
 
-		Page<UserResponseDto> userList = getUserListService.getUserList(page - 1, size, sortBy, isAsc, search);
+		Page<UserResponseDto> userList = getUserListService.getUserList(request);
 
 		return ApiResponseDto.successPage(userList);
 	}
