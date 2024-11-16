@@ -35,7 +35,6 @@ public class Review extends Timestamped {
     @Max(5)
     private int reviewScore;
 
-
     @Column
     private boolean reviewStatus = true;
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -34,61 +35,67 @@ public class ReviewController {
 
     //리뷰 작성
     @PostMapping("/{paymentId}")
-    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> createReview(@PathVariable("paymentId") UUID paymentId,
-                                                                          @RequestBody ReviewRequestDto reviewRequestDto,
-                                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Long userId = userDetails.getUser().getId();  // 로그인한 사용자 ID
+    public ApiResponseDto<Map<String, Object>> createReview(@PathVariable("paymentId") UUID paymentId,
+                                                            Long userId,
+                                                            @RequestBody ReviewRequestDto reviewRequestDto,
+                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        // 리뷰 서비스 호출
+        userId = userDetails.getUser().getId();  // 로그인한 사용자 ID
         ReviewResponseDto reviewResponseDto = reviewService.createReview(reviewRequestDto, userId);
+        String successMessage = "리뷰가 성공적으로 생성되었습니다.";
 
-        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 생성되었습니다.", reviewResponseDto));
+        return ApiResponseDto.success(Map.of(successMessage, reviewResponseDto));
     }
 
     // 리뷰 수정
-    @PutMapping("/{paymentId}/update")
-    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> updateReview(@PathVariable("paymentId") UUID paymentId,
+    @PatchMapping("/{reviewId}/update")
+    public ApiResponseDto<Map<String, Object>> updateReview(@PathVariable("reviewId") UUID reviewId,
                                           @RequestBody ReviewRequestDto reviewRequestDto,
                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Long userId = userDetails.getUser().getId();
         ReviewResponseDto reviewResponseDto = reviewService.updateReview(reviewRequestDto, userId);
 
-        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 수정되었습니다.", reviewResponseDto));
+        String successMessage = "리뷰가 성공적으로 수정되었습니다.";
+
+        return ApiResponseDto.success(Map.of("message", successMessage, "review", reviewResponseDto));
     }
 
     // 리뷰 삭제
-    @PutMapping("/{paymentId}/delete")
-    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> deleteReview(@PathVariable("paymentId") UUID paymentId,
+    @PatchMapping("/{reviewId}/delete")
+    public ApiResponseDto<Map<String, Object>> deleteReview(@PathVariable("reviewId") UUID reviewId,
                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Long userId = userDetails.getUser().getId();
-        ReviewResponseDto reviewResponseDto = reviewService.deleteReview(paymentId, userId);
+        ReviewResponseDto reviewResponseDto = reviewService.deleteReview(reviewId, userId);
 
-        return ResponseEntity.ok(ApiResponseDto.success("리뷰가 성공적으로 삭제되었습니다.", reviewResponseDto));
+        String successMessage = "리뷰가 성공적으로 삭제되었습니다.";
+
+        return ApiResponseDto.success(Map.of("message", successMessage, "review", reviewResponseDto));
     }
 
     // 리뷰ID로 단건 조회
     @GetMapping("/{reviewId}")
-    public ResponseEntity<ApiResponseDto<ReviewResponseDto>> findById(@PathVariable("reviewId") UUID reviewId,
+    public ApiResponseDto<Map<String, Object>> findById(@PathVariable("reviewId") UUID reviewId,
                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
         ReviewResponseDto reviewResponseDto = reviewService.findById(reviewId, userDetails);
-        return ResponseEntity.ok(ApiResponseDto.success(reviewResponseDto));
+
+        return ApiResponseDto.success(Map.of("review", reviewResponseDto));
     }
 
     // userId 사용자별 리뷰 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponseDto<Page<ReviewResponseDto>>> findReviewByUserId(@PathVariable("userId") Long userId,
+    public ApiResponseDto<Map<String, Object>> findReviewByUserId(@PathVariable("userId") Long userId,
                                                                                       Pageable pageable,
                                                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Page<ReviewResponseDto> reviewResponseDto = reviewService.findReviewByUserId(userId, pageable, userDetails);
 
-        return ResponseEntity.ok(ApiResponseDto.success(reviewResponseDto));
+        return ApiResponseDto.success(Map.of("reviews", reviewResponseDto));
     }
 
     // 사용자별 리뷰 조회 + search
     @GetMapping("/search/{userId}")
-    public Page<ReviewResponseDto> findByPaymentOrderUserIdAndStoreName
+    public ApiResponseDto<Map<String, Object>> findByPaymentOrderUserIdAndStoreName
     (@PathVariable("userId") Long userId,
      @RequestParam(value = "search", required = false) String storeName,
      @RequestParam("page") int page, // 페이지 번호
@@ -98,16 +105,17 @@ public class ReviewController {
      @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         Pageable pageable = createPageable(page, size, sortBy, isAcs);
-
         Page<ReviewResponseDto> reviewPage = reviewService.searchReviewByUserIdAndStoreName(userId, storeName, pageable, userDetails);
-        return reviewPage;
+
+        return ApiResponseDto.success(Map.of("reviews", reviewPage));
     }
 
 
     // 가게별 리뷰 조회 (모든 권한)
     @GetMapping("/store/{storeId}")
-    public Page<ReviewResponseDto> findByStoreId(@PathVariable("storeId") UUID storeId, Pageable pageable){
-        return reviewService.findByStoreId(storeId, pageable);
+    public ApiResponseDto<Map<String, Object>> findByStoreId(@PathVariable("storeId") UUID storeId, Pageable pageable){
+        Page<ReviewResponseDto> reviewPage = reviewService.findByStoreId(storeId, pageable);
+        return ApiResponseDto.success(Map.of("reviews", reviewPage));
     }
 
 

@@ -1,5 +1,6 @@
 package com.sparta.plate.dto.request;
 
+import com.sparta.plate.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,9 +14,11 @@ public class PaymentRequestDto {
 
     private UUID orderId;
     private Long orderPrice;
-    private boolean isCanceled;
+    private Long userId;
+    private boolean isCanceled; // 주문이 취소 됐냐 안 됐냐
 
-    public PaymentRequestDto(UUID orderId, Long orderPrice, boolean isCanceled) {
+    public PaymentRequestDto(Long userId, UUID orderId, Long orderPrice, boolean isCanceled) {
+        this.userId = userId;
         this.orderId = orderId;
         this.orderPrice = orderPrice;
         this.isCanceled = isCanceled;

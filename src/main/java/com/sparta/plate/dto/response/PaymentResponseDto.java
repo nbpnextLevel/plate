@@ -25,7 +25,6 @@ public class PaymentResponseDto {
 
     // 가게명, 결제 상품, 주문 유형, 주문 주소, 결제 금액
     private String storeName;
-    private List<OrderProduct> orderProductList;
     private OrderTypeEnum orderTypeEnum;
     private String address;
     private Long orderPrice;
@@ -48,14 +47,13 @@ public class PaymentResponseDto {
         this.amount = payment.getAmount();
 
         this.storeName = payment.getOrder().getStore().getStoreName();
-        this.orderProductList = payment.getOrder().getOrderProductList();
         this.orderTypeEnum = payment.getOrder().getOrderType();
         this.address = payment.getOrder().getOrderAddress();
         this.orderPrice = payment.getOrder().getOrderPrice();
 
         this.createBy = payment.getOrder().getCreateBy();
         this.createAt = payment.getOrder().getCreatedAt();
-        this.deletedBy = payment.getOrder().getCreateBy();
+        this.deletedBy = payment.getOrder().getDeletedBy();
         this.deletedAt = payment.getOrder().getDeletedAt();
     }
 
@@ -71,14 +69,14 @@ public class PaymentResponseDto {
         this.amount = payment.getAmount();
 
         this.storeName = payment.getOrder().getStore().getStoreName();
-        this.orderProductList = payment.getOrder().getOrderProductList();
         this.orderTypeEnum = payment.getOrder().getOrderType();
         this.address = payment.getOrder().getOrderAddress();
         this.orderPrice = payment.getOrder().getOrderPrice();
 
         this.createBy = payment.getOrder().getCreateBy();
         this.createAt = payment.getOrder().getCreatedAt();
-        this.deletedBy = payment.getOrder().getCreateBy();
+        this.deletedBy = payment.getOrder().getDeletedBy();
         this.deletedAt = payment.getOrder().getDeletedAt();
     }
+
 }
