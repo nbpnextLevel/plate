@@ -96,6 +96,7 @@ public class ApiResponseDto<T> {
             .build();
     }
 
+  
     // 401 Unauthorized 응답
     public static <T> ApiResponseDto<T> unauthorized(String message) {
         return ApiResponseDto.<T>builder()
