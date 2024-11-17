@@ -93,7 +93,7 @@ public class WebSecurityConfig {
                                 "/swagger-resources/**", "/v3/api-docs/**").permitAll() // swagger
                         .requestMatchers("/", "/api/users/signup", "/api/users/exists/*", "/api/users/login", "/api/users/reissue").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority( "ROLE_MANAGER", "ROLE_MASTER")
 
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/index.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/stores/**", "/api/stores", "/api/categories").permitAll()

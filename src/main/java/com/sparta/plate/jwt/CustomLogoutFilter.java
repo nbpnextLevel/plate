@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.plate.dto.response.ApiResponseDto;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,8 +52,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		}
 
 		if (refresh == null) {
-			log.error("Refresh cookie not found");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			sendErrorResponse(response, "리프레시 토큰이 존재하지 않습니다.", HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
@@ -60,16 +62,15 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			String loginIdFromToken = jwtTokenProvider.getLoginIdFromToken(refresh);
 
 			if (!redisTemplate.hasKey(loginIdFromToken)) {
-				log.error("[Redis] Login id not found : {} ", loginIdFromToken);
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				sendErrorResponse(response, "저장된 리프레시 토큰을 찾을 수 없습니다.", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
 			// logout
 			Boolean isDeleted = redisTemplate.delete(loginIdFromToken);
 			if(!isDeleted){
-				log.error("[Redis] refreshToken delete failed for key: " + loginIdFromToken);
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				log.error("[Redis] Refresh token delete failed for userId: {}", loginIdFromToken);
+				sendErrorResponse(response, "로그아웃 처리에 실패했습니다.", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
@@ -92,18 +93,34 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		try {
 			jwtTokenProvider.isExpired(refresh);
 		} catch (ExpiredJwtException e) {
-			log.error("[Token] Refresh token expired");
+			log.error("[Token] Refresh token is expired");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
 		boolean refreshToken = jwtTokenProvider.isRefreshToken(refresh);
 		if(!refreshToken) {
-			log.error("[Token] Refresh token type validation failed ");
+			log.error("[Token] This is not a refresh token ");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
+	}
+
+	private void sendErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
+		ApiResponseDto<Void> errorResponse = switch (status) {
+			case HttpServletResponse.SC_BAD_REQUEST -> ApiResponseDto.error(message);
+			case HttpServletResponse.SC_UNAUTHORIZED -> ApiResponseDto.unauthorized(message);
+			case HttpServletResponse.SC_FORBIDDEN -> ApiResponseDto.forbidden(message);
+			default -> ApiResponseDto.error(message);
+		};
+
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.setStatus(status);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.writeValue(response.getWriter(), errorResponse);
 	}
 
 }
