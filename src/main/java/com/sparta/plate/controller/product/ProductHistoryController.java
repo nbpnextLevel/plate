@@ -5,6 +5,7 @@ import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductHistoryResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductHistoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,8 @@ public class ProductHistoryController {
     private final ProductHistoryService historyService;
 
     @PatchMapping("/{historyId}/delete")
+    @Operation(summary = "상품 이력 단건 삭제",
+            description = "상품 이력의 고유 아이디를 활용해 논리적으로 삭제. MASTER 수행 가능")
     public ApiResponseDto<Map<String, Object>> deleteProductHistory(@PathVariable UUID historyId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         historyService.deleteProductHistory(historyId, userDetails.getUser().getId());
 
@@ -30,6 +33,8 @@ public class ProductHistoryController {
     }
 
     @GetMapping
+    @Operation(summary = "상품 이력 목록 조회",
+            description = "상품 이력 테이블의 목록을 조회. MANAGER, MASTER 수행 가능")
     public ApiResponseDto<List<ProductHistoryResponseDto>> getProductHistories(
             @RequestParam(value = "id", required = false) UUID id,
             @RequestParam(value = "productId", required = false) UUID productId,
