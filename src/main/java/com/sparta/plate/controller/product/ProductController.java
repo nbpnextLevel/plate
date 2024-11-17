@@ -27,6 +27,8 @@ public class ProductController {
     private final ProductService productService;
 
     @Hidden
+    @Operation(summary = "상품 등록",
+            description = "상품 및 상품 이미지 등록. OWNER, MANGER, MASTER 수행 가능.")
     @PostMapping(value = "/reg")
     public ApiResponseDto<Map<String, Object>> createProduct(
             @RequestParam(value = "storeId") String storeId,
@@ -165,6 +167,7 @@ public class ProductController {
         return ApiResponseDto.success(Map.of("id", productId, "message", "상품 표시 상태가 성공적으로 수정되었습니다."));
     }
 
+    @Hidden
     @PatchMapping("/{productId}/images")
     @Operation(summary = "상품 이미지 수정 및 관리",
             description = "등록된 상품의 이미지를 삭제하거나 추가" + "해당 상품을 등록한 OWNER, MANAGER, MASTER 수행 가능")
