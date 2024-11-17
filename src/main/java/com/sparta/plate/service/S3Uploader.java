@@ -29,11 +29,16 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String upload(MultipartFile multipartFile) throws IOException {
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-
-        return upload(uploadFile);
+    public String upload(MultipartFile multipartFile) {
+        String fileName = IMAGE_UPLOAD_DIR + "/" + UUID.randomUUID();
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), null)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            return amazonS3Client.getUrl(bucket, fileName).toString();
+        } catch (Exception e) {
+            log.error("Error occurred during file upload: {}", e.getMessage(), e);
+            throw new RuntimeException("File upload to S3 failed", e);
+        }
     }
 
     private String upload(File uploadFile) {
