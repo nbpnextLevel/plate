@@ -123,9 +123,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/payments/search/{userId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.GET, "/api/payments/store/{storeId}").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER")
                         
-                        .requestMatchers("/api/order/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER", "ROLE_CUSTOMER")
-						            .requestMatchers(HttpMethod.PATCH,"/api/order/delete/{orderId}").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
-						            .requestMatchers(HttpMethod.POST,"/api/order").hasAnyAuthority("ROLE_CUSTOMER")
+                        .requestMatchers("/api/orders/**").hasAnyAuthority("ROLE_OWNER", "ROLE_MANAGER", "ROLE_MASTER", "ROLE_CUSTOMER")
+                        .requestMatchers(HttpMethod.PATCH,"/api/orders/delete/{orderId}").hasAnyAuthority("ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.PATCH,"/api/orders/{orderId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
+                        .requestMatchers(HttpMethod.POST,"/api/orders").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
 
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );

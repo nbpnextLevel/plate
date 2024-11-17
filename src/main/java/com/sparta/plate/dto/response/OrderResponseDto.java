@@ -28,7 +28,7 @@ public class OrderResponseDto {
     private List<OrderProductResponseDto> orderProductList;
 
 
-    public static OrderResponseDto fromEntity(Order order) {
+    public static OrderResponseDto fromEntity(Order order, List<OrderProductResponseDto> orderProductResponseDtoList) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setOrderId(order.getOrderId());
         dto.setUserId(order.getUser().getId());
@@ -38,10 +38,8 @@ public class OrderResponseDto {
         dto.setOrderPrice(order.getOrderPrice());
         dto.setOrderAddress(order.getOrderAddress());
         dto.setOrderRequest(order.getOrderRequest());
-        dto.setOrderStatus(order.getOrderStatus().name());
-        dto.setOrderProductList(order.getOrderProductList().stream()
-                .map(OrderProductResponseDto::fromEntity)
-                .toList());
+        dto.setOrderStatus(String.valueOf(order.getOrderStatus()));
+        dto.setOrderProductList(orderProductResponseDtoList);
         return dto;
     }
 

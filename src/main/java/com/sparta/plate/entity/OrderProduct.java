@@ -26,6 +26,9 @@ public class OrderProduct {
     @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)  // 외래 키 설정 (user_id)
     private Product product; // 상품 ID
 
+    @Column(name = "product_history_id", nullable = false)
+    private UUID productHistoryId; //
+
     @Column(nullable = false)
     private int orderQuantity; // 주문 수량
 
