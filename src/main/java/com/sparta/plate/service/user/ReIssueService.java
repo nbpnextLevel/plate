@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.sparta.plate.entity.UserRoleEnum;
 import com.sparta.plate.jwt.JwtTokenProvider;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,11 +37,10 @@ public class ReIssueService {
 		} else {
 			try {
 				redisTemplate.delete(refreshToken);
-				log.info("[Redis] Refresh token deleted successfully : userId {} ", loginIdFromToken);
+				log.info("[Redis] Refresh token is deleted successfully : userId {} ", loginIdFromToken);
 			} catch (RedisConnectionFailureException e) {
 				log.error("[Redis] Redis Connection failed ");
 			}
-
 		}
 
 		tokenMap.put("accessToken", reissueAccessToken(loginIdFromToken, role));
@@ -58,9 +58,15 @@ public class ReIssueService {
 	}
 
 	private void validateToken(String refreshToken) {
-		jwtTokenProvider.validateToken(refreshToken);
+		try {
+			jwtTokenProvider.validateToken(refreshToken);
+		} catch (ExpiredJwtException e) {
+			log.error("[Redis] Refresh token is expired : {}", refreshToken);
+			throw new IllegalArgumentException("[Redis] Refresh token is expired");
+		}
+
 		if(!jwtTokenProvider.isRefreshToken(refreshToken)) {
-			throw new IllegalArgumentException("[Token] Refresh token type validation failed");
+			throw new IllegalArgumentException("[Token] This is not a refresh token ");
 		}
 	}
 

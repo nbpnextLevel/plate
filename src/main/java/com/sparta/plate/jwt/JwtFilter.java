@@ -10,8 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.security.UserDetailsServiceImpl;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,14 +45,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
 		if (StringUtils.hasText(token)) {
 
-			if (!jwtTokenProvider.validateToken(token)) {
-				log.error("Token Error");
+			try {
+				if (!jwtTokenProvider.validateToken(token)) {
+					sendErrorResponse(response, "유효하지 않은 토큰입니다.", HttpServletResponse.SC_UNAUTHORIZED);
+					return;
+				}
+			} catch (ExpiredJwtException e) {
+				sendErrorResponse(response, "토큰이 만료되었습니다.", HttpServletResponse.SC_FORBIDDEN);
 				return;
 			}
 
 			if(!jwtTokenProvider.isAccessToken(token)) {
-				response.getWriter().print("Invalid access token");
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				sendErrorResponse(response, "유효하지 않은 액세스 토큰입니다.", HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}
 
@@ -58,6 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			try {
 				setAuthentication(loginId);
 			} catch (Exception e) {
+				sendErrorResponse(response, "인증 처리 중 오류가 발생했습니다.", HttpServletResponse.SC_UNAUTHORIZED);
 				log.error(e.getMessage());
 				return;
 			}
@@ -89,6 +97,20 @@ public class JwtFilter extends OncePerRequestFilter {
 	private Authentication createAuthentication(String loginId) {
 		UserDetails userDetails = userDetailsService.loadUserByUsername(loginId);
 		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+	}
+
+	private void sendErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
+
+		ApiResponseDto<Void> errorResponse = status == HttpServletResponse.SC_FORBIDDEN
+			? ApiResponseDto.forbidden(message)  // 403
+			: ApiResponseDto.unauthorized(message);  // 401
+
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.setStatus(status);
+
+		String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);
+		response.getWriter().write(jsonResponse);
 	}
 
 }
