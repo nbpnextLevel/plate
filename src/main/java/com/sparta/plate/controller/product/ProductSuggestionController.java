@@ -5,6 +5,7 @@ import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductSuggestionResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductSuggestionService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +23,10 @@ public class ProductSuggestionController {
 
     private final ProductSuggestionService suggestionService;
 
-    @GetMapping
+    @GetMapping("/")
+    @Operation(summary = "상품 정보 제안 요청",
+            description = "상품 이미지의 고유 아이디를 활용해 논리적으로 삭제." +
+                    "OWNER, MANAGER, MASTER 수행 가능")
     public ApiResponseDto<Map<String, Object>> getProductSuggestion(@RequestParam String text) {
         String responseText = suggestionService.getProductSuggestion(text, LocalDateTime.now());
 
@@ -30,6 +34,8 @@ public class ProductSuggestionController {
     }
 
     @GetMapping("/history")
+    @Operation(summary = "상품 정보 제안 요청 목록 조회",
+            description = "상품 정보 제안 요청 테이블의 이록을 조회. MANAGER, MASTER 수행 가능.")
     public ApiResponseDto<List<ProductSuggestionResponseDto>> getSuggestionsHistories(
             @RequestParam(value = "id", required = false) UUID id,
             @RequestParam(value = "requestText", required = false) String requestText,
@@ -58,6 +64,8 @@ public class ProductSuggestionController {
     }
 
     @PatchMapping("/{suggestionId}/delete")
+    @Operation(summary = "상품 정보 제안 요청 기록 단건 삭제",
+            description = "상품 정보 제안 요청 기록의 고유 아이디를 활용해 논리적으로 삭제. MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> deleteProductSuggestion(@PathVariable UUID suggestionId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         suggestionService.deleteProductSuggestion(suggestionId, userDetails.getUser().getId());
 

@@ -5,6 +5,7 @@ import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductImageResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductImageService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +24,8 @@ public class ProductImageController {
     private final ProductImageService imageService;
 
     @PatchMapping("/{imageId}/delete")
+    @Operation(summary = "상품 이미지 단건 삭제",
+            description = "상품 이미지의 고유 아이디를 활용해 논리적으로 삭제. MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> deleteProductImage(@PathVariable UUID imageId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         imageService.deleteProductImage(imageId, userDetails);
 
@@ -30,6 +33,8 @@ public class ProductImageController {
     }
 
     @GetMapping
+    @Operation(summary = "상품 이미지 목록 조회",
+            description = "상품 이미지 테이블의 기록을 조회. MANAGER, MASTER 수행 가능.")
     public ApiResponseDto<List<ProductImageResponseDto>> getProductImages(
             @RequestParam(value = "id", required = false) UUID id,
             @RequestParam(value = "productId", required = false) UUID productId,
