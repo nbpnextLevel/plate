@@ -23,7 +23,7 @@ public class ProductSuggestionController {
 
     private final ProductSuggestionService suggestionService;
 
-    @GetMapping
+    @GetMapping("/")
     @Operation(summary = "상품 정보 제안 요청",
             description = "상품 이미지의 고유 아이디를 활용해 논리적으로 삭제." +
                     "OWNER, MANAGER, MASTER 수행 가능")

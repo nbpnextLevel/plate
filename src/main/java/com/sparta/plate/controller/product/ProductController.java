@@ -5,6 +5,7 @@ import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,8 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping
-    @Operation(summary = "상품 등록",
-            description = "상품 및 상품 이미지 등록. OWNER, MANGER, MASTER 수행 가능.")
+    @Hidden
+    @PostMapping(value = "/reg")
     public ApiResponseDto<Map<String, Object>> createProduct(
             @RequestParam(value = "storeId") String storeId,
             @RequestParam(value = "productName") String productName,
@@ -37,9 +37,13 @@ public class ProductController {
             @RequestParam(value = "maxOrderLimit") Integer maxOrderLimit,
             @RequestParam(value = "displayStatus", required = false) String displayStatus,
             @RequestParam(value = "isHidden", required = false) Boolean isHidden,
-            @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+            @RequestPart(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
     ) throws IOException {
+        if (primaryImageIndex != null && (primaryImageIndex < 0 || primaryImageIndex >= files.length)) {
+            throw new IllegalArgumentException("유효하지 않은 primaryImageIndex 입니다.");
+        }
+
         ProductRequestDto requestDto = ProductRequestDto.builder()
                 .storeId(UUID.fromString(storeId))
                 .productName(productName)
@@ -96,8 +100,7 @@ public class ProductController {
 
     @GetMapping("/search")
     @Operation(summary = "상품 목록 조회",
-            description = "상품의 모"
-                    + "노출 상태가 판매 대기/종료이거나 숨겨진 경우, 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
+            description = "노출 상태가 판매 대기/종료이거나 숨겨진 경우, 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
                     + "상품의 등록 기간 및 숨김 여부 검색은 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
                     + "논리적으로 삭제된 상품은 MANAGER, MASTER만 조회 가능.")
     public ApiResponseDto<List<ProductResponseDto>> searchProducts(

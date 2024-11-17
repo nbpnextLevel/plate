@@ -39,7 +39,8 @@ public class ProductRequestDto {
     private Integer stockQuantity;
 
     @JsonProperty("isHidden")
-    private boolean isHidden;
+    @Builder.Default
+    private Boolean isHidden = false;
 
     @Setter
     private ProductImageRequestDto images;
