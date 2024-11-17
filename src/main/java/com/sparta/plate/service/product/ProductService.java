@@ -61,9 +61,7 @@ public class ProductService {
     public void deleteProduct(UUID productId, UserDetailsImpl userDetails) {
         Product product = findProductById(productId);
 
-        if (product.isDeleted()) {
-            throw new ProductIsDeletedException("This product has already been deleted.");
-        }
+        checkProductIsDeleted(product.isDeleted());
 
         productOwnershipService.checkProductOwnership(product.getId(), userDetails);
 
@@ -235,5 +233,10 @@ public class ProductService {
 
         Pageable pageable = PageableUtil.createPageable(requestDto.getPageNumber(), requestDto.getPageSize());
         return productRepository.searchAll(pageable, requestDto, role, userDetails.getUser().getId());
+    }
+
+    public Product getProductById(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
     }
 }
