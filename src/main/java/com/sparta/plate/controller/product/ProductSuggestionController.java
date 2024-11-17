@@ -64,6 +64,8 @@ public class ProductSuggestionController {
     }
 
     @PatchMapping("/{suggestionId}/delete")
+    @Operation(summary = "상품 정보 제안 요청 기록 단건 삭제",
+            description = "상품 정보 제안 요청 기록의 고유 아이디를 활용해 논리적으로 삭제. MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> deleteProductSuggestion(@PathVariable UUID suggestionId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         suggestionService.deleteProductSuggestion(suggestionId, userDetails.getUser().getId());
 
