@@ -30,6 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Optional<Order> findByStoreIdAndOrderIdAndIsDeletedFalseAndIsCanceledFalseAndOrderStatus(UUID storeId, UUID orderId, OrderStatusEnum orderStatus);
     Optional<Order> findByOrderIdAndIsDeletedFalseAndIsCanceledFalseAndOrderStatus(UUID orderId, OrderStatusEnum orderStatus);
 
+
     // 주문 다건 조회 시 사용
     @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.orderProductList " +
             "WHERE o.orderStatus = :orderStatus " +

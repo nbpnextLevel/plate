@@ -9,11 +9,11 @@ import java.util.UUID;
 
 @Repository
 public interface ProductHistoryRepository extends JpaRepository<ProductHistory, UUID>, ProductHistoryRepositoryCustom {
-    @Query("SELECT ph FROM ProductHistory ph " +
-            "WHERE ph.productId = :productId AND ph.isDeleted = false " +
-            "ORDER BY ph.createdAt DESC")
+    @Query(value = "SELECT * FROM p_product_history ph WHERE ph.product_id = :productId AND ph.is_deleted = false ORDER BY ph.created_at DESC LIMIT 1", nativeQuery = true)
     ProductHistory findLatestByProductId(UUID productId);
 
     boolean existsByProductId(UUID productId);
+
+
 }
 
