@@ -1,5 +1,5 @@
 ### POST PRODUCT - 상품 등록
-POST http://localhost:8080/api/products
+POST http://localhost:8080/api/products/reg
 #Authorization: Bearer {인증 토큰}
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -10,7 +10,7 @@ Content-Disposition: form-data; name="storeId"
 --boundary
 Content-Disposition: form-data; name="productName"
 
-상품명
+새 상품
 --boundary
 Content-Disposition: form-data; name="productDescription"
 
@@ -18,15 +18,15 @@ Content-Disposition: form-data; name="productDescription"
 --boundary
 Content-Disposition: form-data; name="price"
 
-17500
+15000
 --boundary
 Content-Disposition: form-data; name="stockQuantity"
 
-50
+5000
 --boundary
 Content-Disposition: form-data; name="maxOrderLimit"
 
-4
+5
 --boundary
 Content-Disposition: form-data; name="displayStatus"
 
@@ -40,15 +40,15 @@ Content-Disposition: form-data; name="primaryImageIndex"
 
 1
 --boundary
-Content-Disposition: form-data; name="files[]"; filename="profile.png"
+Content-Disposition: form-data; name="files[]"; filename="image1.png"
 Content-Type: image/png
 
-< {이미지경로}\profile.png
+< {이미지경로}\image1.png
 --boundary
-Content-Disposition: form-data; name="files[]"; filename="icon-todo.png"
+Content-Disposition: form-data; name="files[]"; filename="image2.png"
 Content-Type: image/png
 
-< C{이미지경로}\icon-todo.png
+< C{이미지경로}\image2.png
 
 
 ### PATCH PRODUCT IMAGE - 상품이미지 수정 및 관리
@@ -69,17 +69,12 @@ Content-Disposition: form-data; name="deletedImageIds[]"
 
 {삭제할 Image의 ID}
 --boundary
-Content-Disposition: form-data; name="files[]"; filename="F0e_tTIaQAAPSli.png"
-Content-Type: image/png
-
-< C:\Users\misu\Downloads\F0e_tTIaQAAPSli.png
---boundary
-Content-Disposition: form-data; name="files[]"; filename="jjal.jpg"
+Content-Disposition: form-data; name="files[]"; filename="image1.jpg"
 Content-Type: image/jpg
 
-< {이미지경로}\jjal.jpg
+< {이미지경로}\image1.jpg
 --boundary
-Content-Disposition: form-data; name="files[]"; filename="icon-todo.png"
+Content-Disposition: form-data; name="files[]"; filename="image2.png"
 Content-Type: image/png
 
-< {이미지경로}\icon-todo.png
+< {이미지경로}\image2.png
