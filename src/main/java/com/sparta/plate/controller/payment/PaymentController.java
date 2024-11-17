@@ -8,6 +8,7 @@ import com.sparta.plate.repository.PaymentRepository;
 import com.sparta.plate.repository.UserRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.payment.PaymentService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +33,7 @@ public class PaymentController {
 
     // 결제 요청
     @PostMapping("/{orderId}")
+    @Operation(summary = "결제 요청", description = "주문 후, 결제를 위해 사용")
     public ApiResponseDto<Map<String, Object>> createPayment(@PathVariable("orderId") UUID orderId,
                                             Long userId,
                                             @RequestBody PaymentRequestDto paymentRequestDto,
@@ -46,6 +48,7 @@ public class PaymentController {
 
     // 결제 단건 조회
     @GetMapping("/{paymentId}")
+    @Operation(summary = "결제 단건 조회", description = "결제 후, 발급 된 결제 아이디로 결제 조회")
     public ApiResponseDto<Map<String, Object>> getPaymentBypaymentId(@PathVariable("paymentId") UUID paymentId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         PaymentResponseDto paymentResponseDto = paymentService.getPaymentBypaymentId(paymentId, userDetails.getUser().getId());
@@ -54,6 +57,7 @@ public class PaymentController {
 
     // 사용자별 조회
     @GetMapping("/user/{userId}")
+    @Operation(summary = "사용자별 결제 조회", description = "로그인 한 사용자의 결제 목록 조회")
     public  ApiResponseDto<Map<String, Object>> findPaymentByUserId(@PathVariable("userId") Long userId,
                                                                                         Pageable pageable,
                                                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -65,6 +69,7 @@ public class PaymentController {
     // 사용자별 가게 조회 + search(storeName)
     // search : 스토어 이름을 검색해서, 해당되는 스토어만 조회
     @GetMapping("/search/{userId}")
+    @Operation(summary = "사용자별 가게 이름 검색 조회", description = "로그인 한 사용자의 결제 목록중, 특정 가게 검색 조회")
     public ApiResponseDto<Page<PaymentResponseDto>> searchPaymentsByUserIdAndStoreName(
             @PathVariable("userId") Long userId,
             @RequestParam(value = "search", required = false) String storeName,
@@ -85,6 +90,7 @@ public class PaymentController {
 
     // 가게별 조회
     // 가게 사장님이, 결제된 내역들을 조회하기 위해!
+    @Operation(summary = "가게 결제 내역 조회", description = "가게 사장님이 가게에서 결제된 내역을 조회")
     @GetMapping("/store/{storeId}")
     public ApiResponseDto<Page<PaymentResponseDto>> getPaymentsByStoreId(@PathVariable("storeId") UUID storeId,
                                                          Pageable pageable,
