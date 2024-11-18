@@ -142,7 +142,7 @@ public class ProductService {
             newImages = imageService.processProductImages(product, requestDto);
         }
 
-        if (requestDto.getDeletedImageIds() != null) {
+        if (requestDto.getDeletedImageIds() != null && !requestDto.getDeletedImageIds().isEmpty()) {
             currentImages.stream()
                     .filter(image -> requestDto.getDeletedImageIds().contains(image.getId()))
                     .forEach(image -> image.markAsDeleted(userDetails.getUser().getId()));
