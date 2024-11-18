@@ -81,6 +81,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler({StoreOwnerMismatchException.class})
+    public ResponseEntity<RestApiException> handleProductOwnerMismatchException(StoreOwnerMismatchException ex) {
+        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.FORBIDDEN
+        );
+    }
+
     @ExceptionHandler({ProductValidationException.class})
     public ResponseEntity<RestApiException> handleProductValidationException(ProductValidationException ex) {
         RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());

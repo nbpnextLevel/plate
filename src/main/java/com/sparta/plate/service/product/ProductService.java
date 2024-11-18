@@ -7,10 +7,7 @@ import com.sparta.plate.entity.Product;
 import com.sparta.plate.entity.ProductDisplayStatusEnum;
 import com.sparta.plate.entity.ProductImage;
 import com.sparta.plate.entity.Store;
-import com.sparta.plate.exception.InvalidDisplayStatusException;
-import com.sparta.plate.exception.ProductIsDeletedException;
-import com.sparta.plate.exception.ProductNotFoundException;
-import com.sparta.plate.exception.UnauthorizedAccessException;
+import com.sparta.plate.exception.*;
 import com.sparta.plate.repository.ProductRepository;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.store.GetStoreService;
@@ -39,9 +36,15 @@ public class ProductService {
     private final GetStoreService storeService;
 
     @Transactional
-    public UUID createProduct(ProductRequestDto requestDto) throws IOException {
+    public UUID createProduct(ProductRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         Store store = storeService.getStore(requestDto.getStoreId());
         Product product = Product.toEntity(requestDto, store);
+
+        String storeUserId = store.getUser().getId().toString();
+        String userId = userDetails.getUser().getId().toString();
+        if (!storeUserId.equals(userId)) {
+            throw new StoreOwnerMismatchException("You are not the owner of this product");
+        }
 
         if (requestDto.getImages() != null) {
             List<ProductImage> newImages = imageService.processProductImages(product, requestDto.getImages());

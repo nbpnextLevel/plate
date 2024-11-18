@@ -41,6 +41,7 @@ public class ProductController {
             @RequestParam(value = "isHidden", required = false) Boolean isHidden,
             @RequestPart(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
+            , @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
         if (primaryImageIndex != null && (primaryImageIndex < 0 || primaryImageIndex >= files.length)) {
             throw new IllegalArgumentException("유효하지 않은 primaryImageIndex 입니다.");
@@ -65,7 +66,7 @@ public class ProductController {
             requestDto.setImages(imageRequestDto);
         }
 
-        UUID savedProductId = productService.createProduct(requestDto);
+        UUID savedProductId = productService.createProduct(requestDto, userDetails);
 
         return ApiResponseDto.success(Map.of("id", savedProductId));
     }
