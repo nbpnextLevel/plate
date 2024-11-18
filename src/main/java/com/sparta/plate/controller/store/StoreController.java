@@ -61,14 +61,15 @@ public class StoreController {
 	}
 
 	@GetMapping
-	@Operation(summary = "가게 리스트 조회", description = "등록된 가게 리스트를 조회할 수 있음. 검색 필터는 카테고리, 가게명에 적용")
+	@Operation(summary = "가게 리스트 조회", description = "등록된 가게 리스트를 조회할 수 있음. 검색 필터는 카테고리, 가게명, 가게주소에 적용")
 	public ApiResponseDto<List<StoreResponseDto>> getAllStores(
 		@RequestParam("page") int page,
 		@RequestParam(value = "size", defaultValue = "10") int size,
 		@RequestParam("sortBy") String sortBy,
 		@RequestParam("isAsc") boolean isAsc,
 		@RequestParam(value = "categoryId", required = false) UUID categoryId,
-		@RequestParam(value = "storeName", required = false) String storeName
+		@RequestParam(value = "storeName", required = false) String storeName,
+		@RequestParam(value = "address", required = false) String address
 	) {
 		StoreSearchRequestDto request = StoreSearchRequestDto.builder()
 			.page(page-1)
@@ -77,6 +78,7 @@ public class StoreController {
 			.isAsc(isAsc)
 			.categoryId(categoryId)
 			.storeName(storeName)
+			.address(address)
 			.build();
 
 		Page<StoreResponseDto> storeList = getStoreListService.getStoreList(request);
