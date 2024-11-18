@@ -20,7 +20,7 @@ public class OrderProductRequestDto {
     private UUID orderId;
     private UUID productId;
     private int orderQuantity;
-    private String flagStatus;
+    private String flagStatus = "UPDATE";
 
     // DTO -> Entity 변환
     public OrderProduct toEntity(Product product, Order order) {
