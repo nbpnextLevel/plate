@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -224,22 +223,22 @@ public class OrderService {
     }
 
     @Transactional
-    public Page<OrderResponseDto> getOrderList(UUID storeId, String orderStatus, LocalDate orderDateFrom, LocalDate orderDateTo, Pageable pageable, User user) {
+    public Page<OrderResponseDto> getOrderList(UUID storeId, String orderStatus, Pageable pageable, User user) {
 
         Page<Order> orderList;
 
         switch(user.getRole()) {
             case CUSTOMER ->
-                    orderList = orderRepository.findByUserOrdersWithProductList(user.getId(), OrderStatusEnum.valueOf(orderStatus), orderDateFrom, orderDateTo, pageable);
+                    orderList = orderRepository.findByUserOrdersWithProductList(user.getId(), OrderStatusEnum.valueOf(orderStatus), pageable);
 
             case OWNER -> {
 
                 if (!user.getStore().getId().equals(storeId)) {
                     throw new UnAuthorizedException("User does not have access to this store.");
                 }
-                orderList = orderRepository.findByStoreOrdersWithProductList(storeId, OrderStatusEnum.valueOf(orderStatus), orderDateFrom, orderDateTo, pageable);
+                orderList = orderRepository.findByStoreOrdersWithProductList(storeId, OrderStatusEnum.valueOf(orderStatus),  pageable);
             }
-            case MASTER, MANAGER-> orderList = orderRepository.findByOrdersWithProductList(OrderStatusEnum.valueOf(orderStatus), orderDateFrom, orderDateTo, pageable);
+            case MASTER, MANAGER-> orderList = orderRepository.findByOrdersWithProductList(OrderStatusEnum.valueOf(orderStatus), pageable);
 
             default -> throw new UserNotAuthorizedException("User role not recognized");
         }

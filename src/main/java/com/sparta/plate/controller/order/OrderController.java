@@ -16,8 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -61,11 +59,9 @@ public class OrderController {
     @Operation(summary = "주문 다건 조회",
                 description = "CUSTOMER는 자신이 주문한 내역,"
                             + "OWNER는 자신의 가게로 주문된 내역,"
-                            + "MASTER와 MANAGER는 모든 주문에 대한 내역을 검색 조건을 이용하여 다건 조회 가능")
+                            + "MASTER와 MANAGER는 모든 주문에 대한 내역의 상태 값 이용하여 다건 조회 가능")
     public ApiResponseDto<Map<String, Object>> getOrderList(@RequestParam(required = false) UUID storeId,
-                                                            @RequestParam(required = false) String orderStatus,
-                                                            @RequestParam(required = false) String orderDateFrom,
-                                                            @RequestParam(required = false) String orderDateTo,
+                                                            @RequestParam(defaultValue = "PENDING_PAYMENT") String orderStatus,
                                                             @RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "20") int size,
                                                             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -80,18 +76,13 @@ public class OrderController {
             }
         }
 
-        // 날짜 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate startDate = LocalDate.parse(orderDateFrom, formatter);
-        LocalDate endDate = LocalDate.parse(orderDateTo, formatter);
-
         // Sort 설정
         Sort sort = sortOrder.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         // PageRequest 생성
         Pageable pageable = PageRequest.of(page - 1, size, sort); // page는 0-based index
 
-        Page<OrderResponseDto> orderList = orderService.getOrderList(storeId, orderStatus, startDate, endDate, pageable, userDetails.getUser());
+        Page<OrderResponseDto> orderList = orderService.getOrderList(storeId, orderStatus,  pageable, userDetails.getUser());
 
         // 응답으로 Page<OrderResponseDto>를 리스트로 변환하여 전달
         Map<String, Object> response = new HashMap<>();
