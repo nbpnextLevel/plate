@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponseDto> illegalArgumentExceptionHandler(IllegalArgumentException ex) {
         return ResponseEntity.badRequest()
-            .body(ApiResponseDto.error(ex.getMessage()));
+                .body(ApiResponseDto.error(ex.getMessage()));
     }
 
     @ExceptionHandler({NullPointerException.class})
@@ -63,6 +63,33 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler({ProductIsDeletedException.class})
+    public ResponseEntity<RestApiException> handleProductIsDeletedException(ProductIsDeletedException ex) {
+        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler({ProductOwnerMismatchException.class})
+    public ResponseEntity<RestApiException> handleProductOwnerMismatchException(ProductOwnerMismatchException ex) {
+        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler({ProductValidationException.class})
+    public ResponseEntity<RestApiException> handleProductValidationException(ProductValidationException ex) {
+        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
@@ -81,8 +108,6 @@ public class GlobalExceptionHandler {
                 .message(errorMessages.toString())
                 .build());
     }
-
-
 
 
     @ExceptionHandler({OrderNotFoundException.class})
