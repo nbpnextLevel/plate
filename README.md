@@ -60,8 +60,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **Amazon RDS (Relational Database Service)**
   - PostgreSQL 데이터베이스를 호스팅하여 애플리케이션의 데이터 저장을 담당
 - **Redis**
-  - Spring 서버의 성능 향상과 캐시를 위해 사용
-  - 로그인 토큰 관리, 데이터 캐싱 등 빠른 데이터 접근이 필요한 작업에 활용
+  - JWT 토큰 기반 인증 시스템 보안 강화를 위해 활용
 - **Amazon S3**
   - 사용자가 업로드한 이미지나 기타 파일들을 저장하여 사용
 - **Google AI API**
