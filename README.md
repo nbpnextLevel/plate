@@ -2,18 +2,28 @@
 Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리식 아키텍처로 개발하는 것을 목표로 한 서비스에 생성형 인공지능 서비스를 연동하여 구현하였습니다.
 
 ----
-### 📖프로젝트 소개(Plate) ###
+### 📖 프로젝트 소개(Plate) ###
+![image](https://github.com/user-attachments/assets/e765c67d-001c-41e1-a349-a1485323e853)
 
+**Plate는 음식 배달의 중심!**
 
-####
+즉 접시처럼 모든 음식 주문과 관련된 활동을 하나의 플랫폼에서 관리할 수 있는 공간을 제공합니다.
+- #### 프로젝트 목표 ####
+  - 추후 확장성을 고려한 배달 및 포장 음식 주문 관리 서비스 개발
+  - AI 기능을 통해 상품의 정보에 대한 제안 받기
+  - 기획자의 요구사항을 확인하여 프론트엔드 개발자와 협업에 문제 없도록 API 문서 작성
+  - 설계부터 배포까지 여러가지를 시도해보며 학습하기
+- #### 프로젝트 상세 ####
+  - CUSTOMER, OWNER, MANAGER, MASTER의 권한으로 관리하여 진행
+  - 
 ----
-### 👩‍💻팀원 역할 분담 ###
+### 👩‍💻 팀원 역할 분담 ###
  - **성은정 :** 팀장, 결제 및 리뷰 담당
  - **안재희 :** 유저 및 가게 담당
  - **임지은 :** 주문 담당
  - **한미수 :** 상품 및 AI 담당
 ----
-### 🔧개발환경 ###
+### 🔧 개발환경 ###
 - **Framework  :** Spring Boot 3.3.5
 - **Database :** PostgreSQL
 - **Build Tool :** Gradle
@@ -21,23 +31,42 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **ORM :** JPA
 - **VCS :** Git을 이용한 버전 관리 (GitHub, GitLab, Bitbucket 등)
 ----
-### 🔧기술스택 ###
-- **Server :** AWS EC2
-- **Database :** AWS RDS, AWS S3, Redis
+### ⚙️ 기술스택 ###
+- **Server :** AWS VPC, AWS EC2, Redis
+- **Database :** AWS RDS, AWS S3
 - **API documentation:** Swagger
 ----
-### 📝ERD ###
+### 📝 ERD ###
+![image](https://github.com/user-attachments/assets/b185937c-f778-46b3-8c54-0b4abb0be860)
+
 ----
 ### 📚 프로젝트 아키텍처 ###
 ![image](https://github.com/user-attachments/assets/9ed1c358-0350-405b-a94f-c2c4a985158b)
 
 ----
-### ⚙️서비스 구성 및 실행 방법 ###
-- **유저 :**
-- **가게 :**
-- **상품 :**
-- **주문 :**
-- **결제 :**
-- **리뷰 :**
+### 🖥️ API ###
+- **API 명세:** https://teamsparta.notion.site/API-29ccff47988d4ae1a02c643a32393543
+- **Swagger:** http://43.203.245.199/swagger-ui/index.html
+
 ----
-### 🖥️API docs ###
+### ⚙️서비스 구성 및 실행 방법 ###
+- **AWS VPC (Virtual Private Cloud)**
+  - 전체 인프라가 보안 경계 내에서 실행되는 네트워크
+- **EC2 인스턴스**
+  - Spring 애플리케이션 서버가 배포되어 있는 컴퓨팅 자원
+  - 사용자는 EC2 서버를 통해 애플리케이션에 접근
+- **Spring 프레임워크**
+  - 사용자 요청을 처리하고 데이터베이스 및 외부 API와의 상호작용을 담당
+- **Amazon RDS (Relational Database Service)**
+  - PostgreSQL 데이터베이스를 호스팅하여 애플리케이션의 데이터 저장을 담당
+- **Redis**
+  - Spring 서버의 성능 향상과 캐시를 위해 사용
+  - 로그인 토큰 관리, 데이터 캐싱 등 빠른 데이터 접근이 필요한 작업에 활용
+- **Amazon S3**
+  - 사용자가 업로드한 이미지나 기타 파일들을 저장하여 사용
+- **Google AI API**
+  - 외부 AI 서비스와 통합되어 기능을 확장
+  - 사용자는 Spring 애플리케이션을 통해 Google AI API와 상호작용 가능
+----
+### ✒️기술 Issue 해결 과정 ###
+----
