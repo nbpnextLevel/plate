@@ -35,7 +35,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **Build Tool :** Gradle
 - **IDE :** IntelliJ
 - **ORM :** JPA
-- **VCS :** Git을 이용한 버전 관리 (GitHub, GitLab, Bitbucket 등)
+- **VCS :** GitHub(Git Flow 전략)
 ----
 ### ⚙️ 기술스택 ###
 - **Server :** AWS VPC, AWS EC2
