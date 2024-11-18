@@ -17,6 +17,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
   - CUSTOMER, OWNER, MANAGER, MASTER의 권한으로 관리하여 진행
   - 유저, 가게, 상품, 주문, 결제, 리뷰 도메인으로 구성
   - 이력 관리가 필요한 부분은 물리삭제가 아닌 논리삭제(is_deleted) 컬럼 사용
+  - 모든 테이블에 Audit 필드 추가하여 데이터 감사로그 기록 
 ----
 ### 👩‍💻 팀원 역할 분담 ###
  - **성은정 :** 팀장, 결제 및 리뷰 담당
@@ -37,8 +38,8 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **VCS :** Git을 이용한 버전 관리 (GitHub, GitLab, Bitbucket 등)
 ----
 ### ⚙️ 기술스택 ###
-- **Server :** AWS VPC, AWS EC2, Redis
-- **Database :** AWS RDS, AWS S3
+- **Server :** AWS VPC, AWS EC2
+- **Database :** AWS RDS, AWS S3, Redis
 - **API documentation:** Swagger
 ----
 ### 📝 ERD ###
