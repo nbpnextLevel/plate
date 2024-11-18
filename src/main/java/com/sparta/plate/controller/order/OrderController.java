@@ -46,6 +46,7 @@ public class OrderController {
                             + "MASTER와 MANAGER는 모든 주문에 대한 orderId로 주문 단건 조회 가능")
     public ApiResponseDto<OrderResponseDto> getOrder(@PathVariable("orderId") UUID orderId, @RequestParam(required = false) UUID storeId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+
         // OWNER 역할일 경우 storeId가 필수로 입력되었는지 확인
         if (userDetails.getUser().getRole() == UserRoleEnum.OWNER) {
             if (storeId == null) {
@@ -70,6 +71,7 @@ public class OrderController {
                                                             @RequestParam(defaultValue = "createdAt") String sortBy,
                                                             @RequestParam(defaultValue = "desc") String sortOrder,
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
 
         // OWNER 역할일 경우 storeId가 필수로 입력되었는지 확인
         if (userDetails.getUser().getRole() == UserRoleEnum.OWNER) {
@@ -109,12 +111,14 @@ public class OrderController {
                             + "MASTER와 MANAGER는 모든 주문에 대한 orderId로 주문유형, 주문주소, 주문요청사항 및  flagStatus 'CREATE', 'UPDATE', 'DELETE'로 주문 상품에 대한 추가, 삭제와 수량 변경이 가능")
     public ApiResponseDto<Map<String, Object>> updateOrder(@PathVariable("orderId") UUID orderId, @RequestParam(required = false) UUID storeId, @RequestBody OrderRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+
         // OWNER 역할일 경우 storeId가 필수로 입력되었는지 확인
         if (userDetails.getUser().getRole() == UserRoleEnum.OWNER) {
             if (storeId == null) {
                 return ApiResponseDto.error("OWNER는 storeId를 필수로 입력해야 합니다.");
             }
         }
+
 
         orderService.updateOrder(orderId, storeId, requestDto, userDetails.getUser());
         return ApiResponseDto.success("수정 완료되었습니다.", Map.of("orderId", orderId));
@@ -134,12 +138,14 @@ public class OrderController {
                             + "MASTER와 MANAGER는 모든 주문에 대한 내역을 주문이 생성 된 지 5분 이내에 취소 가능")
     public ApiResponseDto<Map<String, Object>> cancelOrder(@PathVariable UUID orderId, @RequestParam(required = false) UUID storeId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
+
         // OWNER 역할일 경우 storeId가 필수로 입력되었는지 확인
         if (userDetails.getUser().getRole() == UserRoleEnum.OWNER) {
             if (storeId == null) {
                 return ApiResponseDto.error("OWNER는 storeId를 필수로 입력해야 합니다.");
             }
         }
+
 
         orderService.cancelOrder(orderId,  storeId,userDetails.getUser());
 

@@ -107,6 +107,10 @@ public class JwtTokenProvider {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
 
+	public Date getExpirationDateFromToken(String token) {
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration();
+	}
+
 	// 만료된 토큰 여부 조회하기
 	public Boolean isExpired(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before((new Date()));
@@ -123,7 +127,7 @@ public class JwtTokenProvider {
 	}
 
 	// HTTP 요청헤더에서 bearer 토큰을 가져옴.
-	public String getJwtFromHeader(HttpServletRequest request) {
+	public String getAccessTokenFromHeader(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
 			return bearerToken.substring(7);
@@ -140,6 +144,7 @@ public class JwtTokenProvider {
 			log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
 		} catch (ExpiredJwtException e) {
 			log.error("Expired JWT token, 만료된 JWT token 입니다.");
+			throw e;
 		} catch (UnsupportedJwtException e) {
 			log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
 		} catch (IllegalArgumentException e) {

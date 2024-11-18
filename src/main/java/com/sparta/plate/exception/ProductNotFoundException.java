@@ -1,6 +1,8 @@
 package com.sparta.plate.exception;
 
-public class ProductNotFoundException extends RuntimeException {
+import jakarta.persistence.EntityNotFoundException;
+
+public class ProductNotFoundException extends EntityNotFoundException {
     public ProductNotFoundException(String message) {
         super(message);
     }

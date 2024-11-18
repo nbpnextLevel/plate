@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -62,7 +61,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	 */
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-		FilterChain chain, Authentication authentication) throws UnsupportedEncodingException {
+		FilterChain chain, Authentication authentication) throws IOException {
 
 		String loginId = ((UserDetailsImpl) authentication.getPrincipal()).getUsername();
 		UserRoleEnum role = ((UserDetailsImpl) authentication.getPrincipal()).getUser().getRole();
@@ -70,26 +69,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String accessToken = jwtTokenProvider.createAccessToken(loginId, role);
 		String refreshToken = jwtTokenProvider.createRefreshToken(loginId, role);
 
-		// response.addHeader(JwtTokenProvider.AUTHORIZATION_HEADER, accessToken);
 		response.setHeader("access", accessToken);
 		response.addCookie(createCookie("refresh", refreshToken));
-		response.setStatus(HttpStatus.OK.value());
+
+		ApiResponseDto<Object> responseDto = ApiResponseDto.success("로그인에 성공했습니다.");
+		sendJsonResponse(response, responseDto);
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws
 		IOException {
 
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-
-		ApiResponseDto<?> responseDto = ApiResponseDto.unauthorized("로그인 실패 : 자격 증명에 실패하였습니다.");
-
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonResponse = objectMapper.writeValueAsString(responseDto);
-
-		response.getWriter().write(jsonResponse);
+		ApiResponseDto<Object> responseDto = ApiResponseDto.unauthorized("로그인 실패 = 자격 증명에 실패하였습니다.");
+		sendJsonResponse(response, responseDto);
 	}
 
 	private Cookie createCookie(String key, String value) throws UnsupportedEncodingException {
@@ -99,5 +91,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		cookie.setHttpOnly(true);
 
 		return cookie;
+	}
+
+	private void sendJsonResponse(HttpServletResponse response, ApiResponseDto<?> responseDto) throws IOException {
+		response.setStatus(responseDto.getStatusCode());
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		new ObjectMapper().writeValue(response.getWriter(), responseDto);
 	}
 }

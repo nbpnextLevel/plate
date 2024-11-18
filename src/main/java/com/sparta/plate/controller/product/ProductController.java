@@ -5,6 +5,8 @@ import com.sparta.plate.dto.response.ApiResponseDto;
 import com.sparta.plate.dto.response.ProductResponseDto;
 import com.sparta.plate.security.UserDetailsImpl;
 import com.sparta.plate.service.product.ProductService;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +26,10 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping
+    @Hidden
+    @Operation(summary = "상품 등록",
+            description = "상품 및 상품 이미지 등록. OWNER, MANGER, MASTER 수행 가능.")
+    @PostMapping(value = "/reg")
     public ApiResponseDto<Map<String, Object>> createProduct(
             @RequestParam(value = "storeId") String storeId,
             @RequestParam(value = "productName") String productName,
@@ -34,9 +39,13 @@ public class ProductController {
             @RequestParam(value = "maxOrderLimit") Integer maxOrderLimit,
             @RequestParam(value = "displayStatus", required = false) String displayStatus,
             @RequestParam(value = "isHidden", required = false) Boolean isHidden,
-            @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+            @RequestPart(value = "files[]", required = false) MultipartFile[] files,
             @RequestParam(value = "primaryImageIndex", required = false) Integer primaryImageIndex
     ) throws IOException {
+        if (primaryImageIndex != null && (primaryImageIndex < 0 || primaryImageIndex >= files.length)) {
+            throw new IllegalArgumentException("유효하지 않은 primaryImageIndex 입니다.");
+        }
+
         ProductRequestDto requestDto = ProductRequestDto.builder()
                 .storeId(UUID.fromString(storeId))
                 .productName(productName)
@@ -62,6 +71,9 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @Operation(summary = "상품 단건 조회",
+            description = "상품의 고유 아이디를 활용해 조회."
+                    + "노출 상태가 판매 대기/종료이거나 숨겨진 경우, 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능.")
     public ApiResponseDto<ProductResponseDto> getProduct(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         ProductResponseDto responseDto = productService.getProduct(productId, userDetails);
 
@@ -69,6 +81,10 @@ public class ProductController {
     }
 
     @GetMapping("/stores/{storeId}")
+    @Operation(summary = "가게별 상품 목록 조회",
+            description = "노출 상태가 판매 대기/종료이거나 숨겨진 경우, 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
+                    + "상품의 등록 기간 및 숨김 여부 검색은 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
+                    + "논리적으로 삭제된 상품은 MANAGER, MASTER만 조회 가능.")
     public ApiResponseDto<List<ProductResponseDto>> searchStroesProducts(
             @RequestParam(value = "productId", required = false) UUID productId,
             @RequestParam(value = "productName", required = false) String productName,
@@ -85,6 +101,10 @@ public class ProductController {
     }
 
     @GetMapping("/search")
+    @Operation(summary = "상품 목록 조회",
+            description = "노출 상태가 판매 대기/종료이거나 숨겨진 경우, 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
+                    + "상품의 등록 기간 및 숨김 여부 검색은 해당 상품은 등록한 OWNER, MANAGER, MASTER만 조회 가능."
+                    + "논리적으로 삭제된 상품은 MANAGER, MASTER만 조회 가능.")
     public ApiResponseDto<List<ProductResponseDto>> searchProducts(
             @RequestParam(value = "storeId", required = false) UUID storeId,
             @RequestParam(value = "productId", required = false) UUID productId,
@@ -102,6 +122,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
+    @Operation(summary = "상품 정보 수정",
+            description = "상품의 주요 정보인 상품명, 설명, 가격 수정. 해당 상품을 등록한 OWNER, MANGER, MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> updateProductDetails(@PathVariable UUID productId, @Valid @RequestBody ProductDetailsRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateProductDetails(productId, requestDto, userDetails);
 
@@ -109,6 +131,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/delete")
+    @Operation(summary = "상품 삭제",
+            description = "상품을 논리적으로 삭제. 해당 상품을 등록한 OWNER, MANGER, MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> deleteProduct(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.deleteProduct(productId, userDetails);
 
@@ -116,6 +140,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/inventory")
+    @Operation(summary = "상품 재고 및 최대 주문 수량 변경",
+            description = "해당 상품을 등록한 OWNER, MANGER, MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> updateStockAndLimit(@PathVariable UUID productId, @RequestBody ProductQuantityRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateStockAndLimit(productId, requestDto, userDetails);
 
@@ -123,6 +149,8 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/visibility")
+    @Operation(summary = "상품 숨김 여부 처리",
+            description = "해당 상품을 등록한 OWNER, MANGER, MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> updateProductVisibility(@PathVariable UUID productId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateProductVisibility(productId, userDetails);
 
@@ -130,13 +158,19 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/display-status")
+    @Operation(summary = "상품 노출 상태 변경",
+            description = "노출상태를 PENDING_SALE(판매대기), IN_STOCK(판매중), DISCONTINUED(판매중)"
+                    + "해당 상품을 등록한 OWNER, MANGER, MASTER 수행 가능.")
     public ApiResponseDto<Map<String, Object>> updateProductDisplayStatus(@PathVariable UUID productId, @RequestParam String displayStatus, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         productService.updateProductDisplayStatus(productId, displayStatus, userDetails);
 
         return ApiResponseDto.success(Map.of("id", productId, "message", "상품 표시 상태가 성공적으로 수정되었습니다."));
     }
 
+    @Hidden
     @PatchMapping("/{productId}/images")
+    @Operation(summary = "상품 이미지 수정 및 관리",
+            description = "등록된 상품의 이미지를 삭제하거나 추가" + "해당 상품을 등록한 OWNER, MANAGER, MASTER 수행 가능")
     public ApiResponseDto<Map<String, Object>> manageProductImage(
             @PathVariable UUID productId,
             @RequestParam(value = "files[]", required = false) MultipartFile[] files,
@@ -168,6 +202,11 @@ public class ProductController {
             String productName, String displayStatus, String isHidden, String isDeleted,
             LocalDateTime startDate, LocalDateTime endDate, String sort,
             int pageNumber, int pageSize, UserDetailsImpl userDetails) {
+
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10;
+        }
+
         ProductQueryDto requestDto = ProductQueryDto.builder()
                 .storeId(storeId)
                 .productId(productId)
