@@ -49,7 +49,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **Swagger:** http://43.203.245.199/swagger-ui/index.html
 ### 🖥️ 테스트시 주의사항 ###
 - 상품 등록 API 및 상품 이미지 수정 및 관리 API는 파일 업로드, JSON 요청 본문, 복잡한 쿼리 파라미터 조합 등
-- Swagger나 Postman에서는 다소 제한적일 수 있어 **HTTP Client**를 사용해 수행해야 합니다.
+  Swagger나 Postman에서는 다소 제한적일 수 있어 **HTTP Client**를 사용해 수행해야 합니다.
 - 테스트 파일 경로(/resoucres/http/createProductTest.http)
 ----
 ### ⚙️서비스 구성 및 실행 방법 ###
