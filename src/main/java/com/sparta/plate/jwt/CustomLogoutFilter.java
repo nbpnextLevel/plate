@@ -1,6 +1,8 @@
 package com.sparta.plate.jwt;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.filter.GenericFilterBean;
@@ -25,6 +27,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisTemplate<String, String> redisTemplate;
+	private static final String BLACKLIST_PREFIX = "blacklist:";
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws
@@ -43,16 +46,15 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		String refresh = null;
-		Cookie[] cookies = request.getCookies();
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("refresh")) {
-				refresh = cookie.getValue();
-			}
+		String accessToken = jwtTokenProvider.getAccessTokenFromHeader(request);
+		if (accessToken == null) {
+			sendErrorResponse(response, "Access 토큰이 존재하지 않습니다.", HttpServletResponse.SC_BAD_REQUEST);
+			return;
 		}
 
+		String refresh = getRefreshToken(request);
 		if (refresh == null) {
-			sendErrorResponse(response, "리프레시 토큰이 존재하지 않습니다.", HttpServletResponse.SC_BAD_REQUEST);
+			sendErrorResponse(response, "Refresh 토큰이 존재하지 않습니다.", HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
@@ -74,6 +76,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
 				return;
 			}
 
+			// 액세스 토큰 블랙리스트 추가
+			blacklistAccessToken(accessToken);
+
 			Cookie cookie = new Cookie("refresh", null);
 			cookie.setMaxAge(0);
 			cookie.setPath("/");
@@ -86,6 +91,35 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	private void blacklistAccessToken(String accessToken) {
+		try {
+			// 토큰의 남은 유효시간 계산
+			Date expiration = jwtTokenProvider.getExpirationDateFromToken(accessToken);
+			long remainingTime = (expiration.getTime() - System.currentTimeMillis()) / 1000;
+
+			if (remainingTime > 0) {
+				String blacklistKey = BLACKLIST_PREFIX + accessToken;
+				redisTemplate.opsForValue().set(blacklistKey, "logout", remainingTime, TimeUnit.SECONDS);
+				log.info("[Redis] Access token added to blacklist. Expires in {} seconds", remainingTime);
+			}
+		} catch (ExpiredJwtException e) {
+			log.info("[Token] Access token is already expired");
+		}
+	}
+
+	private static String getRefreshToken(HttpServletRequest request) {
+		String refresh = null;
+
+		Cookie[] cookies = request.getCookies();
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("refresh")) {
+				refresh = cookie.getValue();
+			}
+		}
+
+		return refresh;
 	}
 
 	private void validateRefresh(HttpServletResponse response, String refresh) {

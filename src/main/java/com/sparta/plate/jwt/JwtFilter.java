@@ -2,6 +2,7 @@ package com.sparta.plate.jwt;
 
 import java.io.IOException;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -31,19 +32,30 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsServiceImpl userDetailsService;
+	private final RedisTemplate<String, String> redisTemplate;
+	private static final String BLACKLIST_PREFIX = "blacklist:";
 
-	public JwtFilter(JwtTokenProvider jwtTokenProvider, UserDetailsServiceImpl userDetailsService) {
+	public JwtFilter(JwtTokenProvider jwtTokenProvider, UserDetailsServiceImpl userDetailsService
+	, RedisTemplate<String, String> redisTemplate) {
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.userDetailsService = userDetailsService;
+		this.redisTemplate = redisTemplate;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String token = jwtTokenProvider.getJwtFromHeader(request);
+		String token = jwtTokenProvider.getAccessTokenFromHeader(request);
 
 		if (StringUtils.hasText(token)) {
+
+			// 블랙리스트 체크
+			String blacklistKey = BLACKLIST_PREFIX + token;
+			if (Boolean.TRUE.equals(redisTemplate.hasKey(blacklistKey))) {
+				sendErrorResponse(response, "로그아웃된 토큰입니다.", HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			}
 
 			try {
 				if (!jwtTokenProvider.validateToken(token)) {
