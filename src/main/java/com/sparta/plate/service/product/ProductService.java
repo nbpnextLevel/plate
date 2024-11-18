@@ -182,6 +182,13 @@ public class ProductService {
             throw new UnauthorizedAccessException("You do not have permission to view this hidden product.");
         }
 
+        if (isRoleOwner || isRoleCustomer) {
+            boolean isProductOwner = productOwnershipService.isProductOwner(product.getId(), userDetails.getUser().getId());
+            if (!isProductOwner && !product.getDisplayStatus().equals(ProductDisplayStatusEnum.IN_STOCK)) {
+                throw new UnauthorizedAccessException("This product cannot be viewed.");
+            }
+        }
+
         if (isRoleOwner && product.isHidden()) {
             productOwnershipService.checkProductOwnership(product.getId(), userDetails);
         }
