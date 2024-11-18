@@ -1,0 +1,80 @@
+### POST PRODUCT - 상품 등록
+POST http://43.203.245.199/api/products/reg
+#Authorization: Bearer {인증 토큰}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="storeId"
+
+{Store의 ID}
+--boundary
+Content-Disposition: form-data; name="productName"
+
+새 상품
+--boundary
+Content-Disposition: form-data; name="productDescription"
+
+설명
+--boundary
+Content-Disposition: form-data; name="price"
+
+15000
+--boundary
+Content-Disposition: form-data; name="stockQuantity"
+
+5000
+--boundary
+Content-Disposition: form-data; name="maxOrderLimit"
+
+5
+--boundary
+Content-Disposition: form-data; name="displayStatus"
+
+PENDING_SALE
+--boundary
+Content-Disposition: form-data; name="isHidden"
+
+false
+--boundary
+Content-Disposition: form-data; name="primaryImageIndex"
+
+1
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="image1.png"
+Content-Type: image/png
+
+< {이미지경로}\image1.png
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="image2.png"
+Content-Type: image/png
+
+< C{이미지경로}\image2.png
+
+
+### PATCH PRODUCT IMAGE - 상품이미지 수정 및 관리
+PATCH http://43.203.245.199/api/products/48b3d33a-4f64-47bb-9993-c2663aaed8ce/images
+#Authorization: Bearer {인증 토큰}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="primaryImageIndex"
+
+1
+--boundary
+Content-Disposition: form-data; name="deletedImageIds[]"
+
+{삭제할 Image의 ID}
+--boundary
+Content-Disposition: form-data; name="deletedImageIds[]"
+
+{삭제할 Image의 ID}
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="image1.jpg"
+Content-Type: image/jpg
+
+< {이미지경로}\image1.jpg
+--boundary
+Content-Disposition: form-data; name="files[]"; filename="image2.png"
+Content-Type: image/png
+
+< {이미지경로}\image2.png

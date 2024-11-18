@@ -1,0 +1,35 @@
+### 토큰 발급을 위한 CUSTOMER 로그인 요청
+POST http://43.203.245.199/api/users/login
+Content-Type: application/json
+
+{
+  "loginId" : "customer1111",
+  "password": "Customer1111@"
+}
+
+### 토큰 발급을 위한 OWNER 로그인 요청
+POST http://43.203.245.199/api/users/login
+Content-Type: application/json
+
+{
+  "loginId" : "owner1111",
+  "password": "Owner1111@"
+}
+
+### 토큰 발급을 위한 MANAGER 로그인 요청
+POST http://43.203.245.199/api/users/login
+Content-Type: application/json
+
+{
+  "loginId" : "manager1111",
+  "password": "Manager1111@"
+}
+
+### 토큰 발급을 위한 MASTER 로그인 요청
+POST http://43.203.245.199/api/users/login
+Content-Type: application/json
+
+{
+  "loginId" : "master1111",
+  "password": "Master1111@"
+}
