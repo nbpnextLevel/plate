@@ -20,6 +20,7 @@ public class StoreSearchRequestDto {
 	private boolean isAsc;
 	private UUID categoryId;
 	private String storeName;
+	private String address;
 
 	public void validate() {
 		validatePageSize();

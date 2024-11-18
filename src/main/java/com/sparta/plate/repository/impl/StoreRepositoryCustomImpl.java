@@ -38,6 +38,11 @@ public class StoreRepositoryCustomImpl implements StoreRepositoryCustom {
             builder.and(store.storeName.contains(request.getStoreName()));
         }
 
+        // 주소 입력되면 검색한 해당 주소에 등록된 지점 노출
+        if (StringUtils.hasText(request.getAddress())) {
+            builder.and(store.address.contains(request.getAddress()));
+        }
+
         long total = getTotalCount(store, builder);
         OrderSpecifier<?> orderSpecifier = getOrderBy(request, store);
 
