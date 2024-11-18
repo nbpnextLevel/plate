@@ -1,7 +1,6 @@
 package com.sparta.plate.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,7 +48,7 @@ public class OrderProduct {
         return this.product.getStockQuantity() < this.orderQuantity;
     }
     public boolean getProductDisplayStatus(){
-        return this.product.getDisplayStatus().equals(IN_STOCK);
+        return !this.product.getDisplayStatus().equals(IN_STOCK);
     }
 
     public void setProductStockQuantity() {

@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.sparta.plate.entity.OrderStatusEnum.PENDING_PAYMENT;
-import static com.sparta.plate.entity.ProductDisplayStatusEnum.IN_STOCK;
 
 @Slf4j
 @Service
@@ -160,7 +159,7 @@ public class OrderService {
 
 
                             if (dto.getOrderQuantity() != productToUpdate.getOrderQuantity()) {
-                                if(!productToUpdate.getProductDisplayStatus()) {
+                                if(productToUpdate.getProductDisplayStatus()) {
                                     throw new InvalidDisplayStatusException("The product is not in a salable : " + productToUpdate.getProduct().getName());
                                 }
                                 if(!productToUpdate.getProductHistoryId().equals((productHistoryRepository.findLatestByProductId(productToUpdate.getProduct().getId()).getId()))) {
@@ -356,7 +355,7 @@ public class OrderService {
             throw new OrderQuantityExceededException("Your order quantity has exceeded your maximum order limit. Max order limt : " + orderProduct.getProduct().getMaxOrderLimit());
         }
 
-        if(!orderProduct.getProductDisplayStatus()) {
+        if(orderProduct.getProductDisplayStatus()) {
             throw new InvalidDisplayStatusException("The product is not in a salable : " +  orderProduct.getProduct().getName());
         }
 
