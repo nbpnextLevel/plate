@@ -153,10 +153,20 @@ public class OrderService {
                         break;
 
                     case UPDATE:
-
                         if (existingProductOpt.isPresent()) {
                             OrderProduct productToUpdate = existingProductOpt.get();
+                            // Product 객체 조회 로직을 추가 (예: productRepository.findById() 등)
+
+
                             if (dto.getOrderQuantity() != productToUpdate.getOrderQuantity()) {
+                                if(productToUpdate.getProductDisplayStatus()) {
+                                    throw new InvalidDisplayStatusException("The product is not in a salable : " + productToUpdate.getProduct().getName());
+                                }
+                                if(!productToUpdate.getProductHistoryId().equals((productHistoryRepository.findLatestByProductId(productToUpdate.getProduct().getId()).getId()))) {
+                                    throw new StatusChangeException("The status of the product has changed.");
+
+                                }
+
                                 productToUpdate.resetProductStockQuantity();
                                 productToUpdate.setOrderQuantity(dto.getOrderQuantity());
                                 productToUpdate.setProductStockQuantity();
@@ -323,13 +333,12 @@ public class OrderService {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + requestDto.getProductId()));
 
         if(!product.getStore().getId().equals(order.getStore().getId())){
-            throw new ProductHistoryNotFoundException("Product is not in order store");
+            throw new ProductNotFoundException("Product is not in order store : " + product.getName());
         }
 
         OrderProduct orderProduct = requestDto.toEntity(product, order);
         checkQuantity(orderProduct);
 
-        //System.out.println("여기" + productHistoryRepository.findLatestByProductId(requestDto.getProductId()).getId());
         orderProduct.setProductHistoryId(productHistoryRepository.findLatestByProductId(requestDto.getProductId()).getId());
         orderProduct.setOrderProductId(orderProductId); // 고유한 ID 설정
 
@@ -344,6 +353,10 @@ public class OrderService {
 
         if(orderProduct.getOrderLimit()) {
             throw new OrderQuantityExceededException("Your order quantity has exceeded your maximum order limit. Max order limt : " + orderProduct.getProduct().getMaxOrderLimit());
+        }
+
+        if(orderProduct.getProductDisplayStatus()) {
+            throw new InvalidDisplayStatusException("The product is not in a salable : " +  orderProduct.getProduct().getName());
         }
 
         orderProduct.setProductStockQuantity();

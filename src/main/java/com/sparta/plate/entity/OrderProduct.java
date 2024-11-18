@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+import static com.sparta.plate.entity.ProductDisplayStatusEnum.IN_STOCK;
+
 @Entity
 @Table(name = "p_order_product")  // 테이블 이름 설정
 @Getter
@@ -44,6 +46,9 @@ public class OrderProduct {
 
     public boolean getOrderQuantityLimit(){
         return this.product.getStockQuantity() < this.orderQuantity;
+    }
+    public boolean getProductDisplayStatus(){
+        return !this.product.getDisplayStatus().equals(IN_STOCK);
     }
 
     public void setProductStockQuantity() {

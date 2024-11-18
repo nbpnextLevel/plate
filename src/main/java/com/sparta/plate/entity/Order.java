@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.sparta.plate.entity.OrderStatusEnum.ORDER_CANCELLED;
+import static com.sparta.plate.entity.OrderStatusEnum.PENDING_PAYMENT;
 
 @Entity
 @Table(name = "p_order")  // 테이블 이름 설정
@@ -48,7 +49,7 @@ public class Order extends Timestamped{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
-    private OrderStatusEnum orderStatus;  // 주문 상태 (ENUM)
+    private OrderStatusEnum orderStatus = PENDING_PAYMENT;  // 주문 상태 (ENUM)
 
     @Column(name = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDeleted = false; // 삭제 여부 (BOOLEAN)

@@ -129,7 +129,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PATCH,"/api/orders/{orderId}").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
                         .requestMatchers(HttpMethod.POST,"/api/orders").hasAnyAuthority("ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_MASTER")
 
-
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
