@@ -85,6 +85,7 @@ public class WebSecurityConfig {
         );
 
 
+        // TODO 각자 권한에 따른 설정 필요
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
