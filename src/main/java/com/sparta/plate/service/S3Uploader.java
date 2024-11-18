@@ -3,6 +3,7 @@ package com.sparta.plate.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +31,22 @@ public class S3Uploader {
     private String bucket;
 
     public String upload(MultipartFile multipartFile) {
-        String fileName = IMAGE_UPLOAD_DIR + "/" + UUID.randomUUID();
+        String originalFilename = multipartFile.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        String fileName = IMAGE_UPLOAD_DIR + "/" + UUID.randomUUID() + extension;
+
         try {
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), null)
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(multipartFile.getContentType());
+            metadata.setContentLength(multipartFile.getSize());
+
+            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
+
             return amazonS3Client.getUrl(bucket, fileName).toString();
         } catch (Exception e) {
             log.error("Error occurred during file upload: {}", e.getMessage(), e);

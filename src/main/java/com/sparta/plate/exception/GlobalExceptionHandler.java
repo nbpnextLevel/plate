@@ -90,6 +90,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler({UnauthorizedAccessException.class})
+    public ResponseEntity<RestApiException> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
+        RestApiException restApiException = new RestApiException(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(
+                restApiException,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
