@@ -1,6 +1,8 @@
 package com.sparta.plate.exception;
 
-public class ProductIsDeletedException extends RuntimeException {
+import jakarta.persistence.EntityNotFoundException;
+
+public class ProductIsDeletedException extends EntityNotFoundException {
     public ProductIsDeletedException(String message) {
         super(message);
     }

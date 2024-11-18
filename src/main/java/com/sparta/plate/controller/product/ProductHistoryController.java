@@ -45,6 +45,10 @@ public class ProductHistoryController {
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10;
+        }
+
         ProductHistoryQueryDto requestDto = ProductHistoryQueryDto.builder()
                 .id(id)
                 .productId(productId)

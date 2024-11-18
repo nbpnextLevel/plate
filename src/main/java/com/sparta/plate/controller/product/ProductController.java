@@ -202,6 +202,11 @@ public class ProductController {
             String productName, String displayStatus, String isHidden, String isDeleted,
             LocalDateTime startDate, LocalDateTime endDate, String sort,
             int pageNumber, int pageSize, UserDetailsImpl userDetails) {
+
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10;
+        }
+
         ProductQueryDto requestDto = ProductQueryDto.builder()
                 .storeId(storeId)
                 .productId(productId)

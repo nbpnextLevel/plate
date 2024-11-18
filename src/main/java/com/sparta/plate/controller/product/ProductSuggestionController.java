@@ -47,6 +47,10 @@ public class ProductSuggestionController {
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 
+        if (pageSize != 10 && pageSize != 30 && pageSize != 50) {
+            pageSize = 10;
+        }
+
         ProductSuggestionQueryDto requestDto = ProductSuggestionQueryDto.builder()
                 .id(id)
                 .requestText(requestText)
