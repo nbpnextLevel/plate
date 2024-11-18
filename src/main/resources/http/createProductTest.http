@@ -1,5 +1,5 @@
 ### POST PRODUCT - 상품 등록
-POST http://localhost:8080/api/products/reg
+POST http://43.203.245.199/api/products/reg
 #Authorization: Bearer {인증 토큰}
 Content-Type: multipart/form-data; boundary=boundary
 
@@ -52,7 +52,7 @@ Content-Type: image/png
 
 
 ### PATCH PRODUCT IMAGE - 상품이미지 수정 및 관리
-PATCH http://localhost:8080/api/products/48b3d33a-4f64-47bb-9993-c2663aaed8ce/images
+PATCH http://43.203.245.199/api/products/48b3d33a-4f64-47bb-9993-c2663aaed8ce/images
 #Authorization: Bearer {인증 토큰}
 Content-Type: multipart/form-data; boundary=boundary
 
