@@ -94,6 +94,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	}
 
 	private void sendJsonResponse(HttpServletResponse response, ApiResponseDto<?> responseDto) throws IOException {
+		response.setStatus(responseDto.getStatusCode());
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		new ObjectMapper().writeValue(response.getWriter(), responseDto);

@@ -107,6 +107,10 @@ public class JwtTokenProvider {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 	}
 
+	public Date getExpirationDateFromToken(String token) {
+		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration();
+	}
+
 	// 만료된 토큰 여부 조회하기
 	public Boolean isExpired(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before((new Date()));
@@ -123,7 +127,7 @@ public class JwtTokenProvider {
 	}
 
 	// HTTP 요청헤더에서 bearer 토큰을 가져옴.
-	public String getJwtFromHeader(HttpServletRequest request) {
+	public String getAccessTokenFromHeader(HttpServletRequest request) {
 		String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
 			return bearerToken.substring(7);
