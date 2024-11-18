@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,36 +32,30 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     // 주문 다건 조회 시 사용
     @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.orderProductList " +
-            "WHERE o.orderStatus = :orderStatus " +
-            "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate "+
+            "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
             "AND o.user.id = :userId "+
             "AND o.isDeleted = false",
             countQuery = "SELECT COUNT(o) FROM Order o " +
-                    "WHERE o.orderStatus = :orderStatus " +
-                    "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate "+
+                    "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
                     "AND o.user.id = :userId "+
                     "AND o.isDeleted = false")
-    Page<Order> findByUserOrdersWithProductList(Long userId, OrderStatusEnum orderStatus, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<Order> findByUserOrdersWithProductList(Long userId, OrderStatusEnum orderStatus, Pageable pageable);
 
     @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.orderProductList " +
-            "WHERE o.orderStatus = :orderStatus " +
-            "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate "+
+            "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
             "AND o.store.id = :storeId "+
             "AND o.isDeleted = false",
             countQuery = "SELECT COUNT(o) FROM Order o " +
-                    "WHERE o.orderStatus = :orderStatus " +
-                    "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate "+
+                    "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
                     "AND o.store.id = :storeId "+
                     "AND o.isDeleted = false")
-    Page<Order> findByStoreOrdersWithProductList(UUID storeId, OrderStatusEnum orderStatus, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<Order> findByStoreOrdersWithProductList(UUID storeId, OrderStatusEnum orderStatus, Pageable pageable);
 
     @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.orderProductList " +
-            "WHERE o.orderStatus = :orderStatus " +
-            "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate " +
+            "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
             "AND o.isDeleted = false",
             countQuery = "SELECT COUNT(o) FROM Order o "+
-                    "WHERE o.orderStatus = :orderStatus " +
-                    "AND FUNCTION('DATE', o.createdAt) BETWEEN :startDate AND :endDate " +
+                    "WHERE (:orderStatus IS NULL OR o.orderStatus = :orderStatus) " +
                     "AND o.isDeleted = false")
-    Page<Order> findByOrdersWithProductList(OrderStatusEnum orderStatus, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<Order> findByOrdersWithProductList(OrderStatusEnum orderStatus, Pageable pageable);
 }
