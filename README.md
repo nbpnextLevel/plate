@@ -17,7 +17,8 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
   - CUSTOMER, OWNER, MANAGER, MASTER의 권한으로 관리하여 진행
   - 유저, 가게, 상품, 주문, 결제, 리뷰 도메인으로 구성
   - 이력 관리가 필요한 부분은 물리삭제가 아닌 논리삭제(is_deleted) 컬럼 사용
-  - 모든 테이블에 Audit 필드 추가하여 데이터 감사로그 기록 
+  - 모든 테이블에 Audit 필드 추가하여 데이터 감사로그 기록
+  - 개발기간 : 24.11.7 ~ 24.11.18
 ----
 ### 👩‍💻 팀원 역할 분담 ###
  - **성은정 :** 팀장, 결제 및 리뷰 담당
@@ -33,15 +34,17 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 ----
 ### 🔧 개발환경 ###
 - **Framework  :** Spring Boot 3.3.5
-- **Database :** PostgreSQL
+- **Version :** Java 17
+- **Database :** PostgreSQL, Redis
 - **Build Tool :** Gradle
 - **IDE :** IntelliJ
 - **ORM :** JPA
 - **VCS :** GitHub(Git Flow 전략)
 ----
 ### ⚙️ 기술스택 ###
-- **Server :** AWS VPC, AWS EC2
-- **Database :** AWS RDS, AWS S3, Redis
+- **Server :** AWS EC2
+- **Database :** AWS RDS, Redis
+- **Storage :** AWS S3
 - **API documentation:** Swagger
 ----
 ### 📝 ERD ###
@@ -72,12 +75,9 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 - **Amazon RDS (Relational Database Service)**
   - PostgreSQL 데이터베이스를 호스팅하여 애플리케이션의 데이터 저장을 담당
 - **Redis**
-  - JWT 토큰 기반 인증 시스템 보안 강화를 위해 활용
+  - JWT RefreshToken 저장, RefreshToken Rotate, 만료된 AccessToken 블랙리스트 관리를 위해 활용
 - **Amazon S3**
   - 사용자가 업로드한 이미지나 기타 파일들을 저장하여 사용
 - **Google AI API**
   - 외부 AI 서비스와 통합되어 기능을 확장
   - 사용자는 Spring 애플리케이션을 통해 Google AI API와 상호작용 가능
-----
-### ✒️기술 Issue 해결 과정 ###
-----
