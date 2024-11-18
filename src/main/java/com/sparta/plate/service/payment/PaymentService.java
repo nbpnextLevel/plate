@@ -2,10 +2,7 @@ package com.sparta.plate.service.payment;
 
 import com.sparta.plate.dto.request.PaymentRequestDto;
 import com.sparta.plate.dto.response.PaymentResponseDto;
-import com.sparta.plate.entity.Order;
-import com.sparta.plate.entity.Payment;
-import com.sparta.plate.entity.User;
-import com.sparta.plate.entity.UserRoleEnum;
+import com.sparta.plate.entity.*;
 import com.sparta.plate.exception.*;
 import com.sparta.plate.repository.OrderRepository;
 import com.sparta.plate.repository.PaymentRepository;
@@ -51,7 +48,7 @@ public class PaymentService {
     public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto, Long userId) {
 
         // 주문 존재 여부 확인
-        Order order = orderRepository.findById(paymentRequestDto.getOrderId())
+        Order order = orderRepository.findByOrderIdAndIsDeletedFalseAndIsCanceledFalse(paymentRequestDto.getOrderId())
                 .orElseThrow(()-> new OrderNotFoundException("해당 주문이 존재하지 않습니다.")
         );;
 
@@ -64,8 +61,11 @@ public class PaymentService {
         // 결제 객체 생성
         Payment payment = new Payment(order);
 
+        order.setOrderStatus(OrderStatusEnum.DELIVERY_COMPLETED);
+
         // DB에 저장
         paymentRepository.save(payment);
+        orderRepository.save(order);
 
         return new PaymentResponseDto(order, payment);
     }
