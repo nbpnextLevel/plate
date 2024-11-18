@@ -34,8 +34,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 ----
 ### 🔧 개발환경 ###
 - **Framework  :** Spring Boot 3.3.5
-- **Version :** Java 17
-- **Database :** PostgreSQL, Redis
+- Java 17
 - **Build Tool :** Gradle
 - **IDE :** IntelliJ
 - **ORM :** JPA
@@ -43,7 +42,7 @@ Spring 심화과정의 첫 프로젝트로 주문 관리 플랫폼을 모놀리�
 ----
 ### ⚙️ 기술스택 ###
 - **Server :** AWS EC2
-- **Database :** AWS RDS, Redis
+- **Database :** AWS RDS, PostgreSQL, Redis
 - **Storage :** AWS S3
 - **API documentation:** Swagger
 ----
